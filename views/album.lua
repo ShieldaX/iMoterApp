@@ -149,11 +149,13 @@ function Album:turnOver()
   local currentPiece = self.elements[self.currentPieceId]
   local targetPiece = self.elements[self.paintedPieceId]
   currentPiece:stop()
-  transition.to( currentPiece.layer, {time = transTime - 50, y = - 1*vH, transition = easeType} )
-  transition.to( targetPiece.elements.shade, {time = transT, alpha = 0, transition = easing.inExpo})
+  --d('Target Scale Factor: ' .. targetPiece.targetScale)
+  transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
+  --transition.to( targetPiece.elements.shade, {time = transT, alpha = 0, transition = easing.inExpo})
   transition.to( targetPiece.layer,{
     time = transTime,
-    x = 0, y = 0, xScale = targetPiece.targetScale, yScale = targetPiece.targetScale,
+    x = 0, y = 0,
+    xScale = 1, yScale = 1,
     transition = easeType,
     onComplete = function()
         currentPiece:cleanup()

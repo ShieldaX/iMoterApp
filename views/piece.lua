@@ -71,7 +71,7 @@ function Piece:preload(callback)
         self:block()
         --self.layer:toBack()
         self.targetScale = self.elements['image'].xScale
-        d('Target Scale Factor: ' .. self.targetScale)
+        --d('Target Scale Factor: ' .. self.targetScale)
 	    end
 	    print ( "event.response.fullPath: ", event.response.fullPath )
 	    print ( "event.response.filename: ", event.response.filename )
@@ -84,6 +84,10 @@ function Piece:preload(callback)
       if callback and type(callback) == 'function' then callback() end
 	end
   display.loadRemoteImage( self.uri, "GET", networkListener, self.fileName, system.CachesDirectory, oX, oY)
+end
+
+function Piece:onImageLoaded()
+  d('self.name' .. 'image resource loaded')
 end
 
 -- ---
@@ -124,9 +128,14 @@ function Piece:touch(event)
         if math.abs(t.motion) > 0 and self.parent.paintedPieceId and self.parent.elements[self.parent.paintedPieceId] then
           local ratio = (math.abs(t.motion)/vH)*.1 + .8
           local paintedPiece = self.parent.elements[self.parent.paintedPieceId].layer
+          --local paintedPieceImage = self.parent.elements[self.parent.paintedPieceId].elements.image
+          if paintedPieceImage then
+            paintedPieceImage.xScale, paintedPieceImage.yScale = ratio, ratio
+            util.center(paintedPieceImage)
+          end
           paintedPiece.xScale, paintedPiece.yScale = ratio, ratio
           util.center(paintedPiece)
-          self.parent.elements[self.parent.paintedPieceId].layer.alpha = 1 - math.abs(t.motion)/(vH*1.2)
+          self.parent.elements[self.parent.paintedPieceId].layer.alpha = math.abs(t.motion)/(vH*1.2)
         end
       --ended or cancelled
       elseif ('ended' == phase or 'cancelled' == phase) then
