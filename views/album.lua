@@ -106,6 +106,14 @@ end
 -- 如果预加载的Piece View 和目标一致则直接返回
 -- 如果有预加载回调任务则置入Piece View的预加载中
 function Album:createPiece(index)
+  if self.paintedPieceId then
+    d('FOUND EXISIST: ' .. self.paintedPieceId)
+    if self.elements[self.paintedPieceId] then
+      return false
+    else
+      
+    end
+  end
   self:turnOut()
   local _piece = Piece:new(self.imgURIs[index], self.imgNames[index])
   _piece:preload()
