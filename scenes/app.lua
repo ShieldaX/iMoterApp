@@ -72,7 +72,7 @@ function scene:create( event )
 
 	--imoter.fetchAlbum(initAlbum(createImgLoader(sceneGroup)))
   iMoter:getAlbumById(
-    '29919',
+    '30303',
     function(res)
       if not res then
         native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
