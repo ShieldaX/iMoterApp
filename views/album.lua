@@ -147,9 +147,15 @@ function Album:turnOver()
   local currentPiece = self.elements[self.currentPieceId]
   local targetPiece = self.elements[self.paintedPieceId]
   currentPiece:stop()
-  --d('Target Scale Factor: ' .. targetPiece.targetScale)
   transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
-  --transition.to( targetPiece.elements.shade, {time = transT, alpha = 0, transition = easing.inExpo})
+  local isPreloaded = targetPiece.state >= View.STATUS.PRELOADED
+  if not isPreloaded then
+    d('Position Target Piece View Group')
+    local _layer = targetPiece.layer
+    _layer.x = (1 - _layer.xScale)*vW*.5
+    _layer.y = (1 - _layer.yScale)*vH*.5
+    --d(_layer.x .. ' : ' .. _layer.y)
+  end
   transition.to( targetPiece.layer,{
     time = transTime,
     x = 0, y = 0,

@@ -116,6 +116,7 @@ function Piece:touch(event)
       _t.direction = 0
     --focus
     elseif _t.isFocus then
+      local album = self.parent
       --moved
       if ('moved' == phase) then
         _t.tLast = event.time
@@ -126,22 +127,22 @@ function Piece:touch(event)
         -- Detect switching direction
         if _t.motion > 0 and _t.direction >= 0 then
           _t.direction = -1
-          self.parent:switchPiece(_t.direction)
+          album:switchPiece(_t.direction)
         elseif _t.motion < 0 and _t.direction <=0 then
           _t.direction = 1
-          self.parent:switchPiece(_t.direction)
+          album:switchPiece(_t.direction)
         end
-        if math.abs(_t.motion) > 0 and self.parent.paintedPieceId and self.parent.elements[self.parent.paintedPieceId] then
+        if math.abs(_t.motion) > 0 and album.paintedPieceId and album.elements[album.paintedPieceId] then
           local ratio = (math.abs(_t.motion)/vH)*.1 + .8
-          local paintedPiece = self.parent.elements[self.parent.paintedPieceId].layer
-          --local paintedPieceImage = self.parent.elements[self.parent.paintedPieceId].elements.image
+          local paintedPiece = album.elements[album.paintedPieceId].layer
+          --local paintedPieceImage = album.elements[album.paintedPieceId].elements.image
           if paintedPieceImage then
             paintedPieceImage.xScale, paintedPieceImage.yScale = ratio, ratio
             util.center(paintedPieceImage)
           end
           paintedPiece.xScale, paintedPiece.yScale = ratio, ratio
           util.center(paintedPiece)
-          self.parent.elements[self.parent.paintedPieceId].layer.alpha = math.abs(_t.motion)/(vH*1.2)
+          album.elements[album.paintedPieceId].layer.alpha = math.abs(_t.motion)/(vH*1.2)
         end
       --ended or cancelled
       elseif ('ended' == phase or 'cancelled' == phase) then
@@ -150,26 +151,26 @@ function Piece:touch(event)
         -- detect flick
         if _t.tLast and (event.time - _t.tLast) < 100 then _t.flick = true else _t.flick = false end
         -- 处理快速翻页动作
-        if (_t.flick or (math.abs(_t.motion) > vH*.4 and math.abs(_t.direction) ~= 0)) and self.parent.paintedPieceId then
-          if self.parent.elements[self.parent.paintedPieceId].state >= View.STATUS.PRELOADED then
+        if (_t.flick or (math.abs(_t.motion) > vH*.4 and math.abs(_t.direction) ~= 0)) and album.paintedPieceId then
+          if album.elements[album.paintedPieceId].state >= View.STATUS.PRELOADED then
             d('Flicked and Image Preloaded')
           else -- 图片未加载完成
             d('Flicked but Image Unloaded')
           end
-          self.parent:turnOver()
+          album:turnOver()
         else
           --ease = easing.inQuad
           transition.to( _t, {time = transT, y = 0, transition = ease} )
           -- drop older painted pix if any
-          if self.parent.paintedPieceId and self.parent.elements[self.parent.paintedPieceId] then
-            local _target = self.parent.elements[self.parent.paintedPieceId]
+          if album.paintedPieceId and album.elements[album.paintedPieceId] then
+            local _target = album.elements[album.paintedPieceId]
             --transition.to(_target.elements['shade'], {time = transT, alpha = 1, transition = ease})
             transition.to(_target.layer, {
                 time = transT,
                 x = 64, y = 96,
                 xScale = 0.8, yScale = 0.8,
                 transition = ease,
-                onComplete = function() self.parent:turnOut() end
+                onComplete = function() album:turnOut() end
               })
           end
         end
@@ -186,7 +187,7 @@ end
 function Piece:tap()
   -- TODO: pop overlay: Enter image resource view.
 	d('board')
-	--self.parent:board()
+	--album:board()
 end
 
 -- ---
@@ -224,7 +225,7 @@ function Piece:reload(image)
   if not self.baseDir then
     self.baseDir = Piece.directory
   end
-  --local reImage = display.newImage( self.parent, self.fileName, self.baseDir )
+  --local reImage = display.newImage( album, self.fileName, self.baseDir )
   --fitScreenW(reImage)
 end
 
