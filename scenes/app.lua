@@ -52,10 +52,10 @@ function scene:create( event )
 
   mui.init(nil, { parent=self.view })
 
-        -----------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
 
-        --      CREATE display objects and add them to 'group' here.
-        --      Example use-case: Restore 'group' from previously saved state.
+  --      CREATE display objects and add them to 'group' here.
+  --      Example use-case: Restore 'group' from previously saved state.
 
   -- Gather insets (function returns these in the order of top, left, bottom, right)
   local topInset, leftInset, bottomInset, rightInset = mui.getSafeAreaInsets()
@@ -70,24 +70,19 @@ function scene:create( event )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
 
-	--imoter.fetchAlbum(initAlbum(createImgLoader(sceneGroup)))
-  iMoter:getAlbumById(
-    '30303',
-    function(res)
-      if not res then
-        native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
-        return false -- no need to try and run the rest of the function if we don't have our forecast.the
-      end
-      local _album = res.data.album
-      print(inspect(_album))
-      local albumView = AlbumView:new(_album, sceneGroup)
-      albumView:open()
-      --timer.performWithDelay(3000, function() albumView:loadPiece(2) end)
-      --timer.performWithDelay(4000, function() albumView:turnOver() end)
+  local function openAlbumWithData(res)
+    if not res then
+      native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
+      return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
-  )
-        -----------------------------------------------------------------------------
-
+    local _album = res.data.album
+    print(inspect(_album))
+    local albumView = AlbumView:new(_album, sceneGroup)
+    albumView:open() 
+  end
+  
+  iMoter:getAlbumById('30282', openAlbumWithData)
+  -----------------------------------------------------------------------------
 end
 
 
@@ -96,11 +91,11 @@ end
 function scene:show( event )
 	local sceneGroup = self.view
 
-        -----------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
 
-        --      This event requires build 2012.782 or later.
+  --      This event requires build 2012.782 or later.
 
-        -----------------------------------------------------------------------------
+  -----------------------------------------------------------------------------
 
 end
 

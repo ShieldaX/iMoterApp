@@ -96,24 +96,22 @@ end
 
 function Album:open(index)
   index = index or 1
-  local callback
-  callback = function()
-    d("Just Display First Piece Firstly!")
-    self.elements[self.currentPieceId]:start()
-  end
-  self:createPiece(index, callback)
+  self:createPiece(index)
   -- update display status
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
-  --self.elements[self.currentPieceId]:start()
 end
 
-function Album:createPiece(index, callback)
+-- ---
+-- 清除其他预加载的Piece View，（重）新创建一个Piece对象，
+-- 如果预加载的Piece View 和目标一致则直接返回
+-- 如果有预加载回调任务则置入Piece View的预加载中
+function Album:createPiece(index)
   self:turnOut()
   local _piece = Piece:new(self.imgURIs[index], self.imgNames[index])
-  _piece:preload(callback)
+  _piece:preload()
   --_piece:loadImage()
   self:_attach(_piece)
-  d(_piece.name)
+  --d(_piece.name)
   self.paintedPieceId = _piece.name
 end
 
@@ -156,6 +154,7 @@ function Album:turnOver()
     time = transTime,
     x = 0, y = 0,
     xScale = 1, yScale = 1,
+    alpha = 1,
     transition = easeType,
     onComplete = function()
         currentPiece:cleanup()
@@ -169,6 +168,8 @@ function Album:turnOver()
 end
 
 -- ---
+-- 清除预加载的（目标）Piece View对象并重置预加载索引
+-- Album:rebase()
 -- clean the new piece object on album view
 -- @return 'boolean' False if nothing need clean.
 function Album:turnOut()

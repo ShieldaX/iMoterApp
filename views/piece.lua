@@ -18,13 +18,19 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 
+-- ---
+-- CLASSES Declaration
+--
 local View = require "libs.view"
 local Piece = class('PieceView', View)
 
+-- ---
+-- Resize Image Display Object to Fit Screen WIDTH
+--
 function util.resize(obj)
   local ini
   local ratioT = obj.width/obj.height
-  d(visibleAspectRatio..':'..ratioT)
+  --d(visibleAspectRatio..':'..ratioT)
   --resize properly
   if visibleAspectRatio >= ratioT then
       ini = vH/obj.height
@@ -34,56 +40,57 @@ function util.resize(obj)
   obj:scale(ini, ini)
 end
 
-Piece.static.directory = system.CachesDirectory
+-- ---
+-- Default Image File Cache Directory
+-- TODO: Try to load piece image from this dir firstly
+Piece.static.DEFAULT_DIRECTORY = system.CachesDirectory
 
-function Piece:initialize(uri, fname, parent, index)
+function Piece:initialize(uri, name, parent, index)
   View.initialize(self)
-  --local name = fname:gsub('.jpg', '')
-  print('创建图片对象: '..fname)
+  assert(self.layer, 'Piece View Initialized Failed!')
+  d('创建图片对象: '..name)
   self.uri = uri .. '.jpg'
-  self.fileName = fname .. '.jpg'
-  self.name = fname
-  --self.parent = parent
-  --self.indexOfAlbum = index
-  --if self.state < 10 then View.initialize(self) end
+  self.fileName = name .. '.jpg'
+  self.name = name
+  d(self.name..' '..self:getState())
 end
 
-function Piece:preload(callback)
-  if self.state > self.class.STATUS['INITIALIZED'] then
+-- ---
+-- Preload Image Display Object
+-- Then Start Self View Automatically
+--
+function Piece:preload()
+  if self.state > self.class.STATUS.INITIALIZED then
     return false
-  elseif self.state < self.class.STATUS['INITIALIZED'] then
+  elseif self.state < self.class.STATUS.INITIALIZED then
     self:initialize()
   end
   -- Load image
 	local function networkListener( event )
-	    if ( event.isError ) then
-        print ( "Network error - download failed" )
-        return false
-	    else
-        local _image = event.target
-        util.resize(_image)
-        _image.alpha = 0
-        util.center(_image)
-        --fitScreenW(_image, 0, 0)
-        --_image.x, _image.y = display.screenOriginX, display.screenOriginY
-        transition.to( _image, { alpha = 1.0 } )
-        self:_attach(_image, 'image')
-        self:block()
-        --self.layer:toBack()
-        self.targetScale = self.elements['image'].xScale
-        --d('Target Scale Factor: ' .. self.targetScale)
-	    end
-	    print ( "event.response.fullPath: ", event.response.fullPath )
-	    print ( "event.response.filename: ", event.response.filename )
-	    print ( "event.response.baseDirectory: ", event.response.baseDirectory )
-      self.fileName = event.response.filename
-      self.baseDir = event.response.baseDirectory
-      --self.imageView:toBack()
-      --self.parent._bg:toBack()
-      self:setState('PRELOADED')
-      if callback and type(callback) == 'function' then callback() end
+    if ( event.isError ) then
+      print ( "Network error - download failed" )
+      return false
+    else
+      local _image = event.target
+      util.resize(_image)
+      _image.alpha = 0
+      util.center(_image)
+      transition.to( _image, { alpha = 1.0 } )
+      self:_attach(_image, 'image')
+      if self.blocking then
+        self:unblock()
+      end
+    end
+    --print ( "event.response.fullPath: ", event.response.fullPath )
+    --print ( "event.response.filename: ", event.response.filename )
+    --print ( "event.response.baseDirectory: ", event.response.baseDirectory )
+    self.fileName = event.response.filename
+    self.baseDir = event.response.baseDirectory
+    self:setState('PRELOADED')
+    -- AutoStart
+    self:start()
 	end
-  display.loadRemoteImage( self.uri, "GET", networkListener, self.fileName, system.CachesDirectory, oX, oY)
+  display.loadRemoteImage( self.uri, "GET", networkListener, self.fileName, Piece.DEFAULT_DIRECTORY, oX, oY)
 end
 
 function Piece:onImageLoaded()
@@ -95,38 +102,37 @@ end
 --
 function Piece:touch(event)
 --{{{
-    local t = event.target
+    local _t = event.target
     local phase = event.phase
     --began
     if ('began' == phase) then
-      --self.parent:info(false)
-      display.getCurrentStage():setFocus( t )
-      t.isFocus = true
-      t.yStart = t.y
-      t.tStart = event.time
+      display.getCurrentStage():setFocus( _t )
+      _t.isFocus = true
+      _t.yStart = _t.y
+      _t.tStart = event.time
       --t.tLast = event.time
-      t.motion = 0
-      t.speed = 0
-      t.direction = 0
+      _t.motion = 0
+      _t.speed = 0
+      _t.direction = 0
     --focus
-    elseif t.isFocus then
+    elseif _t.isFocus then
       --moved
       if ('moved' == phase) then
-        t.tLast = event.time
-        -- space passed by touch
-        t.motion = event.y - event.yStart
-        -- Sync movement
-        t.y = t.yStart + t.motion
+        _t.tLast = event.time
+        -- Distence passed by touch
+        _t.motion = event.y - event.yStart
+        -- Sync Movement
+        _t.y = _t.yStart + _t.motion
         -- Detect switching direction
-        if t.motion > 0 and t.direction >= 0 then
-          t.direction = -1
-          self.parent:switchPiece(t.direction)
-        elseif t.motion < 0 and t.direction <=0 then
-          t.direction = 1
-          self.parent:switchPiece(t.direction)
+        if _t.motion > 0 and _t.direction >= 0 then
+          _t.direction = -1
+          self.parent:switchPiece(_t.direction)
+        elseif _t.motion < 0 and _t.direction <=0 then
+          _t.direction = 1
+          self.parent:switchPiece(_t.direction)
         end
-        if math.abs(t.motion) > 0 and self.parent.paintedPieceId and self.parent.elements[self.parent.paintedPieceId] then
-          local ratio = (math.abs(t.motion)/vH)*.1 + .8
+        if math.abs(_t.motion) > 0 and self.parent.paintedPieceId and self.parent.elements[self.parent.paintedPieceId] then
+          local ratio = (math.abs(_t.motion)/vH)*.1 + .8
           local paintedPiece = self.parent.elements[self.parent.paintedPieceId].layer
           --local paintedPieceImage = self.parent.elements[self.parent.paintedPieceId].elements.image
           if paintedPieceImage then
@@ -135,19 +141,25 @@ function Piece:touch(event)
           end
           paintedPiece.xScale, paintedPiece.yScale = ratio, ratio
           util.center(paintedPiece)
-          self.parent.elements[self.parent.paintedPieceId].layer.alpha = math.abs(t.motion)/(vH*1.2)
+          self.parent.elements[self.parent.paintedPieceId].layer.alpha = math.abs(_t.motion)/(vH*1.2)
         end
       --ended or cancelled
       elseif ('ended' == phase or 'cancelled' == phase) then
         local transT = 600
         local ease = easing.outExpo
         -- detect flick
-        if t.tLast and (event.time - t.tLast) < 100 then t.flick = true else t.flick = false end
-        if (t.flick or (math.abs(t.motion) > vH*.4 and math.abs(t.direction) ~= 0)) and self.parent.paintedPieceId then
+        if _t.tLast and (event.time - _t.tLast) < 100 then _t.flick = true else _t.flick = false end
+        -- 处理快速翻页动作
+        if (_t.flick or (math.abs(_t.motion) > vH*.4 and math.abs(_t.direction) ~= 0)) and self.parent.paintedPieceId then
+          if self.parent.elements[self.parent.paintedPieceId].state >= View.STATUS.PRELOADED then
+            d('Flicked and Image Preloaded')
+          else -- 图片未加载完成
+            d('Flicked but Image Unloaded')
+          end
           self.parent:turnOver()
         else
           --ease = easing.inQuad
-          transition.to( t, {time = transT, y = 0, transition = ease} )
+          transition.to( _t, {time = transT, y = 0, transition = ease} )
           -- drop older painted pix if any
           if self.parent.paintedPieceId and self.parent.elements[self.parent.paintedPieceId] then
             local _target = self.parent.elements[self.parent.paintedPieceId]
@@ -162,7 +174,7 @@ function Piece:touch(event)
           end
         end
         display.getCurrentStage():setFocus( nil )
-        t.isFocus = false
+        _t.isFocus = false
       end
     end
     --
@@ -170,14 +182,15 @@ function Piece:touch(event)
 --}}}
 end
 
--- add tap listeners
+-- Add tap listeners
 function Piece:tap()
+  -- TODO: pop overlay: Enter image resource view.
 	d('board')
 	--self.parent:board()
 end
 
 -- ---
--- blocking Piece on load
+-- Blocking Piece while Loading
 --
 function Piece:block()
   if self.blocking == true then return false end
@@ -189,14 +202,14 @@ function Piece:block()
   --shade.y = self.elements['image'].y
   --self:_attach(shade, 'shade')
   --shade:toFront()
-  layer.alpha = 0.1
+  layer.alpha = 0.2
   self.blocking = true
   --self.layer.xScale = self.targetScale * 0.618
   --self.layer.yScale = self.targetScale * 0.618
 end
 
 -- ---
--- unblock Pix after loading
+-- Unblock Piece After Preloaded
 --
 function Piece:unblock()
   if self.blocking == false then return false end
@@ -216,23 +229,23 @@ function Piece:reload(image)
 end
 
 -- ---
--- begin to receive touch or tap events, then give reflection back properly
+-- Begin to receive touch or tap events, then give reflection back properly
 --
 function Piece:start()
 --{{{
     d(self.name..' '..self:getState())
-    if self.state > 30 then
-      d(self.name .. ' already started!')
+    if self.state > View.STATUS.STARTED then
+      d(self.name .. ' already Started!')
       return false 
     end
-    if self.state < 20 then
-      d(self.name .. ' is not ready to start!')
+    if self.state < View.STATUS.PRELOADED then
+      d(self.name .. ' is Not Ready to Start!')
       return false 
     end
     if self.blocking == true then
       self:unblock()
     end
-    -- add touch event handler
+    -- Add touch event handler
     self.layer:addEventListener('touch', self)
     self.layer:addEventListener('tap', self)
     self:setState('STARTED')

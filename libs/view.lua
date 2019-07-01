@@ -108,6 +108,10 @@ function View:receive()
 end
 
 function View:_attach(obj, name, force)
+  if self.state < View.STATUS.INITIALIZED then
+    d('View not initialized couldnt attach anything!')
+    return false
+  end
   if not name and obj.name and type(obj.name) == 'string' then name = obj.name end
 
   if name then
@@ -118,12 +122,13 @@ function View:_attach(obj, name, force)
   -- add object to the numeric ordered array
   table.insert(self._elements, obj)
 
-  -- add parent field for self for callback
+  -- add parent field to self for callback
   obj.parent = self
 
   if obj.isInstanceOf and obj:isInstanceOf(View) then
     self.layer:insert(obj.layer)
   else
+    --d('Try to insert native display object...')
     self.layer:insert(obj)
   end
 end
