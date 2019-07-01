@@ -83,6 +83,7 @@ function RESTful:initialize(obj, name)
     self.api = json.decode(data)
     print("Loaded api description from JSON file.\n")
   else
+    name = string.lower(name)
     self.api = require('classes.api_'..name)
     print("Loaded api description from Lua Table directly.\n")
   end
