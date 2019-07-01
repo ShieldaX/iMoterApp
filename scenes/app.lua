@@ -71,7 +71,7 @@ function scene:create( event )
   sceneGroup:insert( background )
 
   local function openAlbumWithData(res)
-    if not res then
+    if not res or not res.data then
       native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
@@ -81,7 +81,7 @@ function scene:create( event )
     albumView:open() 
   end
   
-  iMoter:getAlbumById('30284', openAlbumWithData)
+  iMoter:getAlbumById('30286', openAlbumWithData)
   -----------------------------------------------------------------------------
 end
 

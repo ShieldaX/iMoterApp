@@ -151,7 +151,8 @@ function Piece:touch(event)
         -- detect flick
         if _t.tLast and (event.time - _t.tLast) < 100 then _t.flick = true else _t.flick = false end
         -- 处理快速翻页动作
-        if (_t.flick or (math.abs(_t.motion) > vH*.4 and math.abs(_t.direction) ~= 0)) and album.paintedPieceId then
+        local snap = vH*.1
+        if (_t.flick and (math.abs(_t.motion) >= snap and math.abs(_t.direction) ~= 0)) and album.paintedPieceId then
           if album.elements[album.paintedPieceId].state >= View.STATUS.PRELOADED then
             d('Flicked and Image Preloaded')
           else -- 图片未加载完成
