@@ -23,7 +23,7 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 --
 local View = require "libs.view"
 local Piece = class('PieceView', View)
-Piece.STATUS.UNLOAD = 100
+Piece.STATUS.RELEASED = 100
 Piece.STATUS.DESTROYED = 1000
 
 -- ---
@@ -72,7 +72,6 @@ function Piece:preload()
     if event.phase == 'began' or event.phase == 'progress' then
       self._requestId = event.requestId
       print('Image is Loading')
-      d(self._requestId)
       return
     elseif event.phase == 'ended' then
       print('Image Loading Ended')
@@ -240,7 +239,7 @@ function Piece:start()
     return false
   elseif (self.state < View.STATUS.PRELOADED) or self.blocking then
     d(self.name .. ' is Not Ready to Start!')
-    return false 
+    return false
   end
   
   if self.blocking == true then
@@ -306,13 +305,13 @@ end
 --           在PRELOADED状态后实际执行视图清空
 function Piece:cleanup()
   if self.state < View.STATUS.PRELOADED then
-    --self.unloading = true
     d('Try to cleanup ' .. self.name .. ' @ ' .. self:getState())
-    self:setState('UNLOAD')
+    self:setState('RELEASED')
     return false
   end
   d('CLEANUP ' .. self.name..' @ '..self:getState())
   View.cleanup(self)
+  self:setState(DESTROYED)
   d(self.layer)
 end
 
