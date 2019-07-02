@@ -22,19 +22,19 @@ local View = class "View"
 
 -- status code
 View.static.STATUS = {
-    CREATED = 1,
-    INITIALIZED = 10,
-    PRELOADED = 20,
-    STARTED = 30,
-    STOPPED = 90
+    INITIALIZED = 10, -- [BORN]
+    PRELOADED = 20, -- View Couldn't START Before(<) this [READY]
+    STARTED = 30, -- View Shouldn't STOP Before(<) this [WAKE]
+    STOPPED = 90, -- Stop All Interaction Listeners [SLEEP]
+    DESTROYED = 1000 -- Free to Switch to this @ Anytime [ENDED]
 }
 
 function View:initialize(parentGroup)
-  self:setState('CREATED')
-  self.blocking = false
+--  self.isBlocked = true
+  self.isBlocked = false
   self.layer = display.newGroup()
-  -- _elements table contains embedded live objects in a numerical order
-  -- elements table contains embedded live objects has `name` keys in a hash
+  -- _elements table contains embedded view objects in a numerical order
+  -- elements table contains embedded view objects has `name` keys in a hash
   if type(self._elements) ~= 'table' then self._elements = {} end
   if type(self.elements) ~= 'table' then self.elements = {} end
   if parentGroup and parentGroup.insert and type(parentGroup.insert) == 'function' then
@@ -73,7 +73,7 @@ function View:cleanup()
   end
   self._elements = {}
   self.elements = {}
-  self:setState('CREATED')
+  self:setState('INITIALIZED')
 end
 
 function View:send(name, ...)

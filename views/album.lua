@@ -73,25 +73,30 @@ function Album:initialize(obj, sceneGroup)
   d('- Prototype of Album View -')
   d('- ======================== -')
   View.initialize(self, sceneGroup)
-  --if self.state < 10 then View.initialize(self, sceneGroup) end
+  -- -------------------
+  -- DATA BINDING
   self.rawData = obj
   self.imgURIs, self.imgNames = resolveImages(obj)
   self.currentPieceId = nil
   self.paintedPieceId = nil
-  --self.container = display.newContainer(sceneGroup, display.viewableContentWidth, display.viewableContentHeight)
-  --self.container:translate(halfW, halfH)
-  --util.center(self.layer)
-  --self.container.anchorChildren = true
+  self.pieceAutoRotate = false
+  -- END DATA BINDING
+  -- -------------------
+  -- -------------------
+  -- VISUAL INITIALIING
   local _bg = display.newRoundedRect(
     self.layer,
     display.screenOriginX, display.screenOriginY,
     display.viewableContentWidth, display.viewableContentHeight,
     8
   )
-  _bg:setFillColor(1)
+  _bg:setFillColor(1) -- Pure White
   util.center(_bg)
   self:_attach(_bg, '_bg')
   -- TODO: Configure topbar
+  -- -- local _topbar = widget.newProgressBar()
+  -- END VISUAL INITIALIING
+  -- -------------------
 end
 
 function Album:open(index)
@@ -99,6 +104,7 @@ function Album:open(index)
   self:createPiece(index)
   -- update display status
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
+  self:setState('STARTED')
 end
 
 -- ---
@@ -109,10 +115,8 @@ function Album:createPiece(index)
   if self.paintedPieceId then
     d('FOUND EXISIST IN MEMORY: ' .. self.paintedPieceId)
     if self.elements[self.paintedPieceId] then
-      d('ALREADY ATTACHED: ' .. self.elements[self.paintedPieceId].state)
+      d('ALREADY ATTACHED: @' .. self.elements[self.paintedPieceId].state)
       return false
-    else
-      
     end
   end
   self:turnOut()
@@ -163,10 +167,9 @@ function Album:turnOver()
     local _layer = targetPiece.layer
     _layer.x = (1 - _layer.xScale)*vW*.5
     _layer.y = (1 - _layer.yScale)*vH*.5
-    -- Blocking Piece while Transition
-    targetPiece.blocking = true
+    -- Blocking Unloaded Piece while Transition to avoid unexpect troubles
+    targetPiece.isBlocked = true
   end
-  --targetPiece.isTransitioning = true
   transition.to( targetPiece.layer,{
     time = transTime,
     x = 0, y = 0,
@@ -174,8 +177,7 @@ function Album:turnOver()
     alpha = 1,
     transition = easeType,
     onComplete = function()
-        targetPiece.blocking = false
-        --targetPiece.isTransitioning = false
+        targetPiece.isBlocked = false
         currentPiece:cleanup()
         self.elements[self.currentPieceId] = nil
         -- exchange avatars in plus view
@@ -195,10 +197,7 @@ end
 -- @return 'boolean' False if nothing need clean.
 function Album:turnOut()
   if self.paintedPieceId and self.elements[self.paintedPieceId] then
-    if self.elements[self.paintedPieceId].state < View.STATUS.PRELOADED then
-      -- 图片未加载完成，尝试取消加载图片
-    end
-    self.elements[self.paintedPieceId]:cleanup()
+    self.elements[self.paintedPieceId]:cleanup() -- RELEASE Painted Piece
     self.elements[self.paintedPieceId] = nil
     self.paintedPieceId = nil
     return true

@@ -24,7 +24,6 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 local View = require "libs.view"
 local Piece = class('PieceView', View)
 Piece.STATUS.RELEASED = 100
-Piece.STATUS.DESTROYED = 1000
 
 -- ---
 -- Resize Image Display Object to Fit Screen WIDTH
@@ -35,11 +34,20 @@ function util.resize(obj)
   --d(visibleAspectRatio..':'..ratioT)
   --resize properly
   if visibleAspectRatio >= ratioT then
-      ini = vH/obj.height
+    ini = vH/obj.height
   else
-      ini = vW/obj.width
+    ini = vW/obj.width
   end
   obj:scale(ini, ini)
+end
+
+function util.autoRotate(obj, clockwise)
+  if obj.width/obj.height > 1 then
+    clockwise = clockwise and math.abs(clockwise) == 1 and clockwise or 1
+    obj.rotation = 90*clockwise
+    local targetRatio = vW/(obj.height*obj.yScale)
+    obj:scale(targetRatio, targetRatio)
+  end
 end
 
 -- ---
@@ -85,6 +93,7 @@ function Piece:preload()
     else
       local _image = event.target
       util.resize(_image)
+      if self.parent.pieceAutoRotate then util.autoRotate(_image, self.parent.pieceAutoRotate) end
       _image.alpha = 0
       util.center(_image)
       transition.to( _image, { alpha = 1.0 } )
@@ -97,7 +106,7 @@ function Piece:preload()
       self:cleanup()
     else
       self:setState('PRELOADED')
-      if not self.blocking then self:start() end
+      if not self.isBlocked then self:start() end
       d(self.name .. ' ' .. self:getState())
     end
 	end
@@ -204,19 +213,19 @@ end
 -- Blocking Piece while Loading
 --
 function Piece:block()
-  if self.blocking == true then return false end
+  if self.isBlocked == true then return false end
   local layer = self.layer
   layer.alpha = 0.2
-  self.blocking = true
+  self.isBlocked = true
 end
 
 -- ---
 -- Unblock Piece After Preloaded
 --
 function Piece:unblock()
-  if self.blocking == false then return false end
+  if self.isBlocked == false then return false end
   self.layer.alpha = 1
-  self.blocking = false
+  self.isBlocked = false
 end
 
 function Piece:reload(image)
@@ -237,12 +246,12 @@ function Piece:start()
   if (self.state >= View.STATUS.STARTED) then
     d(self.name .. ' already Started!')
     return false
-  elseif (self.state < View.STATUS.PRELOADED) or self.blocking then
+  elseif (self.state < View.STATUS.PRELOADED) or self.isBlocked then
     d(self.name .. ' is Not Ready to Start!')
     return false
   end
   
-  if self.blocking == true then
+  if self.isBlocked == true then
     self:unblock()
   end
   -- Add touch event handler
@@ -260,7 +269,7 @@ end
 function Piece:pause()
 --{{{
     if self:getState() ~= 'started' then return end
-    self.blocking = true
+    self.isBlocked = true
     -- TODO: stop listening
     self.layer:removeEventListener('touch', self)
     self.layer:removeEventListener('tap', self)
@@ -275,7 +284,7 @@ end
 function Piece:resume()
 --{{{
     if self:getState() ~= 'STOPPED' then return false end
-    self.blocking = false
+    self.isBlocked = false
     -- TODO: restore listeners
     self.layer:removeEventListener('touch', self)
     self.layer:removeEventListener('tap', self)
@@ -311,8 +320,9 @@ function Piece:cleanup()
   end
   d('CLEANUP ' .. self.name..' @ '..self:getState())
   View.cleanup(self)
-  self:setState(DESTROYED)
-  d(self.layer)
+  self:setState('DESTROYED')
+  --d(self.layer)
+  d(self.name..' @ '..self:getState())
 end
 
 return Piece
