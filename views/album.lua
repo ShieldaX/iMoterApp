@@ -101,10 +101,10 @@ end
 
 function Album:open(index)
   index = index or 1
+  self.currentPieceId = nil
   self:createPiece(index)
-  -- update display status
+  -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
-  self:turnOver()
   self:setState('STARTED')
 end
 
@@ -122,11 +122,8 @@ function Album:createPiece(index)
   end
   self:turnOut()
   local _piece = Piece:new(self.imgURIs[index], self.imgNames[index])
-  local first = false
-  if index == 1 then first = true end
-  _piece:preload(first)
-  --_piece:loadImage()
   self:_attach(_piece)
+  _piece:preload()
   --d(_piece.name)
   self.paintedPieceId = _piece.name
 end

@@ -69,14 +69,14 @@ end
 -- Preload Image Display Object
 -- Then Try to Start Self if not blocked
 --
-function Piece:preload(first)
+function Piece:preload()
   if self.state > View.STATUS.INITIALIZED then
     d("Try to preload Piece already @ "..self.getState())
     return false
   end
   -- ------------------
   -- Block view while preloading image
-  if not first then
+  if self.parent.currentPieceId then
     self.isBlocked = true
   end
   -- Load image
