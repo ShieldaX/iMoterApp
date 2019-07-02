@@ -107,8 +107,9 @@ end
 -- 如果有预加载回调任务则置入Piece View的预加载中
 function Album:createPiece(index)
   if self.paintedPieceId then
-    d('FOUND EXISIST: ' .. self.paintedPieceId)
+    d('FOUND EXISIST IN MEMORY: ' .. self.paintedPieceId)
     if self.elements[self.paintedPieceId] then
+      d('ALREADY ATTACHED: ' .. self.elements[self.paintedPieceId].state)
       return false
     else
       
@@ -158,7 +159,7 @@ function Album:turnOver()
   transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
   local isPreloaded = targetPiece.state >= View.STATUS.PRELOADED
   if not isPreloaded then
-    d('Position Target Piece View Group')
+    d('Reposition Target Piece View Group')
     local _layer = targetPiece.layer
     _layer.x = (1 - _layer.xScale)*vW*.5
     _layer.y = (1 - _layer.yScale)*vH*.5
@@ -188,6 +189,9 @@ end
 -- @return 'boolean' False if nothing need clean.
 function Album:turnOut()
   if self.paintedPieceId and self.elements[self.paintedPieceId] then
+    if self.elements[self.paintedPieceId].state < View.STATUS.PRELOADED then
+      -- 图片未加载完成，尝试取消加载图片
+    end
     self.elements[self.paintedPieceId]:cleanup()
     self.elements[self.paintedPieceId] = nil
     self.paintedPieceId = nil

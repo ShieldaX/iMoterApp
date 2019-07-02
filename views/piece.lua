@@ -23,6 +23,7 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 --
 local View = require "libs.view"
 local Piece = class('PieceView', View)
+Piece.STATUS.DESTROYED = 1000
 
 -- ---
 -- Resize Image Display Object to Fit Screen WIDTH
@@ -67,6 +68,17 @@ function Piece:preload()
   end
   -- Load image
 	local function networkListener( event )
+    if event.phase == 'began' or event.phase == 'progress' then
+      self._requestId = event.requestId
+      print('Image is Loading')
+      d(self._requestId)
+      return
+    elseif event.phase == 'ended' then
+      print('Image Loading Ended')
+      self._requestId = nil
+    else
+      d(event)
+    end
     if ( event.isError ) then
       print ( "Network error - download failed" )
       return false
@@ -89,8 +101,9 @@ function Piece:preload()
     self:setState('PRELOADED')
     -- AutoStart
     self:start()
+    --if self.unloading == true then self:cleanup() end
 	end
-  display.loadRemoteImage( self.uri, "GET", networkListener, self.fileName, Piece.DEFAULT_DIRECTORY, oX, oY)
+  display.loadRemoteImage( self.uri, "GET", networkListener, {progress = true}, self.fileName, Piece.DEFAULT_DIRECTORY, oX, oY)
 end
 
 function Piece:onImageLoaded()
@@ -114,6 +127,7 @@ function Piece:touch(event)
       _t.motion = 0
       _t.speed = 0
       _t.direction = 0
+      _t.flick = false
     --focus
     elseif _t.isFocus then
       local album = self.parent
@@ -124,7 +138,7 @@ function Piece:touch(event)
         _t.motion = event.y - event.yStart
         -- Sync Movement
         _t.y = _t.yStart + _t.motion
-        -- Detect switching direction
+        -- Detect switching direction then load Right Next Piece in Memory, Painting...
         if _t.motion > 0 and _t.direction >= 0 then
           _t.direction = -1
           album:switchPiece(_t.direction)
@@ -132,25 +146,22 @@ function Piece:touch(event)
           _t.direction = 1
           album:switchPiece(_t.direction)
         end
+        -- Sync Scale and Alpha
         if math.abs(_t.motion) > 0 and album.paintedPieceId and album.elements[album.paintedPieceId] then
-          local ratio = (math.abs(_t.motion)/vH)*.1 + .8
+          local ratio = (math.abs(_t.motion)/vH)*.1 + .8 -- Fading Ratio: 0.8 is Base Scale Factor Number
           local paintedPiece = album.elements[album.paintedPieceId].layer
-          --local paintedPieceImage = album.elements[album.paintedPieceId].elements.image
-          if paintedPieceImage then
-            paintedPieceImage.xScale, paintedPieceImage.yScale = ratio, ratio
-            util.center(paintedPieceImage)
-          end
           paintedPiece.xScale, paintedPiece.yScale = ratio, ratio
           util.center(paintedPiece)
-          album.elements[album.paintedPieceId].layer.alpha = math.abs(_t.motion)/(vH*1.2)
+          paintedPiece.alpha = math.abs(_t.motion)/(vH*1.2)
+          --album.elements[album.paintedPieceId].layer.alpha = math.abs(_t.motion)/(vH*1.2)
         end
       --ended or cancelled
       elseif ('ended' == phase or 'cancelled' == phase) then
-        local transT = 600
+        local transT = 200
         local ease = easing.outExpo
-        -- detect flick
-        if _t.tLast and (event.time - _t.tLast) < 100 then _t.flick = true else _t.flick = false end
-        -- 处理快速翻页动作
+        -- Handle Flicking
+        -- if _t.tLast and (event.time - _t.tLast) < 100 then _t.flick = true else _t.flick = false end
+        _t.flick = _t.tLast and (event.time - _t.tLast) < 100 and true or false
         local snap = vH*.1
         if (_t.flick and (math.abs(_t.motion) >= snap and math.abs(_t.direction) ~= 0)) and album.paintedPieceId then
           if album.elements[album.paintedPieceId].state >= View.STATUS.PRELOADED then
@@ -159,19 +170,19 @@ function Piece:touch(event)
             d('Flicked but Image Unloaded')
           end
           album:turnOver()
-        else
+        else -- Cancelled 动作取消 Try to roll back
+          d('Action Cancelled, Rolling Back...')
           --ease = easing.inQuad
           transition.to( _t, {time = transT, y = 0, transition = ease} )
-          -- drop older painted pix if any
+          -- Try to drop Memory Prepainted Piece after???? transition
           if album.paintedPieceId and album.elements[album.paintedPieceId] then
-            local _target = album.elements[album.paintedPieceId]
-            --transition.to(_target.elements['shade'], {time = transT, alpha = 1, transition = ease})
-            transition.to(_target.layer, {
+            local _paintedPiece = album.elements[album.paintedPieceId].layer
+            transition.to(_paintedPiece, {
                 time = transT,
-                x = 64, y = 96,
+                x = (.2*vW)*.5, y = (.2*vH)*.5,
                 xScale = 0.8, yScale = 0.8,
                 transition = ease,
-                onComplete = function() album:turnOut() end
+                onComplete = function() d('Time to turn out') album:turnOut() end
               })
           end
         end
@@ -300,6 +311,24 @@ function Piece:stop()
     d(self.name..' '..self:getState())
     --self:cleanup()
 --}}}
+end
+
+-- ---
+-- @Overried 由于远程资源加载延迟，Piece View的视图清空需要
+--           在PRELOADED状态后实际执行视图清空
+function Piece:cleanup()
+  if self.state < View.STATUS.PRELOADED then
+    --self.unloading = true
+    if self._requestId then
+      network.cancel(self._requestId)
+      d("Image Loading Cancelled")
+      self:setState('STOPPED')
+    end
+    return self:cleanup()
+  end
+  d(self.name..' '..self:getState())
+  View.cleanup(self)
+  d(self.layer)
 end
 
 return Piece
