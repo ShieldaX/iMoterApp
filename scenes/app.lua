@@ -81,7 +81,7 @@ function scene:create( event )
     albumView:open() 
   end
   
-  iMoter:getAlbumById('30289', openAlbumWithData)
+  iMoter:getAlbumById('30290', openAlbumWithData)
   -----------------------------------------------------------------------------
 end
 

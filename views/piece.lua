@@ -67,13 +67,17 @@ end
 
 -- ---
 -- Preload Image Display Object
--- Then Start Self View Automatically
+-- Then Try to Start Self if not blocked
 --
-function Piece:preload()
-  if self.state > self.class.STATUS.INITIALIZED then
+function Piece:preload(first)
+  if self.state > View.STATUS.INITIALIZED then
+    d("Try to preload Piece already @ "..self.getState())
     return false
-  elseif self.state < self.class.STATUS.INITIALIZED then
-    self:initialize()
+  end
+  -- ------------------
+  -- Block view while preloading image
+  if not first then
+    self.isBlocked = true
   end
   -- Load image
 	local function networkListener( event )
@@ -96,18 +100,22 @@ function Piece:preload()
       if self.parent.pieceAutoRotate then util.autoRotate(_image, self.parent.pieceAutoRotate) end
       _image.alpha = 0
       util.center(_image)
-      transition.to( _image, { alpha = 1.0 } )
+      self.imageTransiton = transition.to( _image, { alpha = 1.0 } )
       self:_attach(_image, 'image')
     end
     self.fileName = event.response.filename
     self.baseDir = event.response.baseDirectory
-    
-    if self.state >= View.STATUS.PRELOADED then -- unloading
+    -- When self is RELEASED by Parent View
+    if self.state >= View.STATUS.PRELOADED then
       self:cleanup()
     else
       self:setState('PRELOADED')
-      if not self.isBlocked then self:start() end
-      d(self.name .. ' ' .. self:getState())
+      if not self.isBlocked then
+        d('Start Piece '..self.name..' '..self:getState()..' and Not Blocked')
+        self:start()
+      else
+        d(self.name .. ' ' .. self:getState())
+      end
     end
 	end
   display.loadRemoteImage( self.uri, "GET", networkListener, {progress = true}, self.fileName, Piece.DEFAULT_DIRECTORY, oX, oY)
@@ -153,14 +161,13 @@ function Piece:touch(event)
           _t.direction = 1
           album:switchPiece(_t.direction)
         end
-        -- Sync Scale and Alpha
+        -- Sync Scale and Alpha to View's Layer
         if math.abs(_t.motion) > 0 and album.paintedPieceId and album.elements[album.paintedPieceId] then
           local ratio = (math.abs(_t.motion)/vH)*.1 + .8 -- Fading Ratio: 0.8 is Base Scale Factor Number
           local paintedPiece = album.elements[album.paintedPieceId].layer
           paintedPiece.xScale, paintedPiece.yScale = ratio, ratio
           util.center(paintedPiece)
           paintedPiece.alpha = math.abs(_t.motion)/(vH*1.2)
-          --album.elements[album.paintedPieceId].layer.alpha = math.abs(_t.motion)/(vH*1.2)
         end
       --ended or cancelled
       elseif ('ended' == phase or 'cancelled' == phase) then
@@ -172,11 +179,12 @@ function Piece:touch(event)
         local snap = vH*.1
         if (_t.flick and (math.abs(_t.motion) >= snap and math.abs(_t.direction) ~= 0)) and album.paintedPieceId then
           if album.elements[album.paintedPieceId].state >= View.STATUS.PRELOADED then
-            d('Flicked and Image Preloaded')
+            d('Flicked and Image Preloaded, now Switching')
           else -- 图片未加载完成
-            d('Flicked but Image Unloaded')
+            --album.elements[album.paintedPieceId].isBlocked = true
+            d('Flicked but Image Unloaded, switch but should Block')
           end
-          album:turnOver()
+          album:turnOver() --TODO: confirm direction?
         else -- Cancelled 动作取消 Try to roll back
           d('Action Cancelled, Rolling Back...')
           --ease = easing.inQuad
@@ -242,23 +250,23 @@ end
 --
 function Piece:start()
 --{{{
-  d(self.name..' '..self:getState())
-  if (self.state >= View.STATUS.STARTED) then
-    d(self.name .. ' already Started!')
-    return false
-  elseif (self.state < View.STATUS.PRELOADED) or self.isBlocked then
+  d('Try to start Piece '..self.name..' @ '..self:getState())
+  if (self.state < View.STATUS.PRELOADED) or self.isBlocked then
     d(self.name .. ' is Not Ready to Start!')
+    return false
+  elseif (self.state >= View.STATUS.STARTED) then
+    d(self.name .. ' already Started!')
     return false
   end
   
-  if self.isBlocked == true then
+  if (self.state <= View.STATUS.STOPPED) then
     self:unblock()
   end
   -- Add touch event handler
   self.layer:addEventListener('touch', self)
   self.layer:addEventListener('tap', self)
   self:setState('STARTED')
-  --d(self.name..' '..self:getState())
+  d(self.name..' '..self:getState())
 --}}}
 end
 
@@ -285,7 +293,6 @@ function Piece:resume()
 --{{{
     if self:getState() ~= 'STOPPED' then return false end
     self.isBlocked = false
-    -- TODO: restore listeners
     self.layer:removeEventListener('touch', self)
     self.layer:removeEventListener('tap', self)
     -- ...
@@ -298,11 +305,10 @@ end
 --
 function Piece:stop()
 --{{{
-    -- TODO: stop listening
+    if self.state < View.STATUS.PRELOADED then d('Try to STOP a piece view NOT Preloaded!!!') end
+    self.isBlocked = true
     self.layer:removeEventListener('touch', self)
     self.layer:removeEventListener('tap', self)
-    -- ...
-    --self:cleanup()
     self:setState('STOPPED')
     d(self.name..' '..self:getState())
     --self:cleanup()

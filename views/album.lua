@@ -104,6 +104,7 @@ function Album:open(index)
   self:createPiece(index)
   -- update display status
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
+  self:turnOver()
   self:setState('STARTED')
 end
 
@@ -121,7 +122,9 @@ function Album:createPiece(index)
   end
   self:turnOut()
   local _piece = Piece:new(self.imgURIs[index], self.imgNames[index])
-  _piece:preload()
+  local first = false
+  if index == 1 then first = true end
+  _piece:preload(first)
   --_piece:loadImage()
   self:_attach(_piece)
   --d(_piece.name)
@@ -153,38 +156,44 @@ end
 
 -- ---
 -- change current piece after switching properly
---
+-- STOP any interactions
 function Album:turnOver()
   if self.paintedPieceId == nil or self.currentPieceId == nil then return false end
   local transTime, easeType = 400, easing.outQuad --ms
   local currentPiece = self.elements[self.currentPieceId]
   local targetPiece = self.elements[self.paintedPieceId]
+  -- ------------------
+  -- Current Piece is Fading Out
   currentPiece:stop()
   transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
+  -- ------------------
+  -- Target Piece is Fading In (Comes Up)
   local isPreloaded = (targetPiece.state >= View.STATUS.PRELOADED)
-  if not isPreloaded then
-    d('Reposition Target Piece View Group')
+  if not isPreloaded then -- 图片未加载的情况下：需要重新定位View的Layer
+    d('REPOSITION Target Piece View Group')
     local _layer = targetPiece.layer
     _layer.x = (1 - _layer.xScale)*vW*.5
     _layer.y = (1 - _layer.yScale)*vH*.5
-    -- Blocking Unloaded Piece while Transition to avoid unexpect troubles
-    targetPiece.isBlocked = true
+    --targetPiece.isBlocked = true
   end
-  transition.to( targetPiece.layer,{
+  -- Blocking Piece to Avoid Unexpect Interaction while Transition (Moving)
+  targetPiece.isBlocked = true
+  transition.to( targetPiece.layer, {
+    --onStart = function() targetPiece.isBlocked = true end,
     time = transTime,
     x = 0, y = 0,
     xScale = 1, yScale = 1,
     alpha = 1,
     transition = easeType,
     onComplete = function()
-        targetPiece.isBlocked = false
-        currentPiece:cleanup()
-        self.elements[self.currentPieceId] = nil
-        -- exchange avatars in plus view
-        self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
-        if self.currentPieceId and self.elements[self.currentPieceId].state >= View.STATUS.PRELOADED then
-          return self.elements[self.currentPieceId]:start()
-        end
+      targetPiece.isBlocked = false
+      currentPiece:cleanup()
+      self.elements[self.currentPieceId] = nil
+      -- exchange avatars in plus view
+      self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
+      if self.currentPieceId and self.elements[self.currentPieceId].state >= View.STATUS.PRELOADED then
+        self.elements[self.currentPieceId]:start()
+      end
     end
     }
   )
