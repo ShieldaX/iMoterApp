@@ -55,7 +55,7 @@ end
 -- TODO: Try to load piece image from this dir firstly
 Piece.static.DEFAULT_DIRECTORY = system.CachesDirectory
 
-function Piece:initialize(uri, name, parent, index)
+function Piece:initialize(uri, name, parent)
   View.initialize(self)
   assert(self.layer, 'Piece View Initialized Failed!')
   d('创建图片对象: '..name)
