@@ -176,14 +176,16 @@ function Piece:touch(event)
         -- Handle Flicking
         -- if _t.tLast and (event.time - _t.tLast) < 100 then _t.flick = true else _t.flick = false end
         _t.flick = _t.tLast and (event.time - _t.tLast) < 100 and true or false
-        local snap = vH*.1
+        local snap = vH*.0618 --TODO: 优化体验以不同屏幕尺寸，避免当屏幕很大时不容易触发Flick翻页
         if (_t.flick and (math.abs(_t.motion) >= snap and math.abs(_t.direction) ~= 0)) and album.paintedPieceId then
+          -- -----------------------------------
+          -- DEBUG: ---------------------------- 
           if album.elements[album.paintedPieceId].state >= View.STATUS.PRELOADED then
             d('Flicked and Image Preloaded, now Switching')
-          else -- 图片未加载完成
-            --album.elements[album.paintedPieceId].isBlocked = true
+          else
             d('Flicked but Image Unloaded, switch but should Block')
           end
+          -- -----------------------------------
           album:turnOver() --TODO: confirm direction?
         else -- Cancelled 动作取消 Try to roll back
           d('Action Cancelled, Rolling Back...')
