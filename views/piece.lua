@@ -23,6 +23,7 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 --
 local View = require "libs.view"
 local Piece = class('PieceView', View)
+Piece.STATUS.UNLOAD = 100
 Piece.STATUS.DESTROYED = 1000
 
 -- ---
@@ -89,19 +90,17 @@ function Piece:preload()
       util.center(_image)
       transition.to( _image, { alpha = 1.0 } )
       self:_attach(_image, 'image')
-      if self.blocking then
-        self:unblock()
-      end
     end
-    --print ( "event.response.fullPath: ", event.response.fullPath )
-    --print ( "event.response.filename: ", event.response.filename )
-    --print ( "event.response.baseDirectory: ", event.response.baseDirectory )
     self.fileName = event.response.filename
     self.baseDir = event.response.baseDirectory
-    self:setState('PRELOADED')
-    -- AutoStart
-    self:start()
-    --if self.unloading == true then self:cleanup() end
+    
+    if self.state >= View.STATUS.PRELOADED then -- unloading
+      self:cleanup()
+    else
+      self:setState('PRELOADED')
+      if not self.blocking then self:start() end
+      d(self.name .. ' ' .. self:getState())
+    end
 	end
   display.loadRemoteImage( self.uri, "GET", networkListener, {progress = true}, self.fileName, Piece.DEFAULT_DIRECTORY, oX, oY)
 end
@@ -208,17 +207,8 @@ end
 function Piece:block()
   if self.blocking == true then return false end
   local layer = self.layer
-  --local shade = display.newRect(layer.x, layer.y, layer.width, layer.height)
-  --shade:setFillColor(1, 1, 1, 255)
-  -- replace manually
-  --shade.x = self.elements['image'].x
-  --shade.y = self.elements['image'].y
-  --self:_attach(shade, 'shade')
-  --shade:toFront()
   layer.alpha = 0.2
   self.blocking = true
-  --self.layer.xScale = self.targetScale * 0.618
-  --self.layer.yScale = self.targetScale * 0.618
 end
 
 -- ---
@@ -226,8 +216,6 @@ end
 --
 function Piece:unblock()
   if self.blocking == false then return false end
-  --self.imageView.xScale = self.targetScale
-  --self.imageView.yScale = self.targetScale
   self.layer.alpha = 1
   self.blocking = false
 end
@@ -246,23 +234,23 @@ end
 --
 function Piece:start()
 --{{{
-    d(self.name..' '..self:getState())
-    if self.state > View.STATUS.STARTED then
-      d(self.name .. ' already Started!')
-      return false 
-    end
-    if self.state < View.STATUS.PRELOADED then
-      d(self.name .. ' is Not Ready to Start!')
-      return false 
-    end
-    if self.blocking == true then
-      self:unblock()
-    end
-    -- Add touch event handler
-    self.layer:addEventListener('touch', self)
-    self.layer:addEventListener('tap', self)
-    self:setState('STARTED')
-    d(self.name..' '..self:getState())
+  d(self.name..' '..self:getState())
+  if (self.state >= View.STATUS.STARTED) then
+    d(self.name .. ' already Started!')
+    return false
+  elseif (self.state < View.STATUS.PRELOADED) or self.blocking then
+    d(self.name .. ' is Not Ready to Start!')
+    return false 
+  end
+  
+  if self.blocking == true then
+    self:unblock()
+  end
+  -- Add touch event handler
+  self.layer:addEventListener('touch', self)
+  self.layer:addEventListener('tap', self)
+  self:setState('STARTED')
+  --d(self.name..' '..self:getState())
 --}}}
 end
 
@@ -319,14 +307,11 @@ end
 function Piece:cleanup()
   if self.state < View.STATUS.PRELOADED then
     --self.unloading = true
-    if self._requestId then
-      network.cancel(self._requestId)
-      d("Image Loading Cancelled")
-      self:setState('STOPPED')
-    end
-    return self:cleanup()
+    d('Try to cleanup ' .. self.name .. ' @ ' .. self:getState())
+    self:setState('UNLOAD')
+    return false
   end
-  d(self.name..' '..self:getState())
+  d('CLEANUP ' .. self.name..' @ '..self:getState())
   View.cleanup(self)
   d(self.layer)
 end

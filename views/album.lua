@@ -157,14 +157,16 @@ function Album:turnOver()
   local targetPiece = self.elements[self.paintedPieceId]
   currentPiece:stop()
   transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
-  local isPreloaded = targetPiece.state >= View.STATUS.PRELOADED
+  local isPreloaded = (targetPiece.state >= View.STATUS.PRELOADED)
   if not isPreloaded then
     d('Reposition Target Piece View Group')
     local _layer = targetPiece.layer
     _layer.x = (1 - _layer.xScale)*vW*.5
     _layer.y = (1 - _layer.yScale)*vH*.5
-    --d(_layer.x .. ' : ' .. _layer.y)
+    -- Blocking Piece while Transition
+    targetPiece.blocking = true
   end
+  --targetPiece.isTransitioning = true
   transition.to( targetPiece.layer,{
     time = transTime,
     x = 0, y = 0,
@@ -172,11 +174,15 @@ function Album:turnOver()
     alpha = 1,
     transition = easeType,
     onComplete = function()
+        targetPiece.blocking = false
+        --targetPiece.isTransitioning = false
         currentPiece:cleanup()
         self.elements[self.currentPieceId] = nil
         -- exchange avatars in plus view
         self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
-        if self.currentPieceId then return self.elements[self.currentPieceId]:start() end
+        if self.currentPieceId and self.elements[self.currentPieceId].state >= View.STATUS.PRELOADED then
+          return self.elements[self.currentPieceId]:start()
+        end
     end
     }
   )
