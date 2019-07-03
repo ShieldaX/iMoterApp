@@ -74,8 +74,8 @@ function Footer:initialize(opts, parent)
   -- Create the widget
   local tabBar = widget.newTabBar(
     {
-      top = display.contentHeight-120,
-      width = display.contentWidth,
+      top = vH - 62, left = 10,
+      width = vW - 20,
       buttons = tabButtons
     }
   )

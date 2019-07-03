@@ -3,7 +3,6 @@
 --      Scene notes
 ---------------------------------------------------------------------------------
 local inspect = require('libs.inspect')
-local myData = require( "classes.mydata" )
 local iMoterAPI = require( "classes.iMoter" )
 local composer = require( "composer" )
 --local mui = require( "materialui.mui" )
@@ -33,7 +32,7 @@ local widget = require( "widget" )
 ---------------------------------------------------------------------------------
 
 -- Our modules
--- local myData = require( "classes.mydata" )
+local APP = require( "classes.application" )
 --local utility = require( "libs.utility" )
 
 local iMoter = iMoterAPI:new()
@@ -70,9 +69,8 @@ function scene:create( event )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
   
-  local footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
-  footer.elements.tabBar:toFront()
-
+  APP.footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
+  
   local function openAlbumWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
@@ -80,8 +78,9 @@ function scene:create( event )
     end
     local _album = res.data.album
     --print(inspect(_album))
-    local albumView = AlbumView:new(_album, sceneGroup)
-    albumView:open()
+    APP.albumView = AlbumView:new(_album, sceneGroup)
+    APP.footer.layer:toFront()
+    APP.albumView:open()
   end
   iMoter:getAlbumById('30291', openAlbumWithData)
   -----------------------------------------------------------------------------
@@ -92,7 +91,7 @@ end
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
 	local sceneGroup = self.view
-
+  --APP.footer.layer:toFront()
   -----------------------------------------------------------------------------
 
   --      This event requires build 2012.782 or later.
