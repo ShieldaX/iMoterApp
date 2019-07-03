@@ -2,15 +2,7 @@
 --      Main App
 --      Scene notes
 ---------------------------------------------------------------------------------
-local inspect = require('libs.inspect')
-local iMoterAPI = require( "classes.iMoter" )
 local composer = require( "composer" )
---local mui = require( "materialui.mui" )
-local AlbumView = require("views.album")
-local FooterView = require("views.footer")
-
-local scene = composer.newScene()
-
 -- forward declarations and other locals
 local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
@@ -18,6 +10,14 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 
 local background = nil
 local widget = require( "widget" )
+
+local inspect = require('libs.inspect')
+local iMoterAPI = require( "classes.iMoter" )
+
+--local mui = require( "materialui.mui" )
+local AlbumView = require("views.album")
+local HeaderView = require("views.header")
+local FooterView = require("views.footer")
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
@@ -30,7 +30,7 @@ local widget = require( "widget" )
 --      unless storyboard.removeScene() is called.
 --
 ---------------------------------------------------------------------------------
-
+local scene = composer.newScene()
 -- Our modules
 local APP = require( "classes.application" )
 --local utility = require( "libs.utility" )
@@ -50,11 +50,9 @@ function scene:create( event )
   display.setDefault("background", 0, 1, 1)
 
   --mui.init(nil, { parent=self.view })
-
   -----------------------------------------------------------------------------
 
   --      CREATE display objects and add them to 'group' here.
-  --      Example use-case: Restore 'group' from previously saved state.
 
   -- Gather insets (function returns these in the order of top, left, bottom, right)
   local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
@@ -69,7 +67,8 @@ function scene:create( event )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
   
-  APP.footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
+  APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
+  APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
   
   local function openAlbumWithData(res)
     if not res or not res.data then
@@ -77,9 +76,11 @@ function scene:create( event )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
     local _album = res.data.album
+    APP.Header.elements.TopBar:setLabel(_album.title)
     --print(inspect(_album))
     APP.albumView = AlbumView:new(_album, sceneGroup)
-    APP.footer.layer:toFront()
+    APP.Header.layer:toFront()
+    APP.Footer.layer:toFront()
     APP.albumView:open()
   end
   iMoter:getAlbumById('30291', openAlbumWithData)
@@ -91,7 +92,7 @@ end
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
 	local sceneGroup = self.view
-  --APP.footer.layer:toFront()
+  --APP.Footer.layer:toFront()
   -----------------------------------------------------------------------------
 
   --      This event requires build 2012.782 or later.

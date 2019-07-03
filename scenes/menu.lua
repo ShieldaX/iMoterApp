@@ -20,7 +20,7 @@ local widget = require( "widget" )
 
 -- our includes
 local utility = require( "libs.utility" )
-local myData = require( "classes.mydata" )
+local myData = require( "classes.application" )
 
 -- function to hide the menu
 local function closeMenu( event )

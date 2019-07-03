@@ -47,6 +47,7 @@ function Indicator:initialize(opts, parent)
   d(self.name..' began with '..self:getState())
   -- -------------------
   -- DATA BINDING
+  self.topPadding = opts.top or 60
   self.total = opts.total
   self.init = opts.init or 0
   self.currentPos = nil
@@ -57,7 +58,7 @@ function Indicator:initialize(opts, parent)
   -- Configure topbar
   local _progbar = widget.newProgressView {
       id = '_indicator_progressv',
-      left = oX, top = oY, width = vW,
+      left = oX, top = oY + self.topPadding, width = vW,
       isAnimated = true
     }
   self:_attach(_progbar, 'bar')

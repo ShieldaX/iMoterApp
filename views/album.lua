@@ -67,6 +67,7 @@ local View = require 'libs.view'
 local Piece = require 'views.piece'
 local Indicator = require 'views.indicator'
 local Album = class('AlbumView', View)
+local APP = require("classes.application")
 
 -- 利用获取的图集信息实例化一个图集对象
 function Album:initialize(obj, sceneGroup)
@@ -98,7 +99,8 @@ end
 function Album:open(index)
   index = index or 1
   self.currentPieceId = nil
-  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar'}, self)
+--  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= APP.Header.elements.TopBar.height}, self)
+  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   --self:addView(indicator)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually

@@ -16,7 +16,7 @@ display.setDefault("background", 0)
 -- appData -- an emtpy table that can be required in multiple modules/scenes
 --           to allow easy passing of data between modules
 local APP = require("classes.application")
-
+require "libs.colors-rgb"
 -- turn on/off mui debug output
 _mui_debug = true
 
