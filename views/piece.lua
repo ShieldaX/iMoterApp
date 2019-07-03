@@ -79,6 +79,7 @@ function Piece:preload()
   if self.parent.currentPieceId then
     self.isBlocked = true
   end
+  self:signal('onPieceLoad')
   -- Load image
 	local function networkListener( event )
     if event.phase == 'began' or event.phase == 'progress' then
@@ -95,6 +96,7 @@ function Piece:preload()
       print ( "Network error - download failed" )
       return false
     else
+      self:signal('onPieceLoaded')
       local _image = event.target
       util.resize(_image)
       if self.parent.pieceAutoRotate then util.autoRotate(_image, self.parent.pieceAutoRotate) end

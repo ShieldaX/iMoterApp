@@ -1,3 +1,7 @@
+local widget = require( "widget" ) 
+-- Set a default theme
+widget.setTheme( "widget_theme_ios7" )
+
 -- Constants List:
 local oX = display.screenOriginX
 local oY = display.screenOriginY
@@ -23,13 +27,22 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 --
 local View = require "libs.view"
 local Indicator = class('Indicator', View)
---Indicator.STATUS.RELEASED = 100
 
-function Indicator:initialize(opts, parentGroup)
+-- Enum of Indicator Types
+Indicator.static.TYPE = {
+    DEFAULT = 10,
+    NUMERIC = 10, -- DEFAULT
+    BAR = 20,
+    ROUNDED = 30
+  }
+-- ---
+-- Resize Image Display Object to Fit Screen WIDTH
+--
+function Indicator:initialize(opts, parent)
   assert(type(opts) ~= table or next(opts) == nil, "a named option hash table need to create an indicator")
-  View.initialize(self, parentGroup)
+  View.initialize(self, parent)
   assert(self.layer, 'Piece View Initialized Failed!')
-  self.name = opts.name or '_indicator'
+  self.name = opts.name or '_indicator' -- timestamp
   d('创建指示器对象: '..self.name)
   d(self.name..' began with '..self:getState())
   -- -------------------
@@ -41,16 +54,39 @@ function Indicator:initialize(opts, parentGroup)
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
-  local _bg = display.newRect(self.layer, display.screenOriginX, display.screenOriginY,
-    display.viewableContentWidth, 16,
-  )
-  _bg:setFillColor(1) -- Pure White
-  util.center(_bg)
-  self:_attach(_bg, '_bg')
-  -- TODO: Configure topbar
-  -- -- local _topbar = widget.newProgressBar()
+  -- Configure topbar
+  local _progbar = widget.newProgressView {
+      id = '_indicator_progressv',
+      left = oX, top = oY, width = vW,
+      isAnimated = true
+    }
+  self:_attach(_progbar, 'bar')
+  
+  local _spinner = widget.newSpinner {
+      id = '_spinner',
+      x = halfW, y = halfH,
+      deltaAngle = 10,
+      incrementEvery = 20
+    }
+  
+  self:_attach(_spinner, 'spinner')
   -- END VISUAL INITIALIING
   -- -------------------
+end
+
+function Indicator:onProgress(event)
+  local i = event.index
+  self.elements.bar:setProgress(i/self.total)
+end
+
+function Indicator:onPieceLoad(event)
+  self.elements.spinner.alpha = 1
+  self.elements.spinner:start()
+end
+
+function Indicator:onPieceLoaded(event)
+  self.elements.spinner.alpha = 0
+  self.elements.spinner:stop()
 end
   
 return Indicator

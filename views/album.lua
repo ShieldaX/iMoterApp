@@ -65,6 +65,7 @@ end
 -- Classes
 local View = require 'libs.view'
 local Piece = require 'views.piece'
+local Indicator = require 'views.indicator'
 local Album = class('AlbumView', View)
 
 -- 利用获取的图集信息实例化一个图集对象
@@ -102,11 +103,15 @@ end
 function Album:open(index)
   index = index or 1
   self.currentPieceId = nil
+  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar'})
+  self:addView(indicator)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
   self:setState('STARTED')
 end
+
+
 
 -- ---
 -- 清除其他预加载的Piece View，（重）新创建一个Piece对象，
@@ -162,6 +167,8 @@ function Album:turnOver()
   -- ------------------
   -- Current Piece is Fading Out
   currentPiece:stop()
+  local targetIndex = table.indexOf(self.imgNames, self.paintedPieceId)
+  self:signal('onProgress', {index = targetIndex})
   transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
   -- ------------------
   -- Target Piece is Fading In (Comes Up)

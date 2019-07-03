@@ -29,7 +29,7 @@ View.static.STATUS = {
     DESTROYED = 1000 -- Free to Switch to this @ Anytime [ENDED]
 }
 
-function View:initialize(parentGroup)
+function View:initialize(parent)
 --  self.isBlocked = true
   self.isBlocked = false
   self.layer = display.newGroup()
@@ -37,11 +37,17 @@ function View:initialize(parentGroup)
   -- elements table contains embedded view objects has `name` keys in a hash
   if type(self._elements) ~= 'table' then self._elements = {} end
   if type(self.elements) ~= 'table' then self.elements = {} end
-  if parentGroup and parentGroup.insert and type(parentGroup.insert) == 'function' then
-    parentGroup:insert(self.layer)
-  end
+
   Runtime:addEventListener('receive', self)
   self:setState('INITIALIZED')
+  
+  if parent then
+    if parent.isInstanceOf and type(parent.isInstanceOf) == 'function' and parent:isInstanceOf(View) and parent.state >= 10 then
+      return parent:addView(self)
+    elseif parent.insert and type(parent.insert) == 'function' then
+      return parent:insert(self.layer)
+    end
+  end
 end
 
 function View:setState(status)
@@ -103,7 +109,7 @@ function View:signal(name, opts)
   Runtime:dispatchEvent(opts)
 end
 
-function View:receive()
+function View:receive(event)
   self:send(event.callback, event)
 end
 
