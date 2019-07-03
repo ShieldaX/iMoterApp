@@ -6,8 +6,9 @@ local inspect = require('libs.inspect')
 local myData = require( "classes.mydata" )
 local iMoterAPI = require( "classes.iMoter" )
 local composer = require( "composer" )
-local mui = require( "materialui.mui" )
+--local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
+local FooterView = require("views.footer")
 
 local scene = composer.newScene()
 
@@ -20,7 +21,7 @@ local background = nil
 local widget = require( "widget" )
 
 -- mui
-local muiData = require( "materialui.mui-data" )
+--local muiData = require( "materialui.mui-data" )
 
 ----------------------------------------------------------------------------------
 --
@@ -33,7 +34,7 @@ local muiData = require( "materialui.mui-data" )
 
 -- Our modules
 -- local myData = require( "classes.mydata" )
-local utility = require( "libs.utility" )
+--local utility = require( "libs.utility" )
 
 local iMoter = iMoterAPI:new()
 
@@ -47,10 +48,9 @@ function scene:create( event )
 
   --Hide status bar from the beginning
   display.setStatusBar( display.HiddenStatusBar )
+  display.setDefault("background", 0, 1, 1)
 
-  display.setDefault("background", 1, 1, 1)
-
-  mui.init(nil, { parent=self.view })
+  --mui.init(nil, { parent=self.view })
 
   -----------------------------------------------------------------------------
 
@@ -58,17 +58,20 @@ function scene:create( event )
   --      Example use-case: Restore 'group' from previously saved state.
 
   -- Gather insets (function returns these in the order of top, left, bottom, right)
-  local topInset, leftInset, bottomInset, rightInset = mui.getSafeAreaInsets()
+  local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
   -- Create a vector rectangle sized exactly to the "safe area"
   background = display.newRect(
-      display.screenOriginX + leftInset,
-      display.screenOriginY + topInset,
-      display.viewableContentWidth - ( leftInset + rightInset ),
-      display.viewableContentHeight - ( topInset + bottomInset )
+    display.screenOriginX + leftInset,
+    display.screenOriginY + topInset,
+    display.viewableContentWidth - ( leftInset + rightInset ),
+    display.viewableContentHeight - ( topInset + bottomInset )
   )
   background:setFillColor( 0 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
+  
+  local footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
+  footer.elements.tabBar:toFront()
 
   local function openAlbumWithData(res)
     if not res or not res.data then
@@ -76,11 +79,10 @@ function scene:create( event )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
     local _album = res.data.album
-    print(inspect(_album))
+    --print(inspect(_album))
     local albumView = AlbumView:new(_album, sceneGroup)
-    albumView:open() 
+    albumView:open()
   end
-  
   iMoter:getAlbumById('30291', openAlbumWithData)
   -----------------------------------------------------------------------------
 end

@@ -85,17 +85,12 @@ function Album:initialize(obj, sceneGroup)
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
-  local _bg = display.newRoundedRect(
-    self.layer,
-    display.screenOriginX, display.screenOriginY,
-    display.viewableContentWidth, display.viewableContentHeight,
-    8
-  )
+  --local _bg = display.newRoundedRect(self.layer, oX, oY, vW, vH, 8)
+  local _bg = display.newRect(self.layer, oX, oY, vW, vH)
   _bg:setFillColor(1) -- Pure White
   util.center(_bg)
   self:_attach(_bg, '_bg')
-  -- TODO: Configure topbar
-  -- -- local _topbar = widget.newProgressBar()
+  self.elements._bg:toBack()
   -- END VISUAL INITIALIING
   -- -------------------
 end
@@ -103,8 +98,8 @@ end
 function Album:open(index)
   index = index or 1
   self.currentPieceId = nil
-  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar'})
-  self:addView(indicator)
+  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar'}, self)
+  --self:addView(indicator)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil

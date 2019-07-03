@@ -39,7 +39,7 @@ Indicator.static.TYPE = {
 -- Resize Image Display Object to Fit Screen WIDTH
 --
 function Indicator:initialize(opts, parent)
-  assert(type(opts) ~= table or next(opts) == nil, "a named option hash table need to create an indicator")
+  assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create an indicator")
   View.initialize(self, parent)
   assert(self.layer, 'Piece View Initialized Failed!')
   self.name = opts.name or '_indicator' -- timestamp
