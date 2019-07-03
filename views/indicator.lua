@@ -27,6 +27,8 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 --
 local View = require "libs.view"
 local Indicator = class('Indicator', View)
+local Toast = require 'views.toast'
+local APP = require("classes.application")
 
 -- Enum of Indicator Types
 Indicator.static.TYPE = {
@@ -89,5 +91,21 @@ function Indicator:onPieceLoaded(event)
   self.elements.spinner.alpha = 0
   self.elements.spinner:stop()
 end
-  
+
+APP.repeated = 0
+function Indicator:onAlbumLimitReached(event)
+  local direction = event.direction or 0
+  local _toast
+  if direction == -1 then
+    d('This is already the first pix!')
+    APP.repeated = APP.repeated + 1
+    Toast('上滑翻页发现更多精彩'..APP.repeated):show()
+  elseif direction == 1 then
+    d('This is already the foot pix!')
+    Toast('你已经看到我的底线了'):show()
+  elseif direction == 0 then
+    d('You have reached the limitation')
+  end
+end
+
 return Indicator

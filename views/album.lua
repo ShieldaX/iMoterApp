@@ -147,7 +147,12 @@ function Album:switchPiece(direction)
   local pieceId = self.imgNames[targetIndex]
   --TODO: prompt head or foot page if any
   if pieceId == nil then
-    if direction == -1 then d('This is already the first pix!') elseif direction == 1 then d('This is already the foot pix!') end
+    if direction == -1 then
+      d('This is already the first pix!') 
+    elseif direction == 1 then
+      d('This is already the foot pix!')
+    end
+    self:signal('onAlbumLimitReached', {direction = direction})
     return false
   end
   self:createPiece(targetIndex)

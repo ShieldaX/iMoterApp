@@ -142,10 +142,11 @@ function Piece:touch(event)
       _t.tStart = event.time
       --t.tLast = event.time
       _t.motion = 0
-      _t.speed = 0
+      --_t.speed = 0
       _t.direction = 0
       _t.flick = false
     --focus
+      --self:blurGaussian()
     elseif _t.isFocus then
       local album = self.parent
       --moved
@@ -163,6 +164,7 @@ function Piece:touch(event)
           _t.direction = 1
           album:switchPiece(_t.direction)
         end
+        --self:distort(_t.direction)
         -- Sync Scale and Alpha to View's Layer
         if math.abs(_t.motion) > 0 and album.paintedPieceId and album.elements[album.paintedPieceId] then
           local ratio = (math.abs(_t.motion)/vH)*.1 + .8 -- Fading Ratio: 0.8 is Base Scale Factor Number
@@ -170,6 +172,12 @@ function Piece:touch(event)
           paintedPiece.xScale, paintedPiece.yScale = ratio, ratio
           util.center(paintedPiece)
           paintedPiece.alpha = math.abs(_t.motion)/(vH*1.2)
+        end
+        if math.abs(_t.motion) >= vH*.0618 then
+          local _multi = math.abs(_t.motion)/vH
+          self:blurGaussian(_multi*15)
+        else
+          self:blurGaussian(0)
         end
       --ended or cancelled
       elseif ('ended' == phase or 'cancelled' == phase) then
@@ -191,13 +199,14 @@ function Piece:touch(event)
           album:turnOver() --TODO: confirm direction?
         else -- Cancelled 动作取消 Try to roll back
           d('Action Cancelled, Rolling Back...')
+          self:blurGaussian(0)
           --ease = easing.inQuad
           transition.to( _t, {time = transT, y = 0, transition = ease} )
           -- Try to drop Memory Prepainted Piece after???? transition
           if album.paintedPieceId and album.elements[album.paintedPieceId] then
             local _paintedPiece = album.elements[album.paintedPieceId].layer
             transition.to(_paintedPiece, {
-                time = transT,
+                time = transT, alpha = 0,
                 x = (.2*vW)*.5, y = (.2*vH)*.5,
                 xScale = 0.8, yScale = 0.8,
                 transition = ease,
@@ -219,6 +228,35 @@ function Piece:tap()
   -- TODO: pop overlay: Enter image resource view.
 	d('board')
 	--album:board()
+end
+
+function Piece:distort(direction, deltaN, time)
+  local image = self.elements.image
+  if not direction or not image then return end
+  local path = image.path
+  deltaN  = deltaN or 100
+  local _time = time or 100
+  if direction == -1 then
+    self.distortion = transition.to(path, {time = _time, x1 = deltaN, y1 = deltaN, x4 = -deltaN, y4 = deltaN})
+  elseif direction == 1 then
+    self.distortion = transition.to(path, {time = _time, x2 = deltaN, y2 = - deltaN, x3 = - deltaN, y3 = - deltaN})
+  end
+end
+
+function Piece:blurGaussian(multi)
+  local object = self.elements.image
+  multi = multi or 2
+  if multi > 5 then
+    return
+  elseif multi == 0 then
+    object.fill.effect = nil
+    return
+  end
+  object.fill.effect = "filter.blurGaussian"
+  object.fill.effect.horizontal.blurSize = 10*multi
+  object.fill.effect.horizontal.sigma = 100*multi
+  object.fill.effect.vertical.blurSize = 10*multi
+  object.fill.effect.vertical.sigma = 100*multi
 end
 
 -- ---
