@@ -92,16 +92,15 @@ function Indicator:onPieceLoaded(event)
   self.elements.spinner:stop()
 end
 
-APP.repeated = 0
 function Indicator:onAlbumLimitReached(event)
   local direction = event.direction or 0
   local _toast
   if direction == -1 then
-    d('This is already the first pix!')
-    APP.repeated = APP.repeated + 1
-    Toast('上滑翻页发现更多精彩'..APP.repeated):show()
+    d('This is already the first piece!')
+    --APP.repeated = APP.repeated + 1
+    Toast('上滑翻页发现更多精彩'):show()
   elseif direction == 1 then
-    d('This is already the foot pix!')
+    d('This is already the foot piece!')
     Toast('你已经看到我的底线了'):show()
   elseif direction == 0 then
     d('You have reached the limitation')

@@ -32,10 +32,10 @@ local Toast = class('ToastView', View)
 
 Toast.static.LENGTH_SHORT = 1000 --ms
 Toast.static.LENGTH_LONG = 2000 --ms
-Toast.static.instance = {}
+Toast.static.instance = {calledTimes = 0}
 
--- ---
--- TOAST
+-- -----------------------
+-- TOAST View Singleton Pattern
 --
 function Toast:allocate()
   Toast.instance.class = self
@@ -50,6 +50,7 @@ function Toast:initialize(text, duration, delay)
       transition.cancel(self.transitionId)
     end
     self:cleanup()
+    self.calledTimes = self.calledTimes + 1
   end
   View.initialize(self)
   -- -------------------
@@ -69,7 +70,7 @@ function Toast:initialize(text, duration, delay)
 --  _text:setFillColor:setFillColor( 1, 0, 0 )
   local _bg_width, _bg_height = _text.width + 25, _text.height + 20
   local _bg = display.newRoundedRect(self.layer, cX, cY, _bg_width, _bg_height, self.cornerRadius)
-  _bg:setFillColor(unpack( colorsRGB.RGBA('royalblue', 0.618) )) -- Pure White
+  _bg:setFillColor(unpack( colorsRGB.RGBA('royalblue', 0.8) )) -- Pure White
   util.center(_bg)
   self:_attach(_bg, '_bg')
   self:_attach(_text, '_text')
@@ -77,6 +78,11 @@ function Toast:initialize(text, duration, delay)
   -- END VISUAL INITIALIING
   -- -------------------
   APP.Toast = self
+  d('Toast called times:: '..self.calledTimes)
+end
+
+function Toast:getInstance(text)
+  return Toast.instance
 end
 
 function Toast:makeText(text)
