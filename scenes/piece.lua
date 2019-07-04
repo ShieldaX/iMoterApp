@@ -20,8 +20,6 @@ local vH = display.viewableContentHeight
 local visibleAspectRatio = vW/vH
 
 local class = require 'libs.middleclass'
---local Stateful = require 'libs.stateful'
---local inspect = require 'libs.inspect'
 
 local util = require 'util'
 local d = util.print_r
@@ -35,7 +33,7 @@ local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
 
 local DEFAULT_DIRECTORY = system.CachesDirectory
 local background, _pieceImage = nil
-local touchListener, cancelMove, tween
+local touchListener, cancelMove, tween, tapListener
 local imageNumberText, imageNumberTextShadow
 local backbutton
 
@@ -53,6 +51,8 @@ local function goBack( event )
 end
 
 local currentPieceId, baseDir, title = nil
+
+local PieceImage = require("views.piece_image")
 
 -- create()
 function scene:create( event )
@@ -73,62 +73,19 @@ function scene:create( event )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
   
-  _pieceImage = display.newImage( sceneGroup, currentPieceId, baseDir, cX, cY )
-  util.resize(_pieceImage)
-  if params.pieceAutoRotate then util.autoRotate(_pieceImage, params.pieceAutoRotate) end
-  _pieceImage.alpha = 0
-  util.center(_pieceImage)
-  sceneGroup:insert(_pieceImage)
+  _pieceImage = PieceImage:new(currentPieceId, baseDir, cX, cY)
+  _pieceImage.layer.alpha = 0
+--  _pieceImage = display.newImage( sceneGroup, currentPieceId, baseDir, cX, cY )
+  sceneGroup:insert(_pieceImage.layer)
   
   title = display.newText { text = currentPieceId, x = cX, y = screenOffsetH + 20, fontSize = 18, align = 'center', font = Helvetica }
-  --title:setFillColor(0)
+  title:setFillColor(1, 1, 1, 0.9)
   sceneGroup:insert(title)
- -- --------------- 
-  function touchListener (self, touch)
-    local phase = touch.phase
-    local dragDistanceX, dragDistanceY
-    print("slides", phase)
-    if ( phase == "began" ) then
-      -- Subsequent touch events will target button even if they are outside the contentBounds of button
-      display.getCurrentStage():setFocus( self )
-      self.isFocus = true
-      startPosX, startPosY = touch.x, touch.y
-      prevPosX, prevPosY = touch.x, touch.y
-    elseif self.isFocus then
-      local dragDistanceX = touch.x - startPosX
-      local dragDistanceY = touch.y - startPosY
-      if dragDistanceX > vW*0.1 or dragDistanceY > vH*0.1 then
-        print("dragDistanceX: " .. dragDistanceX)
-        print("dragDistanceY: " .. dragDistanceY)
-        goBack(event)
-      end
-      if ( phase == "moved" ) then
-        if tween then transition.cancel(tween) end
-        local deltaX, deltaY = touch.x - prevPosX, touch.y - prevPosY
-        prevPosX, prevPosY = touch.x, touch.y
-        _pieceImage.x = _pieceImage.x + deltaX
-        _pieceImage.y = _pieceImage.y + deltaY
-      elseif ( phase == "ended" or phase == "cancelled" ) then
-        
-        if ( phase == "cancelled" ) then	
-          --cancelMove()
-        end
-        cancelMove()
-        -- Allow touch events to be sent normally to the objects they "hit"
-        display.getCurrentStage():setFocus( nil )
-        self.isFocus = false
-      end
-    end   
-    return true
-  end
--- -----------------
-  function cancelMove()
-    tween = transition.to( _pieceImage, {time=400, x=cX, y=cY, transition=easing.outExpo } )
-  end
-  
-  _pieceImage.touch = touchListener
-	_pieceImage:addEventListener( "touch", _pieceImage )
-  background:addEventListener("tap", goBack)
+  -- -----------------
+  -- -----------------
+  --_pieceImage.touch = touchListener
+	--_pieceImage:addEventListener( "touch", self)
+  --_pieceImage:addEventListener("tap", self)
 end
 
 -- show()
@@ -137,8 +94,8 @@ function scene:show( event )
   local phase = event.phase
 
   if ( phase == "will" ) then
-    self.bgTransiton = transition.to( background, { alpha = 0.95 } )
-    self.imageTransiton = transition.to( _pieceImage, { alpha = 1 } )
+    self.bgTransiton = transition.to( background, { alpha = 0.9 } )
+    self.imageTransiton = transition.to( _pieceImage.layer, { alpha = 1 } )
   elseif ( phase == "did" ) then
 
   end
@@ -152,7 +109,7 @@ function scene:hide( event )
   local phase = event.phase
 
   if ( phase == "will" ) then
-    self.imageTransiton = transition.to( _pieceImage, { alpha = 0 } )
+    self.imageTransiton = transition.to( _pieceImage.layer, { alpha = 0 } )
   elseif ( phase == "did" ) then
     
   end
