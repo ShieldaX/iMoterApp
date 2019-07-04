@@ -224,10 +224,11 @@ function Piece:touch(event)
 end
 
 -- Add tap listeners
-function Piece:tap()
+function Piece:tap(event)
   -- TODO: pop overlay: Enter image resource view.
-	d('board')
-	--album:board()
+  if not self.baseDir then return end
+	self:signal('onPieceTapped', {pieceId = self.fileName, baseDir = self.baseDir})
+  return true
 end
 
 function Piece:distort(direction, deltaN, time)

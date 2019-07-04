@@ -1,3 +1,4 @@
+local composer = require( "composer" )
 -- Constants List:
 local oX = display.screenOriginX
 local oY = display.screenOriginY
@@ -221,14 +222,14 @@ function Album:turnOut()
   end
 end
 
-function Album:board()
-	if self.elements['board'] == nil then
-		local board = board.new()
-		--board:board()
-		self:_attach(board, 'board')
-	end
-	local board = self.elements.board
-	--board:changeDisplayStatus()
+function Album:onPieceTapped(event)
+  local options = {
+      effect = "fade",
+      time = 500,
+      isModal = true,
+      params = event
+  }
+  composer.showOverlay( "scenes.piece", options )
 end
 
 --local ActiveAlbum = AlbumView:addState('Actived')
