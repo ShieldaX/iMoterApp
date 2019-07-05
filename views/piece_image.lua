@@ -73,6 +73,8 @@ local View = require "libs.view"
 local PieceImage = class('PieceImageView', View)
 PieceImage:include(Stateful)
 
+PieceImage.static.defaultDurationBetweenTaps = 500
+
 -- -----------------------
 -- Piece Image View which interaction varies between its statements
 --
@@ -89,7 +91,8 @@ function PieceImage:initialize(imageFile, baseDir, x, y, autoRotate)
   -- -------------------
   -- VISUAL INITIALIING
   local _pieceImage = display.newImage( imageFile, baseDir, cX, cY )
-  util.resize(_pieceImage)
+  --util.resize(_pieceImage)
+  fullFillScreen(_pieceImage)
   if autoRotate then util.autoRotate(_pieceImage, autoRotate) end
   util.center(_pieceImage)
   self:_attach(_pieceImage, 'displayImage')
@@ -97,6 +100,7 @@ function PieceImage:initialize(imageFile, baseDir, x, y, autoRotate)
   -- -------------------
 	_pieceImage:addEventListener( "touch", self)
   _pieceImage:addEventListener("tap", self)
+  self:gotoState('FullFilled')
 end
 
 function PieceImage:touch(touch)
@@ -151,8 +155,20 @@ function PieceImage:tap(event)
 end
 
 function FUFLPiece:tap(event)
-  if ( event.numTaps == 2 ) then
-    print( "Display Object Double-tapped: " .. tostring(event.target) )
+  local duration = PieceImage.defaultDurationBetweenTaps
+  if event.numTaps == 1  then
+    d("Display Object Single-tapped: " .. tostring(event.target))
+    self.timer = timer.performWithDelay(duration, function()
+      if self.timer then
+        composer.hideOverlay('crossFade', 500)
+      end
+    end)    
+  elseif event.numTaps == 2 then
+    if self.timer then 
+      timer.cancel(self.timer)
+      self.timer = nil
+    end
+    d("Display Object Double-tapped: " .. tostring(event.target))
     local image = event.target
     image.xScale, image.yScale = 1, 1
     util.center(image)
@@ -169,10 +185,10 @@ function ACTRPiece:tap(event)
     d(image.x..':'..image.y)
     d(event.x..':'..event.y)
     --resize(image)
-    fitImage(image, vW, vH)
+    fullFillScreen(image, vW, vH)
     --image.xScale, image.yScale = 1, 1
     util.center(image)
-    self:gotoState(nil)
+    self:gotoState('FullFilled')
   else
     return true
   end
