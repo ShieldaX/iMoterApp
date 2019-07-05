@@ -145,6 +145,7 @@ function PieceImage:tap(event)
     print( "Object double-tapped: " .. tostring(event.target) )
     local image = event.target
     fullFillScreen(image)
+    util.center(image)
     self:gotoState('FullFilled')
   else
     return true
@@ -158,7 +159,7 @@ function FUFLPiece:tap(event)
     --resize(image)
 --    fitImage(image, vW, vH)
     image.xScale, image.yScale = 1, 1
-    --util.center(image)
+    util.center(image)
     self:gotoState('ActualSize')
   else
     return true
@@ -174,7 +175,7 @@ function ACTRPiece:tap(event)
     --resize(image)
     fitImage(image, vW, vH)
     --image.xScale, image.yScale = 1, 1
-    --util.center(image)
+    util.center(image)
     self:gotoState(nil)
   else
     return true
@@ -182,6 +183,18 @@ function ACTRPiece:tap(event)
 end
 
 local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
+local scrLeft, scrTop, scrRight, scrBottom = oX+leftInset, oY+topInset, oX+vW-(leftInset+rightInset), oY+vH-(topInset+bottomInset)
+local function limitInBounds(displayObject, inBounds)
+  local scrTop, scrLeft, scrBottom, scrRight = inBounds[1], inBounds[2], inBounds[3], inBounds[4]
+  local bounds = displayObject.contentBounds
+  local halfWidth, halfHeight = displayObject.contentWidth*.5, displayObject.contentHeight*.5
+  if bounds.xMin >= scrLeft or bounds.xMax <= scrRight or bounds.yMin >= scrTop or bounds.yMax <= scrBottom then
+    if bounds.xMin >= scrLeft then displayObject.x = scrLeft + halfWidth end
+    if bounds.xMax <= scrRight then displayObject.x = scrRight - halfWidth end
+    if bounds.yMin >= scrTop then displayObject.y = scrTop + halfHeight end 
+    if bounds.yMax <= scrBottom then displayObject.y = scrBottom - halfHeight end 
+  end
+end
 
 function ACTRPiece:touch(touch)
   local phase = touch.phase
@@ -194,25 +207,15 @@ function ACTRPiece:touch(touch)
     prevPosX, prevPosY = touch.x, touch.y
   elseif self.isFocus then
     local _pieceImage = touch.target
-    local dragDistanceX = touch.x - startPosX
-    local dragDistanceY = touch.y - startPosY
-    if dragDistanceX > vW*0.5 or dragDistanceY > vH*0.5 then
-      print("dragDistanceX: " .. dragDistanceX)
-      print("dragDistanceY: " .. dragDistanceY)
-    end
     if ( phase == "moved" ) then
 --      if tween then transition.cancel(tween) end
       local deltaX, deltaY = touch.x - prevPosX, touch.y - prevPosY
       prevPosX, prevPosY = touch.x, touch.y
       _pieceImage.x = _pieceImage.x + deltaX
       _pieceImage.y = _pieceImage.y + deltaY
-      local bounds = _pieceImage.contentBounds
-      if bounds.xMin > leftInset or bounds.xMax < rightInset or bounds.yMin > topInset or bounds.yMax < bottomInset then
-        display.getCurrentStage():setFocus( nil )
-        self.isFocus = false
-        cancelMove(touch.target)
-      end
+      limitInBounds(_pieceImage, {scrTop, scrLeft, scrBottom, scrRight})
     elseif ( phase == "ended" or phase == "cancelled" ) then
+      --limitInBounds(_pieceImage, {scrTop, scrLeft, scrBottom, scrRight})
       if ( phase == "cancelled" ) then	
         cancelMove(touch.target)
       end
