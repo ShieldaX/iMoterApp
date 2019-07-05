@@ -1,7 +1,7 @@
 --local widget = require( "widget" ) 
 --widget.setTheme( "widget_theme_ios7" )
-
 local APP = require("classes.application")
+local composer = require( "composer" )
 
 -- Constants List:
 local oX = display.screenOriginX
@@ -124,10 +124,6 @@ function PieceImage:touch(touch)
       _pieceImage.x = _pieceImage.x + deltaX
       _pieceImage.y = _pieceImage.y + deltaY
     elseif ( phase == "ended" or phase == "cancelled" ) then
-      
-      if ( phase == "cancelled" ) then	
-        --cancelMove()
-      end
       cancelMove(touch.target)
       -- Allow touch events to be sent normally to the objects they "hit"
       display.getCurrentStage():setFocus( nil )
@@ -147,7 +143,9 @@ function PieceImage:tap(event)
     fullFillScreen(image)
     util.center(image)
     self:gotoState('FullFilled')
-  else
+  elseif event.numTaps == 1 then
+    composer.hideOverlay( "crossFade", 500 )
+    --self:cleanup()
     return true
   end
 end
@@ -156,8 +154,6 @@ function FUFLPiece:tap(event)
   if ( event.numTaps == 2 ) then
     print( "Display Object Double-tapped: " .. tostring(event.target) )
     local image = event.target
-    --resize(image)
---    fitImage(image, vW, vH)
     image.xScale, image.yScale = 1, 1
     util.center(image)
     self:gotoState('ActualSize')

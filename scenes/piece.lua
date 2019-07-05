@@ -120,7 +120,7 @@ end
 function scene:destroy( event )
   local sceneGroup = self.view
   background:removeSelf()
-  _pieceImage:removeSelf()
+  _pieceImage:cleanup()
 end
  
  
