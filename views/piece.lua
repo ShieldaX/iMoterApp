@@ -43,7 +43,7 @@ end
 
 function util.autoRotate(obj, clockwise)
   if obj.width/obj.height > 1 then
-    clockwise = clockwise and math.abs(clockwise) == 1 and clockwise or 1
+    clockwise = clockwise and type(clockwise) == 'number' or 1
     obj.rotation = 90*clockwise
     local targetRatio = vW/(obj.height*obj.yScale)
     obj:scale(targetRatio, targetRatio)

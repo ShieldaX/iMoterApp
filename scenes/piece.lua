@@ -41,16 +41,7 @@ local backbutton
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 
-local function goBack( event )
-	print(event.phase)
-  transition.to(background, {time = 400, alpha = 0, transition = easing.outExpo})
-	if event.phase == "ended" then
-		composer.hideOverlay( "crossFade", 500 )
-	end
-	return true
-end
-
-local currentPieceId, baseDir, title = nil
+local currentPieceId, baseDir, label = nil
 
 local PieceImage = require("views.piece_image")
 
@@ -73,14 +64,14 @@ function scene:create( event )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
   
-  _pieceImage = PieceImage:new(currentPieceId, baseDir, cX, cY)
+  _pieceImage = PieceImage:new(currentPieceId, baseDir, cX, cY, true)
   _pieceImage.layer.alpha = 0
 --  _pieceImage = display.newImage( sceneGroup, currentPieceId, baseDir, cX, cY )
   sceneGroup:insert(_pieceImage.layer)
   
-  title = display.newText { text = currentPieceId, x = cX, y = screenOffsetH + 20, fontSize = 18, align = 'center', font = Helvetica }
-  title:setFillColor(1, 1, 1, 0.9)
-  sceneGroup:insert(title)
+  label = display.newText { text = params.labelText, x = cX, y = screenOffsetH + 20, fontSize = 18, align = 'center', font = Helvetica }
+  label:setFillColor(1, 1, 1, 0.9)
+  sceneGroup:insert(label)
   -- -----------------
   -- -----------------
   --_pieceImage.touch = touchListener

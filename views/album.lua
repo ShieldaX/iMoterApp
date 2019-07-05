@@ -83,6 +83,7 @@ function Album:initialize(obj, sceneGroup)
   self.currentPieceId = nil
   self.paintedPieceId = nil
   self.pieceAutoRotate = false
+  APP.CurrentAlbum = self
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -107,6 +108,7 @@ function Album:open(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
   self:setState('STARTED')
+  self:signal('onProgress', {index = index})
 end
 
 
@@ -223,6 +225,7 @@ function Album:turnOut()
 end
 
 function Album:onPieceTapped(event)
+  event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
   local options = {
       effect = "fade",
       time = 500,

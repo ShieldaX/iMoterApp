@@ -92,15 +92,15 @@ function PieceImage:initialize(imageFile, baseDir, x, y, autoRotate)
   -- VISUAL INITIALIING
   local _pieceImage = display.newImage( imageFile, baseDir, cX, cY )
   --util.resize(_pieceImage)
-  fullFillScreen(_pieceImage)
   if autoRotate then util.autoRotate(_pieceImage, autoRotate) end
+  fullFillScreen(_pieceImage)
   util.center(_pieceImage)
   self:_attach(_pieceImage, 'displayImage')
   -- END VISUAL INITIALIING
   -- -------------------
 	_pieceImage:addEventListener( "touch", self)
   _pieceImage:addEventListener("tap", self)
-  self:gotoState('FullFilled')
+  --self:gotoState('FullFilled')
 end
 
 function PieceImage:touch(touch)
@@ -137,24 +137,9 @@ function PieceImage:touch(touch)
   return true
 end
 
-local FUFLPiece = PieceImage:addState('FullFilled')
 local ACTRPiece = PieceImage:addState('ActualSize')
 
 function PieceImage:tap(event)
-  if ( event.numTaps == 2 ) then
-    print( "Object double-tapped: " .. tostring(event.target) )
-    local image = event.target
-    fullFillScreen(image)
-    util.center(image)
-    self:gotoState('FullFilled')
-  elseif event.numTaps == 1 then
-    composer.hideOverlay( "crossFade", 500 )
-    --self:cleanup()
-    return true
-  end
-end
-
-function FUFLPiece:tap(event)
   local duration = PieceImage.defaultDurationBetweenTaps
   if event.numTaps == 1  then
     d("Display Object Single-tapped: " .. tostring(event.target))
@@ -170,8 +155,12 @@ function FUFLPiece:tap(event)
     end
     d("Display Object Double-tapped: " .. tostring(event.target))
     local image = event.target
-    image.xScale, image.yScale = 1, 1
-    util.center(image)
+    --image.xScale, image.yScale = 1, 1
+    self.FFxScale = image.xScale
+    self.FFyScale = image.yScale
+    transition.cancel(tween)
+    tween = transition.to(image, {time = 200, xScale = 1, yScale = 1, x = cX, y = cY})
+    --util.center(image)
     self:gotoState('ActualSize')
   else
     return true
@@ -179,16 +168,16 @@ function FUFLPiece:tap(event)
 end
 
 function ACTRPiece:tap(event)
-  if ( event.numTaps == 2 ) then
+  if ( event.numTaps ) then
     print( "Display Object Double-tapped: " .. tostring(event.target) )
     local image = event.target
     d(image.x..':'..image.y)
     d(event.x..':'..event.y)
-    --resize(image)
-    fullFillScreen(image, vW, vH)
-    --image.xScale, image.yScale = 1, 1
-    util.center(image)
-    self:gotoState('FullFilled')
+    --fullFillScreen(image, vW, vH)
+    transition.cancel(tween)
+    tween = transition.to(image, {time = 200, xScale = self.FFxScale, yScale = self.FFyScale, x = cX, y = cY})
+    --util.center(image)
+    self:gotoState(nil)
   else
     return true
   end
