@@ -82,7 +82,7 @@ function Album:initialize(obj, sceneGroup)
   self.imgURIs, self.imgNames = resolveImages(obj)
   self.currentPieceId = nil
   self.paintedPieceId = nil
-  self.pieceAutoRotate = false
+  self.pieceAutoRotate = 1
   APP.CurrentAlbum = self
   -- END DATA BINDING
   -- -------------------
