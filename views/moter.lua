@@ -94,12 +94,103 @@ function Moter:initialize(obj, sceneGroup)
   -- -------------------
 end
 
+local function makeTimeStamp(dateStringArg)
+	
+	local inYear, inMonth, inDay, inHour, inMinute, inSecond, inZone =      
+  string.match(dateStringArg, '^(%d%d%d%d)-(%d%d)-(%d%d)T(%d%d):(%d%d):(%d%d)(.-)$')
+
+	local zHours, zMinutes = string.match(inZone, '^(.-):(%d%d)$')
+		
+	local returnTime = os.time({year=inYear, month=inMonth, day=inDay, hour=inHour, min=inMinute, sec=inSecond, isdst=false})
+	
+	if zHours then
+		returnTime = returnTime - ((tonumber(zHours)*3600) + (tonumber(zMinutes)*60))
+	end
+	
+	return returnTime
+	
+end
+--[[
+local _then = TimeStamp("2013-01-01T00:00:00Z")
+local _now = os.time()
+local timeDifference = _now - _then
+daysDifference = math.floor(timeDifference / (24 * 60 * 60))
+d(daysDifference)
+--]]
+
+local zodiacList = {'鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'}
+local function BODtoAgeAndZodiac(birthday)
+  local xyear, xmonth, xday = birthday:match("(%d+)%-(%d+)%-(%d+)")
+  local currentDate = os.date("!%Y-%m-%d")
+  local yyear, ymonth, yday = currentDate:match("(%d+)%-(%d+)%-(%d+)")
+  local yearElapsed, _month, _day = yyear - xyear, ymonth - xmonth, yday - xday
+  -- -------------------Age----------------- --
+  local age = yearElapsed
+  d('Age : '..age)
+  if _month < 0 then -- current month: 7, birth month: 8
+    age = age - 1
+  elseif _month == 0 then
+    if _day < 0 then age = age -1 end
+  end
+  d('Age: '..age)
+  -- -----------------Zodiac---------------- --
+  local _animalRange = math.fmod((xyear - 4), 12)
+  local zodiac = zodiacList[_animalRange]
+  d('Zodiac: '..zodiac)
+  -- -----------Astrological Sign----------- --
+  local astroSign
+  local dmonth, dday = tonumber(xmonth), tonumber(xday)
+  if (dmonth == 12) then
+    astroSign = (dday < 22 and '射手' or '摩羯')
+  elseif dmonth == 1 then
+    astroSign = (dday < 20 and '摩羯' or '水瓶')
+  elseif dmonth == 2 then
+    astroSign = dday < 19 and '水瓶' or '双鱼'
+  elseif dmonth == 3 then
+    astroSign = dday < 21 and '双鱼' or '白羊'  
+  elseif dmonth == 4 then
+    astroSign = dday < 20 and '白羊' or '金牛'
+  elseif dmonth == 5 then
+    astroSign = dday < 21 and '金牛' or '双子'
+  elseif dmonth == 6 then
+    astroSign = dday < 21 and '双子' or '巨蟹'
+  elseif dmonth == 7 then
+    astroSign = dday < 23 and '巨蟹' or '狮子'
+  elseif dmonth == 8 then
+    astroSign = dday < 23 and '狮子' or '室女'
+  elseif dmonth == 9 then
+    astroSign = dday < 23 and '室女' or '天秤'
+  elseif dmonth == 10 then
+    astroSign = dday < 23 and '天秤' or '天蝎'
+  elseif dmonth == 11 then
+    astroSign = dday < 22 and '天蝎' or '射手'
+  end
+  d('Astrological Sign: '..astroSign)
+  return age, zodiac, astroSign
+  --return os.time({year = xyear, month = xmonth, day = xday, hour = 0, min = 0, sec = 0})
+end
+
+local function parseBirthday(birthday)
+  --d(birthday)
+  local _time = makeTimeStamp(birthday)
+  --d(_time)
+  return os.date("!%Y-%m-%d", _time)
+end
+
+local function parseAge(birthday)
+  local _then = makeTimeStamp(birthday)
+  local _now = os.time()
+  local timeElapsed = _now - _then
+  yearsPast = math.floor(timeElapsed/(24*60*60*365))
+end
+
 function Moter:layout()
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   --self:addView(indicator)
   local _data = self.rawData
-  local labelAge = display.newText {text = _data.birthday, x = cX, y = cY, fontSize = 18}
-  labelAge:setFillColor(0)
+  local labelBirthday = display.newText {text = '生日：' .. parseBirthday(_data.birthday), x = cX, y = cY, fontSize = 12}
+  BODtoAgeAndZodiac(_data.birthday)
+  labelBirthday:setFillColor(0)
   
   if self.state > View.STATUS.INITIALIZED then
     d("Try to preload Moter already @ "..self.getState())
