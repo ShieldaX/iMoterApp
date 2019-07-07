@@ -5,8 +5,14 @@
 local composer = require( "composer" )
 -- forward declarations and other locals
 local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
+--local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+
+-- Constants List:
+local oX = display.screenOriginX
+local oY = display.screenOriginY
+local vW = display.viewableContentWidth
+local vH = display.viewableContentHeight
 
 local background = nil
 local widget = require( "widget" )
@@ -45,11 +51,6 @@ local iMoter = iMoterAPI:new()
 -- Called when the scene's view does not exist:
 function scene:create( event )
 	local sceneGroup = self.view
-
-  --Hide status bar from the beginning
-  display.setStatusBar( display.HiddenStatusBar )
-  display.setDefault("background", 0, 1, 1)
-
   --mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
 
@@ -59,12 +60,12 @@ function scene:create( event )
   local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
   -- Create a vector rectangle sized exactly to the "safe area"
   background = display.newRect(
-    display.screenOriginX + leftInset,
-    display.screenOriginY + topInset,
-    display.viewableContentWidth - ( leftInset + rightInset ),
-    display.viewableContentHeight - ( topInset + bottomInset )
+    oX + leftInset,
+    oY + topInset,
+    vW - ( leftInset + rightInset ),
+    vH - ( topInset + bottomInset )
   )
-  background:setFillColor( 0 )
+  background:setFillColor( 1, 1, 1, 0.6 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
   

@@ -56,7 +56,7 @@ local APP = require("classes.application")
 
 local LayoutManager = require( "libs.layout" )
 -- layout manager object
-local Layout
+local Layout = LayoutManager:new()
 
 -- Group to hold rects that display the regions
 local Regions
@@ -65,34 +65,6 @@ local Regions
 local ContentGridSize = 4
 local GridPixelPadding = 8
 
--- 利用获取的图集信息实例化一个图集对象
-function Moter:initialize(obj, sceneGroup)
-  d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-  d('- Prototype of Moter View -')
-  d('- ======================== -')
-  View.initialize(self, sceneGroup)
-  -- -------------------
-  -- DATA BINDING
-  self.rawData = obj
-  self.name = obj.name
-  local _id = obj._id
-  self.avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
-  self.avatarFileName = _id.."_".._id..".jpg"
-  --APP.CurrentMoter = self
-  -- END DATA BINDING
-  -- -------------------
-  -- -------------------
-  -- VISUAL INITIALIING
-  local _bg = display.newRoundedRect(self.layer, oX, oY, vW, vH, 8)
---  local _bg = display.newRect(self.layer, oX, oY, vW, vH)
-  _bg:setFillColor(1) -- Pure White
-  util.center(_bg)
---  _bg.y = _bg.y+50
-  self:_attach(_bg, '_bg')
-  --self.elements._bg:toBack()
-  -- END VISUAL INITIALIING
-  -- -------------------
-end
 
 local function makeTimeStamp(dateStringArg)
 	
@@ -110,6 +82,7 @@ local function makeTimeStamp(dateStringArg)
 	return returnTime
 	
 end
+
 --[[
 local _then = TimeStamp("2013-01-01T00:00:00Z")
 local _now = os.time()
@@ -126,7 +99,6 @@ local function DOB2AgeZodiacAstro(birthday)
   local yearElapsed, _month, _day = yyear - xyear, ymonth - xmonth, yday - xday
   -- -------------------Age----------------- --
   local age = yearElapsed
-  d('Age : '..age)
   if _month < 0 then -- current month: 7, birth month: 8
     age = age - 1
   elseif _month == 0 then
@@ -171,32 +143,51 @@ local function DOB2AgeZodiacAstro(birthday)
 end
 
 local function parseBirthday(birthday)
-  --d(birthday)
   local _time = makeTimeStamp(birthday)
-  --d(_time)
   return os.date("!%Y-%m-%d", _time)
 end
 
-local function parseAge(birthday)
-  local _then = makeTimeStamp(birthday)
-  local _now = os.time()
-  local timeElapsed = _now - _then
-  yearsPast = math.floor(timeElapsed/(24*60*60*365))
-end
-
-local function animate(displayObj, direction)
-  local _time = 1600
+local function animate(displayObj, direction, delay)
+  local _time = 800
   direction = direction or 'bottom'
   local _from
   if direction == 'left' or direction == 'right' then
     _from = direction == 'left' and -1 or 1
     local contentW = displayObj.contentWidth
-    displayObj.animation = transition.from(displayObj, {time = _time, x = displayObj.x+(contentW*_from), alpha = 0, transition = easing.outExpo})
+    displayObj.animation = transition.from(displayObj, {delay = delay, time = _time, x = displayObj.x+(contentW*_from), alpha = 0, transition = easing.outSine})
   else
     _from = direction == 'top' and -1 or 1
     local contentH = displayObj.contentHeight
-    displayObj.animation = transition.from(displayObj, {time = _time, y = displayObj.y+(contentH*_from), alpha = 0, transition = easing.outExpo})
+    displayObj.animation = transition.from(displayObj, {delay = delay, time = _time, y = displayObj.y+(contentH*_from), alpha = 0, transition = easing.outBack})
   end
+end
+
+-- 利用获取的图集信息实例化一个图集对象
+function Moter:initialize(obj, sceneGroup)
+  d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
+  d('- Prototype of Moter View -')
+  d('- ======================== -')
+  View.initialize(self, sceneGroup)
+  -- -------------------
+  -- DATA BINDING
+  self.rawData = obj
+  self.name = obj._id
+  local _id = obj._id
+  self.avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
+  self.avatarFileName = _id.."_".._id..".jpg"
+  --APP.CurrentMoter = self
+  -- END DATA BINDING
+  -- -------------------
+  -- VISUAL INITIALIING
+  local _bg = display.newRoundedRect(self.layer, oX, oY, vW*0.9, vH*0.8, 20)
+--  local _bg = display.newRect(self.layer, oX, oY, vW, vH)
+  _bg:setFillColor(1) -- Pure White
+  _bg.anchorY = 0
+  util.center(_bg)
+--  _bg.y = _bg.y+50
+  self:_attach(_bg, 'bg')
+  --self.elements._bg:toBack()
+  -- END VISUAL INITIALIING
 end
 
 function Moter:layout()
@@ -235,6 +226,16 @@ function Moter:layout()
   -- -----------------------
   local labelBio = _data.bio and display.newText {text = _data.bio, x = cX, y = cY - 60, fontSize = 12, width = vW*0.75}
   labelBio:setFillColor(0)
+  self:_attach(labelBio)
+  self:_attach(labelBirthday)
+  self:_attach(labelAge)
+  self:_attach(labelAstroSign)
+  self:_attach(labelHeight)
+  self:_attach(labelWeight)
+  self:_attach(labelMeasure)
+  self:_attach(labelBirthPlace)
+  self:_attach(labelCareer)
+  self:_attach(labelHobbies)
   
   if self.state > View.STATUS.INITIALIZED then
     d("Try to preload Moter already @ "..self.getState())
@@ -242,14 +243,6 @@ function Moter:layout()
   end
   -- Load image
 	local function networkListener( event )
-    if event.phase == 'began' or event.phase == 'progress' then
-      self._requestId = event.requestId
-      print('Image is Loading')
-      return
-    elseif event.phase == 'ended' then
-      print('Image Loading Ended')
-      self._requestId = nil
-    end
     if ( event.isError ) then
       print ( "Network error - download failed" )
       return false
@@ -267,41 +260,34 @@ function Moter:layout()
     end
     self.avatarFileName = event.response.filename
     self.baseDir = event.response.baseDirectory
+--    self.elements.bg.fill = {type = 'image', filename = self.avatarFileName, baseDir = self.baseDir}
+--    self.elements.bg.fill.scaleX = 1.2
     -- When self is RELEASED by Parent View
     if self.state >= View.STATUS.PRELOADED then
       --self:cleanup()
     else
       self:setState('PRELOADED')
       if not self.isBlocked then
-        d('Start Piece '..self.name..' '..self:getState()..' and Not Blocked')
+        d('Start Moter '..self.name..' '..self:getState()..' and Not Blocked')
         self:start()
       else
         d(self.name .. ' ' .. self:getState())
       end
     end
 	end
-  display.loadRemoteImage( self.avatarImgURI, "GET", networkListener, {progress = true}, self.avatarFileName, Piece.DEFAULT_DIRECTORY, oX, oY)
+  display.loadRemoteImage( self.avatarImgURI, "GET", networkListener, {progress = false}, self.avatarFileName, Piece.DEFAULT_DIRECTORY, oX, oY)
 end
-
-function Moter:onPieceTapped(event)
-  event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
-  local options = {
-      effect = "fade",
-      time = 500,
-      isModal = true,
-      params = event
-  }
-  composer.showOverlay( "scenes.piece", options )
-end
-
---local ActiveAlbum = AlbumView:addState('Actived')
---function ActiveAlbum:start() end
 
 function Moter:start()
   if self.state == 30 then return false end
   local e = self._elements
+  transition.from(self.element)
   for i, element in ipairs(e) do
-    animate(element)
+    if i > 1 then
+      animate(element, 'top', i*100)
+    else
+      --transition.from(element, {time = 1000, transition = easing.outExpo, height = element.height*.8})
+    end
   end
   self:setState('STARTED')
 end

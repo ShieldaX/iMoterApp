@@ -46,8 +46,8 @@ function scene:create( event )
 	local sceneGroup = self.view
 
   --Hide status bar from the beginning
-  display.setStatusBar( display.HiddenStatusBar )
-  display.setDefault("background", 0, 1, 1)
+--  display.setStatusBar( display.HiddenStatusBar )
+--  display.setDefault("background", 0, 1, 1)
 
   --mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
@@ -93,6 +93,16 @@ end
 function scene:show( event )
 	local sceneGroup = self.view
   --APP.Footer.layer:toFront()
+  local options =
+  {
+    effect = "fade",
+    time = 600,
+    params = {
+      sampleVar1 = "my sample variable",
+      sampleVar2 = "another sample variable"
+    }
+  }
+  --timer.performWithDelay(2000, function() composer.gotoScene('scenes.moter', options) end)
   -----------------------------------------------------------------------------
 
   --      This event requires build 2012.782 or later.
