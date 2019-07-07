@@ -184,6 +184,21 @@ local function parseAge(birthday)
   yearsPast = math.floor(timeElapsed/(24*60*60*365))
 end
 
+local function animate(displayObj, direction)
+  local _time = 1600
+  direction = direction or 'bottom'
+  local _from
+  if direction == 'left' or direction == 'right' then
+    _from = direction == 'left' and -1 or 1
+    local contentW = displayObj.contentWidth
+    displayObj.animation = transition.from(displayObj, {time = _time, x = displayObj.x+(contentW*_from), alpha = 0, transition = easing.outExpo})
+  else
+    _from = direction == 'top' and -1 or 1
+    local contentH = displayObj.contentHeight
+    displayObj.animation = transition.from(displayObj, {time = _time, y = displayObj.y+(contentH*_from), alpha = 0, transition = easing.outExpo})
+  end
+end
+
 function Moter:layout()
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   --self:addView(indicator)
@@ -218,7 +233,6 @@ function Moter:layout()
   local labelHobbies = _data.hobbies and display.newText {text = '兴趣：'..table.concat(_data.hobbies, ' '), x = cX, y = cY + 160, fontSize = 12}
   if labelHobbies then labelHobbies:setFillColor(0) end
   -- -----------------------
-  
   local labelBio = _data.bio and display.newText {text = _data.bio, x = cX, y = cY - 60, fontSize = 12, width = vW*0.75}
   labelBio:setFillColor(0)
   
@@ -243,12 +257,13 @@ function Moter:layout()
       --self:signal('onAavatrLoaded')
       local _image = event.target
       util.fitWidth(_image, vW/3)
-      _image.alpha = 0
+      --_image.alpha = 0
       util.center(_image)
+      _image.y = _image.contentHeight*.5 + vH*.1
       --_image.x = cX - _image.width*.5
-      self.imageTransiton = transition.to( _image, { time = 500, alpha = 1, y = _image.contentHeight*.5 + vH*.1, transition = easing.outExpo} )
+      --self.animation = transition.to( _image, { time = 500, alpha = 1, y = _image.contentHeight*.5 + vH*.1, transition = easing.outExpo} )
       self:_attach(_image, 'avatar')
-      
+      --animate(_image)
     end
     self.avatarFileName = event.response.filename
     self.baseDir = event.response.baseDirectory
@@ -284,7 +299,10 @@ end
 
 function Moter:start()
   if self.state == 30 then return false end
-  --local e = self.elements
+  local e = self._elements
+  for i, element in ipairs(e) do
+    animate(element)
+  end
   self:setState('STARTED')
 end
 
