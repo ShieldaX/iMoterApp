@@ -1,3 +1,5 @@
+
+
 local composer = require( "composer" )
 -- Constants List:
 local oX = display.screenOriginX
@@ -8,6 +10,7 @@ local vH = display.viewableContentHeight
 local class = require 'libs.middleclass'
 local Stateful = require 'libs.stateful'
 local inspect = require 'libs.inspect'
+local colorHex = require('libs.convertcolor').hex
 
 local util = require 'util'
 local d = util.print_r
@@ -44,7 +47,6 @@ function util.fitWidth(obj, W)
   local scaleFactor = W/obj.width
   obj.width = obj.width*scaleFactor
   obj.height = obj.height*scaleFactor
-  --obj:scale(scaleFactor, scaleFactor)
 end
 
 -- Classes
@@ -179,9 +181,9 @@ function Moter:initialize(obj, sceneGroup)
   -- END DATA BINDING
   -- -------------------
   -- VISUAL INITIALIING
-  local _bg = display.newRoundedRect(self.layer, oX, oY, vW*0.9, vH*0.8, 20)
+  local _bg = display.newRoundedRect(self.layer, oX, oY, vW*0.9, vH*0.8, 2)
 --  local _bg = display.newRect(self.layer, oX, oY, vW, vH)
-  _bg:setFillColor(1) -- Pure White
+  _bg:setFillColor(0, 0)
   _bg.anchorY = 0
   util.center(_bg)
 --  _bg.y = _bg.y+50
@@ -192,8 +194,9 @@ function Moter:initialize(obj, sceneGroup)
     color2 = colorsRGB.RGBA('white', 0),
     direction = "down"
   }
-  _bg.stroke = self.paint
-  _bg.strokeWidth = 6
+  _bg:setStrokeColor(colorHex('D8DDE4'))
+  --_bg.strokeWidth = 1
+  self.parentBG = sceneGroup[1]
   --self.elements._bg:toBack()
   -- END VISUAL INITIALIING
 end
@@ -202,13 +205,13 @@ function Moter:layout()
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   --self:addView(indicator)
   local _data = self.rawData
+  local labelScore = _data.score and display.newText {text = _data.score.count, x = vW-50, y = self.elements.bg.y+80, fontSize = 50}
+  labelScore:setFillColor(unpack(colorsRGB.RGBA('royalblue', .8)))
+  self:_attach(labelScore, 'score')
   local labelBirthday = display.newText {text = '生日：' .. parseBirthday(_data.birthday), x = cX, y = cY, fontSize = 12}
-  labelBirthday:setFillColor(0)
   local age, zodiac, astroSign = DOB2AgeZodiacAstro(_data.birthday)
   local labelAge = display.newText {text = '年龄：' .. age, x = cX, y = cY + 20, fontSize = 12}
   local labelAstroSign = display.newText {text = '星座：' .. astroSign .. '座', x = cX, y = cY + 40, fontSize = 12}
-  labelAge:setFillColor(0)
-  labelAstroSign:setFillColor(0)
   -- ------------------------------ http://www.wellho.net/resources/ex.php4?item=u105/spjo
   local names = _data.names
   if names.cn and names.en then
@@ -217,23 +220,19 @@ function Moter:layout()
     names = names.cn
   elseif names.en then
     names = names.en
+  else
+    names = _data.name
   end
+  APP.Header.elements.TopBar:setLabel(names)
   local labelHeight = _data.height and display.newText {text = '身高：' .. _data.height .. 'CM', x = cX, y = cY + 60, fontSize = 12}
-  if labelHeight then labelHeight:setFillColor(0) end
   local labelWeight = _data.weight and display.newText {text = '体重：' .. _data.weight .. 'KG', x = cX, y = cY + 80, fontSize = 12}
-  if labelWeight then labelWeight:setFillColor(0) end
   local measure = _data.measure and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips
   local labelMeasure = display.newText {text = '三围：' .. measure, x = cX, y = cY + 100, fontSize = 12}
-  if labelMeasure then labelMeasure:setFillColor(0) end
   local labelBirthPlace = display.newText {text = '出生：'.._data.country..' '.._data.birthplace, x = cX, y = cY + 120, fontSize = 12}
-  if labelBirthPlace then labelBirthPlace:setFillColor(0) end
   local labelCareer = _data.career and display.newText {text = '职业：'..table.concat(_data.career, ' '), x = cX, y = cY + 140, fontSize = 12}
-  if labelCareer then labelCareer:setFillColor(0) end
   local labelHobbies = _data.hobbies and display.newText {text = '兴趣：'..table.concat(_data.hobbies, ' '), x = cX, y = cY + 160, fontSize = 12}
-  if labelHobbies then labelHobbies:setFillColor(0) end
   -- -----------------------
   local labelBio = _data.bio and display.newText {text = _data.bio, x = cX, y = cY - 60, fontSize = 12, width = vW*0.75}
-  labelBio:setFillColor(0)
   self:_attach(labelBio)
   self:_attach(labelBirthday)
   self:_attach(labelAge)
@@ -269,7 +268,15 @@ function Moter:layout()
     end
     self.avatarFileName = event.response.filename
     self.baseDir = event.response.baseDirectory
---    self.elements.bg.fill = {type = 'image', filename = self.avatarFileName, baseDir = self.baseDir}
+    local parentBG = self.parentBG
+    parentBG.alpha = 0.6
+    parentBG.fill = {type = 'image', filename = self.avatarFileName, baseDir = self.baseDir}
+    parentBG.fill.scaleX = 1.6
+    parentBG.fill.effect = "filter.blurGaussian"
+    parentBG.fill.effect.horizontal.blurSize = 10
+    --parentBG.fill.effect.horizontal.sigma = 120
+    parentBG.fill.effect.vertical.blurSize = 10
+    --parentBG.fill.effect.vertical.sigma = 120
 --    self.elements.bg.fill.scaleX = 1.2
     -- When self is RELEASED by Parent View
     if self.state >= View.STATUS.PRELOADED then

@@ -2,7 +2,13 @@
 --      Main App
 --      Scene notes
 ---------------------------------------------------------------------------------
+local mui = require( "materialui.mui" )
+local muiData = require( "materialui.mui-data" )
+
 local composer = require( "composer" )
+
+local util = require 'util'
+local d = util.print_r
 -- forward declarations and other locals
 local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
 --local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
@@ -48,10 +54,68 @@ local iMoter = iMoterAPI:new()
 -- BEGINNING OF YOUR IMPLEMENTATION
 ---------------------------------------------------------------------------------
 
+-- @usage: https://material.io/tools/icons
+local function createIcon(options)
+  local fontPath = "icon-font/"
+  local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
+  options.font = materialFont
+  local x,y = 160, 240
+  if options.x ~= nil then
+      x = options.x
+  end
+  if options.y ~= nil then
+      y = options.y
+  end  
+  local fontSize = options.height
+  if options.fontSize ~= nil then
+      fontSize = options.fontSize
+  end
+  fontSize = math.floor(tonumber(fontSize))
+  
+  local font = native.systemFont
+  if options.font ~= nil then
+      font = options.font
+  end
+  local textColor = { 0, 0.82, 1 }
+  if options.textColor ~= nil then
+      textColor = options.textColor
+  end
+  local fillColor = { 0, 0, 0 }
+  if options.fillColor ~= nil then
+      fillColor = options.fillColor
+  end
+  options.isFontIcon = true
+  -- scale font
+  -- Calculate a font size that will best fit the given text field's height
+  local checkbox = {contentHeight=options.height, contentWidth=options.width}
+  local textToMeasure = display.newText( options.text, 0, 0, font, fontSize )
+  fontSize = math.floor(fontSize * ( ( checkbox.contentHeight ) / textToMeasure.contentHeight ))
+  local tw = textToMeasure.contentWidth
+  local th = textToMeasure.contentHeight
+  tw = fontSize
+  options.text = mui.getMaterialFontCodePointByName(options.text)
+  textToMeasure:removeSelf()
+  textToMeasure = nil
+  local options2 =
+  {
+    --parent = textGroup,
+    text = options.text,
+    x = x,
+    y = y,
+    font = font,
+    width = tw * 1.5,
+    fontSize = fontSize,
+    align = "center"
+  }
+  local _icon = display.newText( options2 )
+  _icon:setFillColor(unpack(textColor))
+  return _icon
+end
+
 -- Called when the scene's view does not exist:
 function scene:create( event )
 	local sceneGroup = self.view
-  --mui.init(nil, { parent=self.view })
+  mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
 
   --      CREATE display objects and add them to 'group' here.
@@ -65,9 +129,44 @@ function scene:create( event )
     vW - ( leftInset + rightInset ),
     vH - ( topInset + bottomInset )
   )
-  background:setFillColor( 1, 1, 1, 0.6 )
+  background:setFillColor( 1, 1, 1, 0.8 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
+
+  local options2 = {
+    --parent = mui.getParent(),
+    name = "plus",
+    text = "menu",
+    width = 25,
+    height = 25,
+    x = 30,
+    y = 25,
+    isFontIcon = true,
+    font = mui.materialFont,
+    textColor = { 0.25, 0.75, 1, 1 }
+  }
+  local iconFace = createIcon( options2 )
+  iconFace:setFillColor(unpack(colorsRGB.RGBA('royalblue', 0.8)))
+  
+  local buttonG = display.newGroup()
+  local _text = display.newText { text = '女神图集', x = cX, y = cY, fontSize = 18, align = 'center', font = Helvetica }
+  local moreIcon = createIcon {
+      name = "plus",
+      text = "expand_more",
+      width = 40,
+      height = 40,
+      x = cX, y = vH*.9,
+      isFontIcon = true,
+      font = mui.materialFont,
+      textColor = { 0.25, 0.75, 1, 1 }
+    }
+  _text:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
+  moreIcon:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
+  util.center(moreIcon)
+  moreIcon.y = vH*.9 + _text.height*1.5
+  buttonG:insert(_text)
+  util.center(buttonG)
+  buttonG.y = vH*.9
   
   APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
   --APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
@@ -85,7 +184,7 @@ function scene:create( event )
     --APP.Footer.layer:toFront()
     APP.moterView:layout()
   end
-  iMoter:getMoterById('22162', showMoterWithData)
+  iMoter:getMoterById('27180', showMoterWithData)
   -----------------------------------------------------------------------------
 end
 
