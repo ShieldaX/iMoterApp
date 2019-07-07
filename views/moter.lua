@@ -119,7 +119,7 @@ d(daysDifference)
 --]]
 
 local zodiacList = {'鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'}
-local function BODtoAgeAndZodiac(birthday)
+local function DOB2AgeZodiacAstro(birthday)
   local xyear, xmonth, xday = birthday:match("(%d+)%-(%d+)%-(%d+)")
   local currentDate = os.date("!%Y-%m-%d")
   local yyear, ymonth, yday = currentDate:match("(%d+)%-(%d+)%-(%d+)")
@@ -141,9 +141,9 @@ local function BODtoAgeAndZodiac(birthday)
   local astroSign
   local dmonth, dday = tonumber(xmonth), tonumber(xday)
   if (dmonth == 12) then
-    astroSign = (dday < 22 and '射手' or '摩羯')
+    astroSign = dday < 22 and '射手' or '摩羯'
   elseif dmonth == 1 then
-    astroSign = (dday < 20 and '摩羯' or '水瓶')
+    astroSign = dday < 20 and '摩羯' or '水瓶'
   elseif dmonth == 2 then
     astroSign = dday < 19 and '水瓶' or '双鱼'
   elseif dmonth == 3 then
@@ -189,8 +189,38 @@ function Moter:layout()
   --self:addView(indicator)
   local _data = self.rawData
   local labelBirthday = display.newText {text = '生日：' .. parseBirthday(_data.birthday), x = cX, y = cY, fontSize = 12}
-  BODtoAgeAndZodiac(_data.birthday)
   labelBirthday:setFillColor(0)
+  local age, zodiac, astroSign = DOB2AgeZodiacAstro(_data.birthday)
+  local labelAge = display.newText {text = '年龄：' .. age, x = cX, y = cY + 20, fontSize = 12}
+  local labelAstroSign = display.newText {text = '星座：' .. astroSign .. '座', x = cX, y = cY + 40, fontSize = 12}
+  labelAge:setFillColor(0)
+  labelAstroSign:setFillColor(0)
+  -- ------------------------------ http://www.wellho.net/resources/ex.php4?item=u105/spjo
+  local names = _data.names
+  if names.cn and names.en then
+    names = names.cn..','..names.en
+  elseif names.cn then
+    names = names.cn
+  elseif names.en then
+    names = names.en
+  end
+  local labelHeight = _data.height and display.newText {text = '身高：' .. _data.height .. 'CM', x = cX, y = cY + 60, fontSize = 12}
+  if labelHeight then labelHeight:setFillColor(0) end
+  local labelWeight = _data.weight and display.newText {text = '体重：' .. _data.weight .. 'KG', x = cX, y = cY + 80, fontSize = 12}
+  if labelWeight then labelWeight:setFillColor(0) end
+  local measure = _data.measure and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips
+  local labelMeasure = display.newText {text = '三围：' .. measure, x = cX, y = cY + 100, fontSize = 12}
+  if labelMeasure then labelMeasure:setFillColor(0) end
+  local labelBirthPlace = display.newText {text = '出生：'.._data.country..' '.._data.birthplace, x = cX, y = cY + 120, fontSize = 12}
+  if labelBirthPlace then labelBirthPlace:setFillColor(0) end
+  local labelCareer = _data.career and display.newText {text = '职业：'..table.concat(_data.career, ' '), x = cX, y = cY + 140, fontSize = 12}
+  if labelCareer then labelCareer:setFillColor(0) end
+  local labelHobbies = _data.hobbies and display.newText {text = '兴趣：'..table.concat(_data.hobbies, ' '), x = cX, y = cY + 160, fontSize = 12}
+  if labelHobbies then labelHobbies:setFillColor(0) end
+  -- -----------------------
+  
+  local labelBio = _data.bio and display.newText {text = _data.bio, x = cX, y = cY - 60, fontSize = 12, width = vW*0.75}
+  labelBio:setFillColor(0)
   
   if self.state > View.STATUS.INITIALIZED then
     d("Try to preload Moter already @ "..self.getState())
@@ -215,7 +245,7 @@ function Moter:layout()
       util.fitWidth(_image, vW/3)
       _image.alpha = 0
       util.center(_image)
-      _image.x = cX - _image.width*.5
+      --_image.x = cX - _image.width*.5
       self.imageTransiton = transition.to( _image, { time = 500, alpha = 1, y = _image.contentHeight*.5 + vH*.1, transition = easing.outExpo} )
       self:_attach(_image, 'avatar')
       

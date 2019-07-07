@@ -114,6 +114,10 @@ function View:receive(event)
 end
 
 function View:_attach(obj, name, force)
+  if obj == nil then
+    d('View wouldnt attach anything unexists!')
+    return false
+  end
   if self.state < View.STATUS.INITIALIZED then
     d('View not initialized couldnt attach anything!')
     return false
