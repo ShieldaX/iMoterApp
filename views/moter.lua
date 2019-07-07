@@ -154,7 +154,7 @@ local function animate(displayObj, direction, delay)
   if direction == 'left' or direction == 'right' then
     _from = direction == 'left' and -1 or 1
     local contentW = displayObj.contentWidth
-    displayObj.animation = transition.from(displayObj, {delay = delay, time = _time, x = displayObj.x+(contentW*_from), alpha = 0, transition = easing.outSine})
+    displayObj.animation = transition.from(displayObj, {delay = delay, time = _time, x = displayObj.x+(contentW*_from), alpha = 0, transition = easing.outBack})
   else
     _from = direction == 'top' and -1 or 1
     local contentH = displayObj.contentHeight
@@ -186,6 +186,14 @@ function Moter:initialize(obj, sceneGroup)
   util.center(_bg)
 --  _bg.y = _bg.y+50
   self:_attach(_bg, 'bg')
+  self.paint = {
+    type = "gradient",
+    color1 = colorsRGB.RGBA('white', 0.6),
+    color2 = colorsRGB.RGBA('white', 0),
+    direction = "down"
+  }
+  _bg.stroke = self.paint
+  _bg.strokeWidth = 6
   --self.elements._bg:toBack()
   -- END VISUAL INITIALIING
 end
@@ -252,7 +260,8 @@ function Moter:layout()
       util.fitWidth(_image, vW/3)
       --_image.alpha = 0
       util.center(_image)
-      _image.y = _image.contentHeight*.5 + vH*.1
+      d(self.elements.bg.y)
+      _image.y = _image.contentHeight*.5 + self.elements.bg.y + self.elements.bg.strokeWidth*.5
       --_image.x = cX - _image.width*.5
       --self.animation = transition.to( _image, { time = 500, alpha = 1, y = _image.contentHeight*.5 + vH*.1, transition = easing.outExpo} )
       self:_attach(_image, 'avatar')
@@ -286,7 +295,7 @@ function Moter:start()
     if i > 1 then
       animate(element, 'top', i*100)
     else
-      --transition.from(element, {time = 1000, transition = easing.outExpo, height = element.height*.8})
+      transition.from(element, {time = 1000, transition = easing.outBack, height = element.height*.9})
     end
   end
   self:setState('STARTED')
