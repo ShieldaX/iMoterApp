@@ -77,7 +77,7 @@ function Header:initialize(opts, parent)
 		onEvent = leftButtonEvent,
 	}
 --  local tColor = colorsRGB.RGBA('dodgerblue', 0.618)
-  local tColor = colorsRGB.RGBA('whitesmoke', 0.618)
+  local tColor = colorsRGB.RGBA('whitesmoke', 0.1)
   d(tColor)
   local navBarBackgroundColor = tColor or theme.navBarBackgroundColor
   local topBar = widget.newNavigationBar({
@@ -85,7 +85,7 @@ function Header:initialize(opts, parent)
 		backgroundColor = navBarBackgroundColor,
 		title = "= MEOW =",
 		titleColor = theme.navBarTextColor,
-		font = theme.fontBold, fontSize = 12,
+		font = theme.fontBold, fontSize = 14,
 		height = 45,
 		includeStatusBar = false,
 		--leftButton = leftButton

@@ -147,7 +147,7 @@ function scene:create( event )
     textColor = { 0.25, 0.75, 1, 1 }
   }
   local iconFace = createIcon( options2 )
-  iconFace:setFillColor(unpack(colorsRGB.RGBA('royalblue', 0.8)))
+  iconFace:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
   
   local buttonG = display.newGroup()
   local _text = display.newText { text = '女神图集', x = cX, y = cY, fontSize = 18, align = 'center', font = 'Helvetica' }
@@ -188,6 +188,7 @@ function scene:create( event )
     end
     local _moter = res.data.moter
     APP.Header.elements.TopBar:setLabel(_moter.name)
+    APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
     print(inspect(_moter))
     APP.moterView = MoterView:new(_moter, sceneGroup)
     APP.Header.layer:toFront()

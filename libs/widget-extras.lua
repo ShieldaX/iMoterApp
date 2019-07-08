@@ -556,6 +556,6 @@ function widget.newNavigationBar( options )
     function barContainer:getLabel()
         return(self._title.text)
     end
-
+    
     return barContainer
 end
