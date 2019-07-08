@@ -10,9 +10,10 @@ local composer = require( "composer" )
 local util = require 'util'
 local d = util.print_r
 -- forward declarations and other locals
-local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
---local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
+local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
+local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
 
 -- Constants List:
 local oX = display.screenOriginX
@@ -149,7 +150,7 @@ function scene:create( event )
   iconFace:setFillColor(unpack(colorsRGB.RGBA('royalblue', 0.8)))
   
   local buttonG = display.newGroup()
-  local _text = display.newText { text = '女神图集', x = cX, y = cY, fontSize = 18, align = 'center', font = Helvetica }
+  local _text = display.newText { text = '女神图集', x = cX, y = cY, fontSize = 18, align = 'center', font = 'Helvetica' }
   local moreIcon = createIcon {
       name = "plus",
       text = "expand_more",
@@ -163,10 +164,19 @@ function scene:create( event )
   _text:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
   moreIcon:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
   util.center(moreIcon)
-  moreIcon.y = vH*.9 + _text.height*1.5
+  moreIcon.y = _text.y + _text.height*1.5
   buttonG:insert(_text)
+  buttonG:insert(moreIcon)
+  buttonG.anchorChildren = true
   util.center(buttonG)
-  buttonG.y = vH*.9
+  buttonG.y = vH*.94
+  
+  --transition.blink(buttonG, {transition = easing.outExpo, time = 6000})
+  local contentH = _text.contentHeight
+  transition.from(buttonG, {delay = 1200, time = 1000, y = buttonG.y+(contentH*-1), alpha = 0, transition = easing.outBack})
+  transition.to(buttonG, {iterations = -1, delay = 2200, time = 2400, y = buttonG.y+(contentH*0.2), alpha = 0.5, transition = easing.continuousLoop})
+  
+  sceneGroup:insert(buttonG)
   
   APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
   --APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
@@ -184,7 +194,7 @@ function scene:create( event )
     --APP.Footer.layer:toFront()
     APP.moterView:layout()
   end
-  iMoter:getMoterById('27180', showMoterWithData)
+  iMoter:getMoterById('22162', showMoterWithData)
   -----------------------------------------------------------------------------
 end
 

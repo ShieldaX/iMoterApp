@@ -206,7 +206,7 @@ function Moter:layout()
   --self:addView(indicator)
   local _data = self.rawData
   local labelScore = _data.score and display.newText {text = _data.score.count, x = vW-50, y = self.elements.bg.y+80, fontSize = 50}
-  labelScore:setFillColor(unpack(colorsRGB.RGBA('royalblue', .8)))
+  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('royalblue', .8))) end
   self:_attach(labelScore, 'score')
   local labelBirthday = display.newText {text = '生日：' .. parseBirthday(_data.birthday), x = cX, y = cY, fontSize = 12}
   local age, zodiac, astroSign = DOB2AgeZodiacAstro(_data.birthday)
