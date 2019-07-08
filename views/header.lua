@@ -78,7 +78,6 @@ function Header:initialize(opts, parent)
 	}
 --  local tColor = colorsRGB.RGBA('dodgerblue', 0.618)
   local tColor = colorsRGB.RGBA('whitesmoke', 0.1)
-  d(tColor)
   local navBarBackgroundColor = tColor or theme.navBarBackgroundColor
   local topBar = widget.newNavigationBar({
 		isTransluscent = true,

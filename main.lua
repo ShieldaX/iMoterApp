@@ -3,7 +3,6 @@
 -- main.lua
 --
 -----------------------------------------------------------------------------------------
-require("mobdebug").start()
 
 -- show default status bar (iOS)
 display.setStatusBar(display.HiddenStatusBar)

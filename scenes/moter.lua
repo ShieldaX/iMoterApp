@@ -29,7 +29,7 @@ local iMoterAPI = require( "classes.iMoter" )
 
 --local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
-local MoterView = require("views.moter")
+local MoterView = require("views.moter_ui")
 local HeaderView = require("views.header")
 local FooterView = require("views.footer")
 
@@ -56,7 +56,7 @@ local iMoter = iMoterAPI:new()
 ---------------------------------------------------------------------------------
 
 -- @usage: https://material.io/tools/icons
-local function createIcon(options)
+function util.createIcon(options)
   local fontPath = "icon-font/"
   local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
   options.font = materialFont
@@ -98,16 +98,16 @@ local function createIcon(options)
   textToMeasure:removeSelf()
   textToMeasure = nil
   local options2 =
-  {
-    --parent = textGroup,
-    text = options.text,
-    x = x,
-    y = y,
-    font = font,
-    width = tw * 1.5,
-    fontSize = fontSize,
-    align = "center"
-  }
+    {
+      --parent = textGroup,
+      text = options.text,
+      x = x,
+      y = y,
+      font = font,
+      width = tw * 1.5,
+      fontSize = fontSize,
+      align = "center"
+    }
   local _icon = display.newText( options2 )
   _icon:setFillColor(unpack(textColor))
   return _icon
@@ -146,12 +146,12 @@ function scene:create( event )
     font = mui.materialFont,
     textColor = { 0.25, 0.75, 1, 1 }
   }
-  local iconFace = createIcon( options2 )
+  local iconFace = util.createIcon( options2 )
   iconFace:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
   
   local buttonG = display.newGroup()
   local _text = display.newText { text = '女神图集', x = cX, y = cY, fontSize = 18, align = 'center', font = 'Helvetica' }
-  local moreIcon = createIcon {
+  local moreIcon = util.createIcon {
       name = "plus",
       text = "expand_more",
       width = 40,
