@@ -82,7 +82,7 @@ local function makeTimeStamp(dateStringArg)
 	
 end
 
-local zodiacList = {'猪', '鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗'}
+local zodiacList = {'鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'}
 local function DOB2AgeZodiacAstro(birthday)
   local xyear, xmonth, xday = birthday:match("(%d+)%-(%d+)%-(%d+)")
   local currentDate = os.date("!%Y-%m-%d")
@@ -98,7 +98,7 @@ local function DOB2AgeZodiacAstro(birthday)
   d('Age: '..age)
   -- -----------------Zodiac---------------- --
   local _animalRange = math.fmod((xyear - 4), 12)
-  local zodiac = zodiacList[_animalRange+1]
+  local zodiac = zodiacList[_animalRange]
   d('Zodiac: '..zodiac)
   -- -----------Astrological Sign----------- --
   local astroSign
@@ -218,8 +218,6 @@ end
 -- -----------------
 -- 使用数据以及资源填充页面 with 排版布局
 function Moter:layout()
-  local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
-  local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
   --d(inspect(native.getFontNames()))
   local _data = self.rawData
   -- ==============================
@@ -227,11 +225,10 @@ function Moter:layout()
   local labelG = display.newGroup()
   --labelG.anchorChildren = true
   local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
-  labelBG:setFillColor(colorHex('222222', .99))
-  labelBG.strokeWidth = 1; labelBG:setStrokeColor(colorHex('333333', 0.5))
+  labelBG:setFillColor(colorHex('222222', .96))
+  
   local padding = 28
   local names, name = _data.names
-  names = names or {}
   if names.cn and names.en then
     name = names.cn..','..names.en
   elseif names.cn then
@@ -242,11 +239,8 @@ function Moter:layout()
     name = _data.name
   end
   APP.Header.elements.TopBar:setLabel(name)
-  local age, zodiac, astroSign
-  if _data.birthday then
-    age, zodiac, astroSign = DOB2AgeZodiacAstro(_data.birthday)
-  end
-  local labelNameAge = display.newText {text = _data.name..(age and ','..age or ''), x = 0, y = 0, fontSize = 22, font = fontDMFT}
+  local age, zodiac, astroSign = DOB2AgeZodiacAstro(_data.birthday)
+  local labelNameAge = display.newText {text = _data.name..','..age, x = 0, y = 0, fontSize = 20, font = native.systemFontBold}
   local bounds = labelBG.contentBounds
   labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5; labelNameAge.y = bounds.yMin+padding
   labelG:insert(labelNameAge)
@@ -256,14 +250,14 @@ function Moter:layout()
   sperateLine:setStrokeColor(colorHex('333333')); sperateLine.strokeWidth = 2
   -- ==============================
   -- DATA INFO SECTION
-  local labelHW, labelBirthPlace
+  local labelHeight, labelBirthPlace
   local leftPadding = bounds.xMin+padding*.5
   if _data.height or _data.weight then
-    local HW = (_data.height and _data.height .. 'CM  ' or '') .. (_data.weight and _data.weight .. 'KG' or '')
-    labelHW = display.newText {text = HW, x = leftPadding, y = sperateLine.y + padding*.5, fontSize = 14, font = fontSHSans}
-    labelHW:setFillColor(colorHex('C7A680'))
-    labelHW.anchorX, labelHW.anchorY = 0, 0
-    labelG:insert(labelHW)
+    local HW = (_data.height and _data.height .. 'CM' or '') .. (_data.weight and _data.weight .. 'KG' or '')
+    labelHeight = display.newText {text = _data.height .. 'CM', x = leftPadding, y = sperateLine.y + padding*.5, fontSize = 14, font = native.systemFont}
+    labelHeight:setFillColor(colorHex('C7A680'))
+    labelHeight.anchorX, labelHeight.anchorY = 0, 0
+    labelG:insert(labelHeight)
   end
   
   local measure = _data.measure and next(_data.measure) and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips or ''
@@ -273,14 +267,14 @@ function Moter:layout()
   infoText = infoText..(_data.career and '\n'..table.concat(_data.career, ' ') or '')
   
   infoText = infoText..(_data.hobbies and '\n'..table.concat(_data.hobbies, ' ') or '')
-  
-  local labelInfo = display.newText {text = infoText,  x = leftPadding, y = labelHW.y + padding*.6, fontSize = 14, font = fontSHSans}
+
+  local labelInfo = display.newText {text = infoText,  x = leftPadding, y = labelHeight.y + padding*.6, fontSize = 14, font = native.systemFont}
   labelInfo:setFillColor(colorHex('C7A680'))
   labelInfo.anchorX, labelInfo.anchorY = 0, 0
   labelG:insert(labelInfo)
   
-  local labelBioCap = display.newText {text = '详情资料', x = 0, y = 0, fontSize = 20, font = fontDMFT}
-  local labelBio = display.newText {text = _data.bio,  width = vW*.9, x = leftPadding, y = labelHW.y + padding*.6, fontSize = 14, font = fontSHSans}
+  local labelBioCap = display.newText {text = '详情资料', x = 0, y = 0, fontSize = 20, font = native.systemFontBold}
+  local labelBio = display.newText {text = _data.bio,  width = vW*.9, x = leftPadding, y = labelHeight.y + padding*.6, fontSize = 14, font = native.systemFont}
   labelBioCap:setFillColor(colorHex('C7A680'))
   labelBio:setFillColor(colorHex('6C6C6C'))
   labelBioCap.anchorX, labelBioCap.anchorY = 0, 0
@@ -295,27 +289,21 @@ function Moter:layout()
   local favoriteIcon = util.createIcon {
       name = "plus",
       text = "favorite",
-      width = 28,
-      height = 28,
+      width = 32,
+      height = 32,
       x = cX, y = vH*.9,
       isFontIcon = true,
+      --font = mui.materialFont,
       textColor = { 0.25, 0.75, 1, 1 }
     }
-  favoriteIcon:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
+  favoriteIcon:setFillColor(unpack(colorsRGB.RGBA('red', 1)))
   util.center(favoriteIcon)
   favoriteIcon.x = vW*.8
   favoriteIcon.y = bg.y - bg.height
-  local btnCircle = display.newCircle(favoriteIcon.x, favoriteIcon.y, 28)
+  local btnCircle = display.newCircle(favoriteIcon.x, favoriteIcon.y, 32)
   btnCircle:setFillColor(colorHex('1B1B19'))
-  btnCircle:setStrokeColor(colorHex('BB9F7D'))
-  btnCircle.alpha = 0.96
+  btnCircle:setStrokeColor(colorHex('BB9F7D')) --BB9F7D
   btnCircle.strokeWidth = 2
-  local btnCircleDeco = display.newCircle(favoriteIcon.x, favoriteIcon.y, 36)
-  btnCircleDeco:setFillColor(colorHex('1B1B19'))
-  btnCircleDeco:setStrokeColor(colorHex('BB9F7D'))
-  btnCircleDeco.alpha = 0.4
-  btnCircleDeco.strokeWidth = 1
-  favBtnG:insert(btnCircleDeco)
   favBtnG:insert(btnCircle)
   favBtnG:insert(favoriteIcon)
 end
