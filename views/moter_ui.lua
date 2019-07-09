@@ -238,7 +238,7 @@ function Moter:layout()
   local names, name = _data.names
   names = names or {}
   if names.cn and names.en then
-    name = names.cn..','..names.en
+    name = names.cn..', '..names.en
   elseif names.cn then
     name = names.cn
   elseif names.en then
@@ -300,6 +300,16 @@ function Moter:layout()
   labelBio.x, labelBio.y = 15, labelBioCap.y + padding*1.3
   self:_attach(labelBioCap)
   self:_attach(labelBio)
+  -- Reheight and reposition capCard to fit full-screened phones
+  local crossCut = labelBG.contentBounds.yMax - labelInfo.contentBounds.yMax
+  labelBG.anchorY = 0
+  labelBG.y = labelBG.y - labelBG.contentHeight*.5
+  if crossCut > 0 and crossCut < 5 then
+    labelBG.height = labelBG.target + 5
+  elseif crossCut > padding then
+    labelBG.height = labelBG.height - crossCut + padding*.5
+  end
+  labelG.y = self.elements.bg.contentBounds.yMin-labelG.height*.2
   
   local favBtnG = display.newGroup()
   local favoriteIcon = util.createIcon {

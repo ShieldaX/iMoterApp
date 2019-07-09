@@ -164,6 +164,7 @@ for i,m in ipairs(devices) do
         util.SCR_INCHES = m.inchesDiagonal
     end
 end
+util.SCR_INCHES = util.SCR_INCHES or 6
 util.isTablet = util.SCR_INCHES >= 7
 
 -- ## Debug Functions
