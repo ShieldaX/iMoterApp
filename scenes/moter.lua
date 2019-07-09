@@ -135,7 +135,6 @@ function scene:create( event )
   sceneGroup:insert( background )
 
   local options2 = {
-    --parent = mui.getParent(),
     name = "plus",
     text = "menu",
     width = 25,
@@ -148,7 +147,7 @@ function scene:create( event )
   }
   local iconFace = util.createIcon( options2 )
   iconFace:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
-  
+  --[[
   local buttonG = display.newGroup()
   local _text = display.newText { text = '女神图集', x = cX, y = cY, fontSize = 18, align = 'center', font = 'Helvetica' }
   local moreIcon = util.createIcon {
@@ -170,14 +169,14 @@ function scene:create( event )
   buttonG.anchorChildren = true
   util.center(buttonG)
   buttonG.y = vH*.94
-  
+
   --transition.blink(buttonG, {transition = easing.outExpo, time = 6000})
   local contentH = _text.contentHeight
   transition.from(buttonG, {delay = 1200, time = 1000, y = buttonG.y+(contentH*-1), alpha = 0, transition = easing.outBack})
   transition.to(buttonG, {iterations = -1, delay = 2200, time = 2400, y = buttonG.y+(contentH*0.2), alpha = 0.5, transition = easing.continuousLoop})
   
   sceneGroup:insert(buttonG)
-  
+    ]]
   APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
   --APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
   
@@ -195,13 +194,34 @@ function scene:create( event )
     --APP.Footer.layer:toFront()
     APP.moterView:layout()
   end
---  iMoter:getMoterById('22162', showMoterWithData)
-  iMoter:getMoterById('27180', showMoterWithData)
+  iMoter:getMoterById('19702', {fetchcover = true}, showMoterWithData)
+--  iMoter:getMoterById('27180', showMoterWithData)
   -----------------------------------------------------------------------------
 end
+--[[
+local green = hexcolor('#33ffbb')
+local blue = hexcolor('#3399ff')
 
+local function test2(x, y, color, scale1, scale2, delay, time)
+  local circle = display.newCircle(x, y, 20)
+  circle:setFillColor(unpack(color))
+  local effect1 = display.newCircle(x, y, 20)
+  effect1:setFillColor(unpack(color))
+  effect1.alpha = 0.4
+  transition.to(effect1, {xScale = scale1, yScale = scale1, time = time + delay})
+  transition.to(effect1, {alpha = 0, delay = delay, time = time, onComplete = display.remove})
+  local effect2 = display.newCircle(x, y, 20)
+  effect2:setFillColor(unpack(_T_))
+  effect2:setStrokeColor(unpack(color))
+  effect2.strokeWidth = 3
+  transition.to(effect2, {xScale = scale2, yScale = scale2, time = time + delay})
+  transition.to(effect2, {alpha = 0, strokeWidth = 0, delay = delay, time = time, onComplete = display.remove})
+end
 
-
+local scale1 = 2
+local scale2 = 4
+test2(cX - 100, cY, green, scale1, scale2, 250, 500)
+]]
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
 	local sceneGroup = self.view
