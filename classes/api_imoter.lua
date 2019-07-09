@@ -18,6 +18,7 @@ return {
     getMoterById = {
       method = "GET",
       path = "api/moters/:moter_id",
+      optional_params = { "fetchcover" },
       required_params = {"moter_id"},
     },
 

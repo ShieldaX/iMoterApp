@@ -161,6 +161,10 @@ function RESTful:call(name, t, headers, extraArgList, preCallbackHook, ...)
         if type(value) == "table" then
           fileList[a] = optList[a]
         else
+          if type(value) == "boolean" then
+            optList[a] = tostring(value)
+            print('[RESTful] Auto convert boolean value to string: '..tostring(_)..'=>'..optList[a])
+          end
           argList[a] = optList[a]
         end
       end
