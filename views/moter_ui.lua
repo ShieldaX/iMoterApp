@@ -265,11 +265,12 @@ function Moter:layout()
   local leftPadding = bounds.xMin+padding*.5
   if _data.height or _data.weight then
     local HW = (_data.height and _data.height .. 'CM  ' or '') .. (_data.weight and _data.weight .. 'KG' or '')
-    labelHW = display.newText {text = HW, x = leftPadding, y = sperateLine.y + padding*.5, fontSize = 14, font = fontSHSans}
+    labelHW = display.newText {text = HW, x = leftPadding, y = sperateLine.y + padding*.25, fontSize = 14, font = fontSHSans}
     labelHW:setFillColor(colorHex('C7A680'))
     labelHW.anchorX, labelHW.anchorY = 0, 0
     labelG:insert(labelHW)
   end
+  self:_attach(labelG, 'capCard')
   
   local measure = _data.measure and next(_data.measure) and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips or ''
   local infoText = measure
@@ -283,7 +284,11 @@ function Moter:layout()
   labelInfo:setFillColor(colorHex('C7A680'))
   labelInfo.anchorX, labelInfo.anchorY = 0, 0
   labelG:insert(labelInfo)
-  
+  d('======================')
+  labelInfo.y = labelHW.y + labelInfo.baselineOffset*.5 + labelHW.contentHeight*.3
+
+  -- ==============================
+  -- BIO DESC SECTION
   local labelBioCap = display.newText {text = '详情资料', x = 0, y = 0, fontSize = 20, font = fontDMFT}
   local labelBio = display.newText {text = _data.bio,  width = vW*.9, x = leftPadding, y = labelHW.y + padding*.6, fontSize = 14, font = fontSHSans}
   labelBioCap:setFillColor(colorHex('C7A680'))
@@ -291,7 +296,7 @@ function Moter:layout()
   labelBioCap.anchorX, labelBioCap.anchorY = 0, 0
   labelBio.anchorX, labelBio.anchorY = 0, 0
   local bg = self.elements.bg
-  labelBioCap.x, labelBioCap.y = 15, bg.y - bg.height + padding*2.6
+  labelBioCap.x, labelBioCap.y = 15, bg.y - bg.height + padding*2.4
   labelBio.x, labelBio.y = 15, labelBioCap.y + padding*1.3
   self:_attach(labelBioCap)
   self:_attach(labelBio)
@@ -330,15 +335,15 @@ end
 function Moter:start()
   if self.state == 30 then return false end
   local e = self._elements
-  --[[
+  
   for i, element in ipairs(e) do
     if i > 1 then
-      animate(element, 'top', i*100)
+      animate(element, 'bottom', i*100)
     else
-      transition.from(element, {time = 1000, transition = easing.outBack, height = element.height*.9})
+      transition.from(element, {time = 1000, transition = easing.outBack, height = element.height*.6})
     end
   end
-  ]]
+  
 
   local green = {colorHex('33ffbb')}
   local blue = {colorHex('3399ff')}
@@ -371,14 +376,27 @@ function Moter:start()
   favBtnG:insert(effectG)
   effectG:toBack()
   effectG.x, effectG.y = favIcon.x, favIcon.y
+  
   local function tapListener(tap)
-    d(tap.numTaps)
+    self:signal('onLikeTapped', tap)
     pulse2(0, 0, gold, scale1, scale2, 250, 500, effectG)
-    favBtnG[4]:setFillColor(unpack(colorsRGB.RGBA('red')))
+    --favBtnG[4]:setFillColor(unpack(colorsRGB.RGBA('red')))
   end
   favIcon:addEventListener('tap', tapListener)
 
   self:setState('STARTED')
+end
+
+function Moter:onLikeTapped(tap)
+  --d(tap.numTaps)
+  local favIcon = self.elements.favBtnG[self.elements.favBtnG.numChildren]
+  if self.moterLiked then
+    self.moterLiked = false
+    favIcon:setFillColor(unpack(colorsRGB.RGBA('white')))
+  else
+    self.moterLiked = true
+    favIcon:setFillColor(unpack(colorsRGB.RGBA('red')))
+  end
 end
 
 function Moter:stop()
