@@ -364,14 +364,20 @@ function Moter:start()
   local scale1 = 2
   local scale2 = 4
   local favBtnG = self.elements.favBtnG
+  local favIcon = favBtnG[1]
   local effectG = display.newGroup()
-  effectG.anchorChildren = true
+
   favBtnG.effectG = effectG
   favBtnG:insert(effectG)
   effectG:toBack()
-  favBtnG[1]:addEventListener('tap', function(tap) pulse2(favBtnG[1].x, favBtnG[1].y, gold, scale1, scale2, 250, 500, effectG) end)
+  effectG.x, effectG.y = favIcon.x, favIcon.y
+  local function tapListener(tap)
+    d(tap.numTaps)
+    pulse2(0, 0, gold, scale1, scale2, 250, 500, effectG)
+    favBtnG[4]:setFillColor(unpack(colorsRGB.RGBA('red')))
+  end
+  favIcon:addEventListener('tap', tapListener)
 
-  
   self:setState('STARTED')
 end
 
