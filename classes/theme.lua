@@ -17,7 +17,7 @@ M.navBarBackgroundColor = { 1, 1, 1 }
 M.navBarTextColor = { 0, 0, 0 }
 M.rowBackgroundColor = { 1, 1, 1 }
 M.font = "assets/fonts/Roboto-Thin.ttf"
-M.fontBold = "assets/fonts/Roboto-Regular.ttf"
+M.fontBold = "assets/fonts/SourceHanSansK-Bold.ttf"
 M.name = "light"
 
 function M.setTheme( scheme )

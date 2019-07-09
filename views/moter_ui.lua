@@ -154,17 +154,22 @@ local function animate(displayObj, direction, delay)
 end
 
 -- 利用获取的图集信息实例化一个图集对象
-function Moter:initialize(obj, sceneGroup)
+function Moter:initialize(data, sceneGroup)
   d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
   d('- Prototype of Moter View -')
   d('- ======================== -')
   View.initialize(self, sceneGroup)
   -- -------------------
   -- DATA BINDING
-  self.rawData = obj
+  self.rawData = data.moter
+  local obj = self.rawData
   self.name = obj._id
   local _id = obj._id
-  self.avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
+  if data.avatar then
+    self.avatarImgURI = "https://t1.onvshen.com:85/gallery/".._id.."/"..data.avatar.."/0.jpg"
+  else
+    self.avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
+  end
   self.avatarFileName = _id.."_".._id..".jpg"
   --APP.CurrentMoter = self
   -- END DATA BINDING
@@ -318,6 +323,8 @@ function Moter:layout()
   favBtnG:insert(btnCircleDeco)
   favBtnG:insert(btnCircle)
   favBtnG:insert(favoriteIcon)
+  
+  self:_attach(favBtnG, 'favBtnG')
 end
 
 function Moter:start()
@@ -332,6 +339,39 @@ function Moter:start()
     end
   end
   ]]
+
+  local green = {colorHex('33ffbb')}
+  local blue = {colorHex('3399ff')}
+  local gold = {colorHex('BB9F7D')}
+  local _T_ = colorsRGB.RGBA('white', 0) -- Total Transparent
+  
+  local function pulse2(x, y, color, scale1, scale2, delay, time, parentG)
+    local circle = display.newCircle(parentG, x, y, 20)
+    circle:setFillColor(unpack(color))
+    local effect1 = display.newCircle(parentG, x, y, 20)
+    effect1:setFillColor(unpack(color))
+    effect1.alpha = 0.4
+    transition.to(effect1, {xScale = scale1, yScale = scale1, time = time + delay})
+    transition.to(effect1, {alpha = 0, delay = delay, time = time, onComplete = display.remove})
+    local effect2 = display.newCircle(parentG, x, y, 20)
+    effect2:setFillColor(unpack(_T_))
+    effect2:setStrokeColor(unpack(color))
+    effect2.strokeWidth = 3
+    transition.to(effect2, {xScale = scale2, yScale = scale2, time = time + delay})
+    transition.to(effect2, {alpha = 0, strokeWidth = 0, delay = delay, time = time, onComplete = display.remove})
+  end
+
+  local scale1 = 2
+  local scale2 = 4
+  local favBtnG = self.elements.favBtnG
+  local effectG = display.newGroup()
+  effectG.anchorChildren = true
+  favBtnG.effectG = effectG
+  favBtnG:insert(effectG)
+  effectG:toBack()
+  favBtnG[1]:addEventListener('tap', function(tap) pulse2(favBtnG[1].x, favBtnG[1].y, gold, scale1, scale2, 250, 500, effectG) end)
+
+  
   self:setState('STARTED')
 end
 

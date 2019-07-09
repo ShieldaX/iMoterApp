@@ -77,7 +77,8 @@ function Header:initialize(opts, parent)
 		onEvent = leftButtonEvent,
 	}
 --  local tColor = colorsRGB.RGBA('dodgerblue', 0.618)
-  local tColor = colorsRGB.RGBA('whitesmoke', 0.1)
+--  local tColor = colorsRGB.RGBA('whitesmoke', 0.24)
+  local tColor = colorsRGB.RGBA('black', 0.24)
   local navBarBackgroundColor = tColor or theme.navBarBackgroundColor
   local topBar = widget.newNavigationBar({
 		isTransluscent = true,

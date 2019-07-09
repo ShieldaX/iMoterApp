@@ -186,10 +186,11 @@ function scene:create( event )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
     local _moter = res.data.moter
+    local _data = res.data
     APP.Header.elements.TopBar:setLabel(_moter.name)
     APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
-    print(inspect(_moter))
-    APP.moterView = MoterView:new(_moter, sceneGroup)
+    print(inspect(_data))
+    APP.moterView = MoterView:new(_data, sceneGroup)
     APP.Header.layer:toFront()
     --APP.Footer.layer:toFront()
     APP.moterView:layout()
@@ -198,30 +199,7 @@ function scene:create( event )
 --  iMoter:getMoterById('27180', showMoterWithData)
   -----------------------------------------------------------------------------
 end
---[[
-local green = hexcolor('#33ffbb')
-local blue = hexcolor('#3399ff')
 
-local function test2(x, y, color, scale1, scale2, delay, time)
-  local circle = display.newCircle(x, y, 20)
-  circle:setFillColor(unpack(color))
-  local effect1 = display.newCircle(x, y, 20)
-  effect1:setFillColor(unpack(color))
-  effect1.alpha = 0.4
-  transition.to(effect1, {xScale = scale1, yScale = scale1, time = time + delay})
-  transition.to(effect1, {alpha = 0, delay = delay, time = time, onComplete = display.remove})
-  local effect2 = display.newCircle(x, y, 20)
-  effect2:setFillColor(unpack(_T_))
-  effect2:setStrokeColor(unpack(color))
-  effect2.strokeWidth = 3
-  transition.to(effect2, {xScale = scale2, yScale = scale2, time = time + delay})
-  transition.to(effect2, {alpha = 0, strokeWidth = 0, delay = delay, time = time, onComplete = display.remove})
-end
-
-local scale1 = 2
-local scale2 = 4
-test2(cX - 100, cY, green, scale1, scale2, 250, 500)
-]]
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
 	local sceneGroup = self.view
