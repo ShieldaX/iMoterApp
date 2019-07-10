@@ -255,6 +255,7 @@ function Moter:layout()
   local bounds = labelBG.contentBounds
   labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5; labelNameAge.y = bounds.yMin+padding
   labelG:insert(labelNameAge)
+  -- ------------------------------
   labelG.x, labelG.y = oX+labelBG.width*.6, self.elements.bg.contentBounds.yMin-labelBG.height*.2
   -- ==============================
   local sperateLine = display.newLine(labelG, bounds.xMin+padding*.5, labelNameAge.y+padding, bounds.xMax-padding*.5, labelNameAge.y+padding)

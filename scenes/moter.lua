@@ -62,28 +62,28 @@ function util.createIcon(options)
   options.font = materialFont
   local x,y = 160, 240
   if options.x ~= nil then
-      x = options.x
+    x = options.x
   end
   if options.y ~= nil then
-      y = options.y
+    y = options.y
   end  
   local fontSize = options.height
   if options.fontSize ~= nil then
-      fontSize = options.fontSize
+    fontSize = options.fontSize
   end
   fontSize = math.floor(tonumber(fontSize))
-  
+
   local font = native.systemFont
   if options.font ~= nil then
-      font = options.font
+    font = options.font
   end
   local textColor = { 0, 0.82, 1 }
   if options.textColor ~= nil then
-      textColor = options.textColor
+    textColor = options.textColor
   end
   local fillColor = { 0, 0, 0 }
   if options.fillColor ~= nil then
-      fillColor = options.fillColor
+    fillColor = options.fillColor
   end
   options.isFontIcon = true
   -- scale font
@@ -98,16 +98,16 @@ function util.createIcon(options)
   textToMeasure:removeSelf()
   textToMeasure = nil
   local options2 =
-    {
-      --parent = textGroup,
-      text = options.text,
-      x = x,
-      y = y,
-      font = font,
-      width = tw * 1.5,
-      fontSize = fontSize,
-      align = "center"
-    }
+  {
+    --parent = textGroup,
+    text = options.text,
+    x = x,
+    y = y,
+    font = font,
+    width = tw * 1.5,
+    fontSize = fontSize,
+    align = "center"
+  }
   local _icon = display.newText( options2 )
   _icon:setFillColor(unpack(textColor))
   return _icon
@@ -115,7 +115,7 @@ end
 
 -- Called when the scene's view does not exist:
 function scene:create( event )
-	local sceneGroup = self.view
+  local sceneGroup = self.view
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
 
@@ -179,7 +179,8 @@ function scene:create( event )
     ]]
   APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
   --APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
-  
+
+--  TODO: Show Indicator Before Moter View Really Loaded
   local function showMoterWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This moter currently not avaialble!", { "Okay" } )
@@ -202,7 +203,7 @@ end
 
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
-	local sceneGroup = self.view
+  local sceneGroup = self.view
   --APP.Footer.layer:toFront()
   -----------------------------------------------------------------------------
 
@@ -213,17 +214,17 @@ function scene:show( event )
 end
 
 function scene:hide( event )
-	local sceneGroup = self.view
-	-- nothing to do here
-	if event.phase == "will" then
+  local sceneGroup = self.view
+  -- nothing to do here
+  if event.phase == "will" then
 
-	end
+  end
 
 end
 
 function scene:destroy( event )
-	local sceneGroup = self.view
-	-- nothing to do here
+  local sceneGroup = self.view
+  -- nothing to do here
 end
 
 ---------------------------------------------------------------------------------

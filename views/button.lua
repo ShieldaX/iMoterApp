@@ -28,13 +28,13 @@ local View = require "libs.view"
 local Button = class('Button', View)
 --local Toast = require 'views.toast'
 local APP = require("classes.application")
+Button:include(Stateful)
 
 -- Enum of Indicator Types
 Button.static.TYPE = {
     DEFAULT = 10,
-    NUMERIC = 10, -- DEFAULT
+    PLAIN = 10, -- DEFAULT
     BAR = 20,
-    ROUNDED = 30,
     CUSTOMED = 100
   }
 -- ---
@@ -42,17 +42,14 @@ Button.static.TYPE = {
 --
 function Button:initialize(opts, parent)
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create an indicator")
+  self.name = opts.name or '_Button'..os.time() -- timestamped
   View.initialize(self, parent)
-  assert(self.layer, 'Piece View Initialized Failed!')
-  self.name = opts.name or '_indicator' -- timestamp
-  d('创建指示器对象: '..self.name)
-  d(self.name..' began with '..self:getState())
+  assert(self.layer, 'Button View Initialized Failed!')
+  d('创建按钮对象: '..self.name) -- Key =>（按）键; Button => 按钮 
   -- -------------------
   -- DATA BINDING
-  self.topPadding = opts.top or 60
-  self.total = opts.total
-  self.init = opts.init or 0
-  self.currentPos = nil
+  self.padding = opts.padding or 40
+  self.labelText = opts.text or 'Button'
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -75,6 +72,44 @@ function Button:initialize(opts, parent)
   self:_attach(_spinner, 'spinner')
   -- END VISUAL INITIALIING
   -- -------------------
+end
+
+-- overridable visual constructor
+function Button:render(btnType)
+  local btnTypeList = Button.TYPE
+  btnType = table.indexOf(btnTypeList, btnType) or btnTypeList.DEFUALT
+  if btnType == btnTypeList.DEFUALT or btnType == btnTypeList.PLAIN then
+    -- 普通文字按钮
+    local touchArea = display.newRect(0, 0, 200, 100)
+    touchArea:setFillColor(colorsRGB.RGBA('gray', 0.6))
+    touchArea.anchorX, touchArea.anchorY = .5, .5
+    if not Button.DEBUG then
+      touchArea.isVisible = true
+    else
+      touchArea.isVisible = false
+    end
+    touchArea.isHitTestable = true
+    local label = display.newText { -- TODO: Use embossed text constructor
+        text = self.labelText,
+        x = 0, y = 0,
+        font = native.systemFontBold,
+        fontSize = self.fontSize or 16
+      }
+    touchArea.width = self.padding*2+label.width
+    touchArea.height = self.padding*2+label.height
+    --
+    self.touchDelegate = touchArea
+  end
+  self:send('start')
+  --self:gotoState('TOUCHABLE')
+end
+
+function Button:start()
+  self.touchDelegate:addEventListener('touch', self)
+end
+
+function Button:touch(touch)
+  d(touch.phase)
 end
 
 function Button:onProgress(event)
