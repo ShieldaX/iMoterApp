@@ -13,6 +13,13 @@ local util = require 'util'
 local d = util.print_r
 --util.show_fps()
 
+-- Classes
+local View = require 'libs.view'
+local Piece = require 'views.piece'
+local Indicator = require 'views.indicator'
+local Album = class('AlbumView', View)
+local APP = require("classes.application")
+
 -- local forward references should go here --
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
@@ -62,13 +69,6 @@ local function fitScreenW(p, top, bottom)
 	p.x = screenW*.5
 	p.y = h*.5
 end
-
--- Classes
-local View = require 'libs.view'
-local Piece = require 'views.piece'
-local Indicator = require 'views.indicator'
-local Album = class('AlbumView', View)
-local APP = require("classes.application")
 
 -- 利用获取的图集信息实例化一个图集对象
 function Album:initialize(obj, sceneGroup)

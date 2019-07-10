@@ -32,6 +32,7 @@ local AlbumView = require("views.album")
 local MoterView = require("views.moter_ui")
 local HeaderView = require("views.header")
 local FooterView = require("views.footer")
+local Indicator = require 'views.indicator'
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
@@ -181,11 +182,15 @@ function scene:create( event )
   --APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
 
 --  TODO: Show Indicator Before Moter View Really Loaded
+  local indicator = Indicator:new({name= 'loadingIn', top= 0}, self)
+  indicator.elements.spinner.y = vH*.36
+  indicator:send('onPieceLoad')
   local function showMoterWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This moter currently not avaialble!", { "Okay" } )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
+    indicator:send('onPieceLoaded')
     local _moter = res.data.moter
     local _data = res.data
     APP.Header.elements.TopBar:setLabel(_moter.name)

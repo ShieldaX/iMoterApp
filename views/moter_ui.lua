@@ -49,7 +49,7 @@ end
 -- Classes
 local View = require 'libs.view'
 local Piece = require 'views.piece'
-local Indicator = require 'views.indicator'
+--local Indicator = require 'views.indicator'
 local Moter = class('MoterView', View)
 local APP = require("classes.application")
 

@@ -58,20 +58,23 @@ function Indicator:initialize(opts, parent)
   -- -------------------
   -- VISUAL INITIALIING
   -- Configure topbar
-  local _progbar = widget.newProgressView {
-      id = '_indicator_progressv',
-      left = oX, top = oY + self.topPadding, width = vW,
-      isAnimated = true
-    }
-  self:_attach(_progbar, 'bar')
-  
+  local _progbar
+  if self.total then
+    _progbar = widget.newProgressView {
+        id = '_indicator_progressv',
+        left = oX, top = oY + self.topPadding, width = vW,
+        isAnimated = true
+      }
+    self:_attach(_progbar, 'bar')
+  end
+
   local _spinner = widget.newSpinner {
       id = '_spinner',
       x = halfW, y = halfH,
       deltaAngle = 10,
       incrementEvery = 20
     }
-  
+  _spinner.alpha = 0
   self:_attach(_spinner, 'spinner')
   -- END VISUAL INITIALIING
   -- -------------------
