@@ -223,6 +223,7 @@ end
 -- -----------------
 -- 使用数据以及资源填充页面 with 排版布局
 function Moter:layout()
+  self.layer.alpha = 0
   local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
   local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
   --d(inspect(native.getFontNames()))
@@ -346,6 +347,7 @@ end
 
 function Moter:start()
   if self.state == 30 then return false end
+  self.layer.alpha = 1
   local e = self._elements
   
   for i, element in ipairs(e) do
@@ -355,8 +357,8 @@ function Moter:start()
       transition.from(element, {time = 1000, transition = easing.outBack, height = element.height*.6})
     end
   end
+  self:signal('onMoterLoaded')
   
-
   local green = {colorHex('33ffbb')}
   local blue = {colorHex('3399ff')}
   local gold = {colorHex('BB9F7D')}

@@ -114,6 +114,19 @@ function util.createIcon(options)
   return _icon
 end
 
+local indicator = Indicator:new({name= 'loadingIn', top= 0}, scene.view)
+indicator.elements.spinner.y = vH*.36
+--indicator:send('onPieceLoad')
+
+function indicator:onMoterLoad(event)
+  d('ddddddddddddddddddddddddd')
+  self:onPieceLoad(event)
+end
+
+function indicator:onMoterLoaded(event)
+  self:onPieceLoaded(event)
+end
+
 -- Called when the scene's view does not exist:
 function scene:create( event )
   local sceneGroup = self.view
@@ -182,21 +195,19 @@ function scene:create( event )
   --APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
 
 --  TODO: Show Indicator Before Moter View Really Loaded
-  local indicator = Indicator:new({name= 'loadingIn', top= 0}, self)
-  indicator.elements.spinner.y = vH*.36
-  indicator:send('onPieceLoad')
+  indicator:send('onMoterLoad')
   local function showMoterWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This moter currently not avaialble!", { "Okay" } )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
-    indicator:send('onPieceLoaded')
     local _moter = res.data.moter
     local _data = res.data
     APP.Header.elements.TopBar:setLabel(_moter.name)
     APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
     print(inspect(_data))
-    APP.moterView = MoterView:new(_data, sceneGroup)
+    local moterView = MoterView:new(_data, sceneGroup)
+    APP.moterView = moterView
     APP.Header.layer:toFront()
     --APP.Footer.layer:toFront()
     APP.moterView:layout()
