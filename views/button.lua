@@ -143,3 +143,5 @@ function Button:onAlbumLimitReached(event)
 end
 
 return Button
+
+--https://github.com/luapower/ui/blob/master/ui_button.lua
