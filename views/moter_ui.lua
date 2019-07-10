@@ -409,7 +409,7 @@ function Moter:onLikeTapped(tap)
     favIcon:setFillColor(unpack(colorsRGB.RGBA('white')))
   else
     self.moterLiked = true
-    favIcon:setFillColor(unpack(colorsRGB.RGBA('red')))
+    favIcon:setFillColor(unpack(colorsRGB.RGBA('coral')))
   end
 end
 
