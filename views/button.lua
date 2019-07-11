@@ -37,50 +37,67 @@ Button.static.TYPE = {
     BAR = 20,
     CUSTOMED = 100
   }
+  
+--[[
+ options..
+    name: name of button
+    width: width
+    height: height
+    radius: radius of the corners
+    strokeColor: {r, g, b}
+    fillColor: {r, g, b}
+    x: x
+    y: y
+    text: text for button
+    textColor: {r, g, b}
+    font: font to use
+    fontSize:
+    textMargin: used to pad around button and determine font size,
+    circleColor: {r, g, b} (optional, defaults to textColor)
+    touchpoint: boolean, if true circle touch point is user based else centered
+    callBack: method to call passing the "e" to it
+]]
 -- ---
--- Resize Image Display Object to Fit Screen WIDTH
+-- Button View Class
 --
 function Button:initialize(opts, parent)
-  assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create an indicator")
+  assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create a button")
   self.name = opts.name or '_Button'..os.time() -- timestamped
   View.initialize(self, parent)
   assert(self.layer, 'Button View Initialized Failed!')
   d('创建按钮对象: '..self.name) -- Key =>（按）键; Button => 按钮 
   -- -------------------
   -- DATA BINDING
+  self.config = opts
   self.padding = opts.padding or 40
   self.labelText = opts.text or 'Button'
+  self.type = Button.TYPE.DEFAULT
+  -- Set UI constructor data by Custom Configuration or Default
+  self.fillColor = opts.fillColor or colorsRGB.RGBA('white')
+  self.strokeColor = opts.strokeColor or colorsRGB.RGBA('royalblue')
+  self.strokeWidth = opts.strokeWidth or 0
+  
+  self.textColor = opts.textColor or colorsRGB.RGBA('royalblue')
+  self.font = opts.font or native.systemFontBold
+  
+  self:send('label')
   -- END DATA BINDING
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
-  -- Configure topbar
-  local _progbar = widget.newProgressView {
-      id = '_indicator_progressv',
-      left = oX, top = oY + self.topPadding, width = vW,
-      isAnimated = true
-    }
-  self:_attach(_progbar, 'bar')
-  
-  local _spinner = widget.newSpinner {
-      id = '_spinner',
-      x = halfW, y = halfH,
-      deltaAngle = 10,
-      incrementEvery = 20
-    }
-  
-  self:_attach(_spinner, 'spinner')
+  -- Configure UI  
+  self:ui(Button.TYPE.DEFAULT)
   -- END VISUAL INITIALIING
   -- -------------------
 end
 
 -- overridable visual constructor
-function Button:render(btnType)
+function Button:ui(btnType)
   local btnTypeList = Button.TYPE
   btnType = table.indexOf(btnTypeList, btnType) or btnTypeList.DEFUALT
   if btnType == btnTypeList.DEFUALT or btnType == btnTypeList.PLAIN then
     -- 普通文字按钮
-    local touchArea = display.newRect(0, 0, 200, 100)
+    local touchArea = display.newRect(0, 0, self.width or 200, self.height or 100)
     touchArea:setFillColor(colorsRGB.RGBA('gray', 0.6))
     touchArea.anchorX, touchArea.anchorY = .5, .5
     if not Button.DEBUG then
@@ -105,6 +122,7 @@ function Button:render(btnType)
 end
 
 function Button:start()
+  if not self.touchDelegate then return false end
   self.touchDelegate:addEventListener('touch', self)
 end
 
