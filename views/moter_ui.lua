@@ -153,6 +153,22 @@ local function animate(displayObj, direction, delay)
   end
 end
 
+local function ratingStars(score)
+  local score2Local = score*.5
+  d('Local score: '..score2Local)
+  for i=1, 5, 1 do
+    print(i)
+    if i <= score2Local then
+      d('create star')
+    elseif i>score2Local then
+      d('create star_border')
+    else
+      d('create star_half')
+    end
+    --util.createIcon('star')
+  end
+end
+
 -- 利用获取的图集信息实例化一个图集对象
 function Moter:initialize(data, sceneGroup)
   d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
@@ -230,7 +246,10 @@ function Moter:layout()
   local _data = self.rawData
   -- ==============================
   -- TITLE SECTION
+  local ratingStars = ratingStars(_data.score.count)
   local labelG = display.newGroup()
+  local labelScore = _data.score and display.newText {text = _data.score.count, x = vW-50, y = self.elements.bg.y+80, fontSize = 50}
+  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('royalblue', .8))) end
   --labelG.anchorChildren = true
   local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
   labelBG:setFillColor(colorHex('222222', .99))
