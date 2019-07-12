@@ -170,6 +170,20 @@ local function ratingStars(score)
   end
 end
 
+local function resolveNames(names, name)
+  names = names or {}
+  if names.cn and names.en then
+    name = names.cn..', '..names.en
+  elseif names.cn then
+    name = names.cn
+  elseif names.en then
+    name = names.en
+  else
+    name = _data.name
+  end
+  return name
+end
+
 -- 利用获取的图集信息实例化一个图集对象
 function Moter:initialize(data, sceneGroup)
   d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
@@ -247,7 +261,10 @@ function Moter:layout()
   local _data = self.rawData
   -- ==============================
   -- TITLE SECTION
-  local ratingStars = _data.score and StarRating(_data.score.count, {name = 'stars', fillColor = {colorHex('C7A680')}, iconSize = 20})
+  local name = resolveNames(_data.names, _data.name)
+  APP.Header.elements.TopBar:setLabel(name)
+  
+  local ratingStars = _data.score and StarRating(_data.score.count, {name = 'stars', fillColor = colorsRGB.RGBA('gold'), iconSize = 20})
   util.center(ratingStars.layer)
   --ratingStars:animate()
   local labelG = display.newGroup()
@@ -257,33 +274,23 @@ function Moter:layout()
   local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
   labelBG:setFillColor(colorHex('222222', .99))
   labelBG.strokeWidth = 1; labelBG:setStrokeColor(colorHex('333333', 0.5))
+  
   local padding = 28
-  local names, name = _data.names
-  names = names or {}
-  if names.cn and names.en then
-    name = names.cn..', '..names.en
-  elseif names.cn then
-    name = names.cn
-  elseif names.en then
-    name = names.en
-  else
-    name = _data.name
-  end
-  APP.Header.elements.TopBar:setLabel(name)
   local age, zodiac, astroSign
   if _data.birthday then
     age, zodiac, astroSign = DOB2AgeZodiacAstro(_data.birthday)
   end
   local labelNameAge = display.newText {text = _data.name..(age and ','..age or ''), x = 0, y = 0, fontSize = 22, font = fontDMFT}
   local bounds = labelBG.contentBounds
-  labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5; labelNameAge.y = bounds.yMin+padding
+  d(bounds)
+  labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5
+  labelNameAge.y = bounds.yMin+padding
   labelG:insert(labelNameAge)
   -- ------------------------------
   --labelG.anchorChildren = true
-  local cardLayer = display.newGroup()
-  cardLayer:insert(labelG)
-  labelG.x, labelG.y = oX+labelBG.width*.6, self.elements.bg.contentBounds.yMin-labelBG.height*.2
-  --cardLayer.x, cardLayer.y = oX+labelBG.width*.6, self.elements.bg.contentBounds.yMin-labelBG.height*.2
+  labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
+  labelG.y = self.elements.bg.contentBounds.yMin-labelBG.height*.2
+  d(self.elements.bg.contentBounds)
   -- ==============================
   local sperateLine = display.newLine(labelG, bounds.xMin+padding*.5, labelNameAge.y+padding, bounds.xMax-padding*.5, labelNameAge.y+padding)
   sperateLine:setStrokeColor(colorHex('333333')); sperateLine.strokeWidth = 2
@@ -293,12 +300,12 @@ function Moter:layout()
   local leftPadding = bounds.xMin+padding*.5
   if _data.height or _data.weight then
     local HW = (_data.height and _data.height .. 'CM  ' or '') .. (_data.weight and _data.weight .. 'KG' or '')
-    labelHW = display.newText {text = HW, x = leftPadding, y = sperateLine.y + padding*.25, fontSize = 14, font = fontSHSans}
+    labelHW = display.newText {text = HW, x = leftPadding, y = sperateLine.y + padding*.5, fontSize = 14, font = fontSHSans}
     labelHW:setFillColor(colorHex('C7A680'))
     labelHW.anchorX, labelHW.anchorY = 0, 0
     labelG:insert(labelHW)
   end
-  self:_attach(cardLayer, 'capCard')
+  self:_attach(labelG, 'capCard')
   
   local measure = _data.measure and next(_data.measure) and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips or ''
   local infoText = measure
@@ -371,6 +378,9 @@ function Moter:layout()
   favBtnG:insert(btnCircle)
   favBtnG:insert(favoriteIcon)
   
+  labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
+  labelG.y = self.elements.bg.contentBounds.yMin-labelG.contentHeight*.2
+  d(labelBG.height*.2)
   self:_attach(favBtnG, 'favBtnG')
 end
 
