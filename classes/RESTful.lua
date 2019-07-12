@@ -163,7 +163,7 @@ function RESTful:call(name, t, headers, extraArgList, preCallbackHook, ...)
         else
           if type(value) == "boolean" then
             optList[a] = tostring(value)
-            print('[RESTful] Auto convert boolean value to string: '..tostring(_)..'=>'..optList[a])
+            print('[RESTful] Auto convert boolean value to string: ['..tostring(_)..']=>'..optList[a])
           end
           argList[a] = optList[a]
         end

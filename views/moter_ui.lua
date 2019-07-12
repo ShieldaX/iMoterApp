@@ -49,7 +49,7 @@ end
 -- Classes
 local View = require 'libs.view'
 local Piece = require 'views.piece'
---local Indicator = require 'views.indicator'
+local StarRating = require 'views.star_rating'
 local Moter = class('MoterView', View)
 local APP = require("classes.application")
 
@@ -156,14 +156,15 @@ end
 local function ratingStars(score)
   local score2Local = score*.5
   d('Local score: '..score2Local)
+  --local halfAt = score2Local - math.floor(score2Local) > 0 and math.floor(score2Local)
   for i=1, 5, 1 do
     print(i)
-    if i <= score2Local then
+    if score2Local > i then
       d('create star')
-    elseif i>score2Local then
-      d('create star_border')
-    else
+    elseif score2Local < i and math.ceil(score2Local) == i then
       d('create star_half')
+    else
+      d('create star_border')
     end
     --util.createIcon('star')
   end
@@ -246,10 +247,12 @@ function Moter:layout()
   local _data = self.rawData
   -- ==============================
   -- TITLE SECTION
-  local ratingStars = ratingStars(_data.score.count)
+  local ratingStars = _data.score and StarRating(_data.score.count, {name = 'stars', fillColor = {colorHex('C7A680')}, iconSize = 20})
+  util.center(ratingStars.layer)
+  --ratingStars:animate()
   local labelG = display.newGroup()
-  local labelScore = _data.score and display.newText {text = _data.score.count, x = vW-50, y = self.elements.bg.y+80, fontSize = 50}
-  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('royalblue', .8))) end
+  local labelScore = _data.score and display.newText{text = _data.score.count, x = vW-50, y = self.elements.bg.y-80, fontSize = 50}
+  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('gold', .9))) end
   --labelG.anchorChildren = true
   local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
   labelBG:setFillColor(colorHex('222222', .99))
@@ -276,8 +279,11 @@ function Moter:layout()
   labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5; labelNameAge.y = bounds.yMin+padding
   labelG:insert(labelNameAge)
   -- ------------------------------
-  labelG.anchorChildren = true
+  --labelG.anchorChildren = true
+  local cardLayer = display.newGroup()
+  cardLayer:insert(labelG)
   labelG.x, labelG.y = oX+labelBG.width*.6, self.elements.bg.contentBounds.yMin-labelBG.height*.2
+  --cardLayer.x, cardLayer.y = oX+labelBG.width*.6, self.elements.bg.contentBounds.yMin-labelBG.height*.2
   -- ==============================
   local sperateLine = display.newLine(labelG, bounds.xMin+padding*.5, labelNameAge.y+padding, bounds.xMax-padding*.5, labelNameAge.y+padding)
   sperateLine:setStrokeColor(colorHex('333333')); sperateLine.strokeWidth = 2
@@ -292,7 +298,7 @@ function Moter:layout()
     labelHW.anchorX, labelHW.anchorY = 0, 0
     labelG:insert(labelHW)
   end
-  self:_attach(labelG, 'capCard')
+  self:_attach(cardLayer, 'capCard')
   
   local measure = _data.measure and next(_data.measure) and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips or ''
   local infoText = measure
@@ -306,7 +312,11 @@ function Moter:layout()
   labelInfo:setFillColor(colorHex('C7A680'))
   labelInfo.anchorX, labelInfo.anchorY = 0, 0
   labelG:insert(labelInfo)
+  labelG:insert(ratingStars.layer)
   d('======================')
+  ratingStars.layer.x = sperateLine.x + ratingStars.layer.contentWidth*.5
+  ratingStars.layer.y = sperateLine.y
+  self.stars = ratingStars
   labelInfo.y = labelHW.y + labelInfo.baselineOffset*.5 + labelHW.contentHeight*.3
 
   -- ==============================
@@ -376,6 +386,7 @@ function Moter:start()
       transition.from(element, {time = 1000, transition = easing.outBack, height = element.height*.6})
     end
   end
+  timer.performWithDelay(1000, function() self.stars:animate() end)
   self:signal('onMoterLoaded')
   
   local green = {colorHex('33ffbb')}

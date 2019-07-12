@@ -97,7 +97,6 @@ end
 
 function Indicator:onAlbumLimitReached(event)
   local direction = event.direction or 0
-  local _toast
   if direction == -1 then
     d('This is already the first piece!')
     --APP.repeated = APP.repeated + 1

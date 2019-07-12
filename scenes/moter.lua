@@ -119,7 +119,6 @@ indicator.elements.spinner.y = vH*.36
 --indicator:send('onPieceLoad')
 
 function indicator:onMoterLoad(event)
-  d('ddddddddddddddddddddddddd')
   self:onPieceLoad(event)
 end
 
