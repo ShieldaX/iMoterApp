@@ -211,8 +211,8 @@ function scene:create( event )
     --APP.Footer.layer:toFront()
     APP.moterView:layout()
   end
-  iMoter:getMoterById('19702', {fetchcover = true}, showMoterWithData) -- 19702; 22162
---  iMoter:getMoterById('27180', showMoterWithData)
+  iMoter:getMoterById('19702', {fetchcover = true}, showMoterWithData) -- 19702; 22162; 27180
+--  iMoter:getMoterById('18229', {}, showMoterWithData)
   -----------------------------------------------------------------------------
 end
 

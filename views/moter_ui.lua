@@ -82,7 +82,7 @@ local function makeTimeStamp(dateStringArg)
 
 end
 
-local zodiacList = {'猪', '鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗'}
+local zodiacList = {'鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'}
 local function DOB2AgeZodiacAstro(birthday)
   local xyear, xmonth, xday = birthday:match("(%d+)%-(%d+)%-(%d+)")
   local currentDate = os.date("!%Y-%m-%d")
@@ -142,7 +142,7 @@ local function getAstroCode(astroName)
 end
 
 local function getZodiacCode(zodiacName)
-  local alphabet = 'bcdefghijkla'
+  local alphabet = 'abcdefghijkl'
   local index = table.indexOf(zodiacList, zodiacName)
   if not index then return false end
   return alphabet:sub(index, index)
@@ -297,7 +297,7 @@ function Moter:layout()
   if _data.birthday then
     age, zodiac, astroSign = DOB2AgeZodiacAstro(_data.birthday)
   end
-  local labelNameAge = display.newText {text = _data.name..(age and ','..age or ''), x = 0, y = 0, fontSize = 22, font = fontDMFT}
+  local labelNameAge = display.newText {text = _data.name..(age and ', '..age or ''), x = 0, y = 0, fontSize = 22, font = fontDMFT}
   local bounds = labelBG.contentBounds
   labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5
   labelNameAge.y = bounds.yMin+padding
