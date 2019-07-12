@@ -22,20 +22,20 @@ local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
 
 -- 将图片自适应屏幕宽度
 local function fitScreenW(p, top, bottom)
-	top = top or 0
-	bottom = bottom or 0
-	local h = viewableScreenH-(top+bottom)
-	if p.width > viewableScreenW or p.height > h then
-		if p.width/viewableScreenW > p.height/h then
-				p.xScale = viewableScreenW/p.width
-				p.yScale = viewableScreenW/p.width
-		else
-				p.xScale = h/p.height
-				p.yScale = h/p.height
-		end
-	end
-	p.x = screenW*.5
-	p.y = h*.5
+  top = top or 0
+  bottom = bottom or 0
+  local h = viewableScreenH-(top+bottom)
+  if p.width > viewableScreenW or p.height > h then
+    if p.width/viewableScreenW > p.height/h then
+      p.xScale = viewableScreenW/p.width
+      p.yScale = viewableScreenW/p.width
+    else
+      p.xScale = h/p.height
+      p.yScale = h/p.height
+    end
+  end
+  p.x = screenW*.5
+  p.y = h*.5
 end
 -- ---
 -- Resize Image Display Object to Fit Screen WIDTH
@@ -66,20 +66,20 @@ local GridPixelPadding = 8
 
 
 local function makeTimeStamp(dateStringArg)
-	
-	local inYear, inMonth, inDay, inHour, inMinute, inSecond, inZone =      
+
+  local inYear, inMonth, inDay, inHour, inMinute, inSecond, inZone =      
   string.match(dateStringArg, '^(%d%d%d%d)-(%d%d)-(%d%d)T(%d%d):(%d%d):(%d%d)(.-)$')
 
-	local zHours, zMinutes = string.match(inZone, '^(.-):(%d%d)$')
-		
-	local returnTime = os.time({year=inYear, month=inMonth, day=inDay, hour=inHour, min=inMinute, sec=inSecond, isdst=false})
-	
-	if zHours then
-		returnTime = returnTime - ((tonumber(zHours)*3600) + (tonumber(zMinutes)*60))
-	end
-	
-	return returnTime
-	
+  local zHours, zMinutes = string.match(inZone, '^(.-):(%d%d)$')
+
+  local returnTime = os.time({year=inYear, month=inMonth, day=inDay, hour=inHour, min=inMinute, sec=inSecond, isdst=false})
+
+  if zHours then
+    returnTime = returnTime - ((tonumber(zHours)*3600) + (tonumber(zMinutes)*60))
+  end
+
+  return returnTime
+
 end
 
 local zodiacList = {'猪', '鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗'}
@@ -224,7 +224,7 @@ function Moter:preload()
     return false
   end
   -- Load remote image
-	local function networkListener( event )
+  local function networkListener( event )
     if ( event.isError ) then
       print ( "Network error - download failed" )
       return false
@@ -247,7 +247,7 @@ function Moter:preload()
     else
       d(self.name .. ' ' .. self:getState())
     end
-	end
+  end
   display.loadRemoteImage( self.avatarImgURI, "GET", networkListener, {progress = false}, self.avatarFileName, Piece.DEFAULT_DIRECTORY, oX, oY)
 end
 
@@ -263,18 +263,20 @@ function Moter:layout()
   -- TITLE SECTION
   local name = resolveNames(_data.names, _data.name)
   APP.Header.elements.TopBar:setLabel(name)
-  
+
   local ratingStars = _data.score and StarRating(_data.score.count, {name = 'stars', fillColor = colorsRGB.RGBA('gold'), iconSize = 20})
   util.center(ratingStars.layer)
-  --ratingStars:animate()
+
   local labelG = display.newGroup()
-  local labelScore = _data.score and display.newText{text = _data.score.count, x = vW-50, y = self.elements.bg.y-80, fontSize = 50}
-  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('gold', .9))) end
-  --labelG.anchorChildren = true
+--  local labelScore = _data.score and display.newText{text = _data.score.count, x = vW-50, y = self.elements.bg.y-80, fontSize = 50}
+--  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('gold', .9))) end
+
   local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
   labelBG:setFillColor(colorHex('222222', .99))
   labelBG.strokeWidth = 1; labelBG:setStrokeColor(colorHex('333333', 0.5))
-  
+  labelBG.anchorY = 0
+  --labelBG.y = labelBG.y - labelBG.height*.5
+
   local padding = 28
   local age, zodiac, astroSign
   if _data.birthday then
@@ -282,15 +284,10 @@ function Moter:layout()
   end
   local labelNameAge = display.newText {text = _data.name..(age and ','..age or ''), x = 0, y = 0, fontSize = 22, font = fontDMFT}
   local bounds = labelBG.contentBounds
-  d(bounds)
   labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5
   labelNameAge.y = bounds.yMin+padding
   labelG:insert(labelNameAge)
-  -- ------------------------------
-  --labelG.anchorChildren = true
-  labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
-  labelG.y = self.elements.bg.contentBounds.yMin-labelBG.height*.2
-  d(self.elements.bg.contentBounds)
+
   -- ==============================
   local sperateLine = display.newLine(labelG, bounds.xMin+padding*.5, labelNameAge.y+padding, bounds.xMax-padding*.5, labelNameAge.y+padding)
   sperateLine:setStrokeColor(colorHex('333333')); sperateLine.strokeWidth = 2
@@ -305,16 +302,15 @@ function Moter:layout()
     labelHW.anchorX, labelHW.anchorY = 0, 0
     labelG:insert(labelHW)
   end
-  self:_attach(labelG, 'capCard')
-  
+
   local measure = _data.measure and next(_data.measure) and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips or ''
   local infoText = measure
   infoText = infoText..(_data.country and '\n'.._data.country..' ' or '') .. (_data.birthplace and _data.birthplace or '')
 
   infoText = infoText..(_data.career and '\n'..table.concat(_data.career, ' ') or '')
-  
+
   infoText = infoText..(_data.hobbies and '\n'..table.concat(_data.hobbies, ' ') or '')
-  
+
   local labelInfo = display.newText {text = infoText,  x = leftPadding, y = labelHW.y + padding*.6, fontSize = 14, font = fontSHSans}
   labelInfo:setFillColor(colorHex('C7A680'))
   labelInfo.anchorX, labelInfo.anchorY = 0, 0
@@ -337,29 +333,33 @@ function Moter:layout()
   local bg = self.elements.bg
   labelBioCap.x, labelBioCap.y = 15, bg.y - bg.height + padding*2.4
   labelBio.x, labelBio.y = 15, labelBioCap.y + padding*1.3
+  self:_attach(labelG, 'capCard')
   self:_attach(labelBioCap)
   self:_attach(labelBio)
   -- Reheight and reposition capCard to fit full-screened phones
   local crossCut = labelBG.contentBounds.yMax - labelInfo.contentBounds.yMax
-  labelBG.anchorY = 0
-  labelBG.y = labelBG.y - labelBG.contentHeight*.5
-  if crossCut > 0 and crossCut < 5 then
-    labelBG.height = labelBG.target + 5
+  if crossCut > 0 and crossCut < 5 then -- Keep at least 5px space
+    labelBG.height = labelBG.height + 5
   elseif crossCut > padding then
+    d('cross cutting: '..crossCut)
     labelBG.height = labelBG.height - crossCut + padding*.5
   end
-  labelG.y = self.elements.bg.contentBounds.yMin-labelG.height*.2
-  
+  -- ------------------------------
+  --labelG.anchorChildren = true
+  labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
+  labelG.y = self.elements.bg.contentBounds.yMin - labelG.contentHeight*.7
+
+
   local favBtnG = display.newGroup()
   local favoriteIcon = util.createIcon {
-      name = "plus",
-      text = "favorite",
-      width = 28,
-      height = 28,
-      x = cX, y = vH*.9,
-      isFontIcon = true,
-      textColor = { 0.25, 0.75, 1, 1 }
-    }
+    name = "plus",
+    text = "favorite",
+    width = 28,
+    height = 28,
+    x = cX, y = vH*.9,
+    isFontIcon = true,
+    textColor = { 0.25, 0.75, 1, 1 }
+  }
   favoriteIcon:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
   util.center(favoriteIcon)
   favoriteIcon.x = vW*.8
@@ -377,10 +377,7 @@ function Moter:layout()
   favBtnG:insert(btnCircleDeco)
   favBtnG:insert(btnCircle)
   favBtnG:insert(favoriteIcon)
-  
-  labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
-  labelG.y = self.elements.bg.contentBounds.yMin-labelG.contentHeight*.2
-  d(labelBG.height*.2)
+
   self:_attach(favBtnG, 'favBtnG')
 end
 
@@ -388,7 +385,7 @@ function Moter:start()
   if self.state == 30 then return false end
   self.layer.alpha = 1
   local e = self._elements
-  
+
   for i, element in ipairs(e) do
     if i > 1 then
       animate(element, 'bottom', i*100)
@@ -398,12 +395,12 @@ function Moter:start()
   end
   timer.performWithDelay(1000, function() self.stars:animate() end)
   self:signal('onMoterLoaded')
-  
+
   local green = {colorHex('33ffbb')}
   local blue = {colorHex('3399ff')}
   local gold = {colorHex('BB9F7D')}
   local _T_ = colorsRGB.RGBA('white', 0) -- Total Transparent
-  
+
   local function pulse2(x, y, color, scale1, scale2, delay, time, parentG)
     local circle = display.newCircle(parentG, x, y, 20)
     circle:setFillColor(unpack(color))
@@ -430,7 +427,7 @@ function Moter:start()
   favBtnG:insert(effectG)
   effectG:toBack()
   effectG.x, effectG.y = favIcon.x, favIcon.y
-  
+
   local function tapListener(tap)
     self:signal('onLikeTapped', tap)
     pulse2(0, 0, gold, scale1, scale2, 250, 500, effectG)

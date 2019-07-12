@@ -98,6 +98,7 @@ function StarRating:initialize(score, opts, parent)
   end
   --self.layer.anchorChildren = true
   --self.layer.anchorY = 0.5
+  self.layer.alpha = 0
   -- END VISUAL INITIALIING
   -- -------------------
 end
@@ -110,7 +111,7 @@ function StarRating:animate(direction)
   local padding = elements[1].width*.6
   for i, element in ipairs(elements) do
     element.x = (i-1)*padding
-    transition.from(element, {x = 0, y = i*(-10), xScale = 3, yScale = 3, alpha = 0, time = 400, delay = (i-1)*timeInterval, transition = easing.outBack})
+    transition.from(element, {x = 0, y = -20*i, xScale = 4, yScale = 4, alpha = 0, time = 400, delay = (i-1)*timeInterval, transition = easing.outBack})
   end
 end
 
