@@ -133,6 +133,21 @@ local function DOB2AgeZodiacAstro(birthday)
   --return os.time({year = xyear, month = xmonth, day = xday, hour = 0, min = 0, sec = 0})
 end
 
+local function getAstroCode(astroName)
+  local astroTalbe = {'白羊', '金牛', '双子', '巨蟹', '狮子', '室女', '天秤', '天蝎', '射手', '摩羯', '水瓶', '双鱼'}
+  local alphabet = 'EFGHIJKLMNOP'
+  local index = table.indexOf(astroTalbe, astroName)
+  if not index then return false end
+  return alphabet:sub(index, index)
+end
+
+local function getZodiacCode(zodiacName)
+  local alphabet = 'bcdefghijkla'
+  local index = table.indexOf(zodiacList, zodiacName)
+  if not index then return false end
+  return alphabet:sub(index, index)
+end
+
 local function parseBirthday(birthday)
   local _time = makeTimeStamp(birthday)
   return os.date("!%Y-%m-%d", _time)
@@ -270,7 +285,7 @@ function Moter:layout()
   local labelG = display.newGroup()
 --  local labelScore = _data.score and display.newText{text = _data.score.count, x = vW-50, y = self.elements.bg.y-80, fontSize = 50}
 --  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('gold', .9))) end
-
+  
   local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
   labelBG:setFillColor(colorHex('222222', .99))
   labelBG.strokeWidth = 1; labelBG:setStrokeColor(colorHex('333333', 0.5))
@@ -330,11 +345,34 @@ function Moter:layout()
   labelBio:setFillColor(colorHex('6C6C6C'))
   labelBioCap.anchorX, labelBioCap.anchorY = 0, 0
   labelBio.anchorX, labelBio.anchorY = 0, 0
+  -- ---------------------------------
+  local birthG = display.newGroup()
+  birthG.anchorChildren = true
+  local zodiacIcon
+  if zodiac then
+    local zodiacCode = getZodiacCode(zodiac)
+    zodiacIcon = display.newText{text = zodiacCode, x = vW-50, y = self.elements.bg.y-50, fontSize = 25, align = "center", font = "assets/fonts/Chinese Zodiac.ttf"}
+    zodiacIcon:setFillColor(colorHex('6C6C6C'))
+    birthG:insert(zodiacIcon)
+  end
+  local astroIcon
+  if astroSign then
+    local astroCode = getAstroCode(astroSign)
+    astroIcon = display.newText{text = astroCode, x = vW-50, y = self.elements.bg.y-50, fontSize = 25, align = "center", font = "assets/fonts/華康星座篇.ttf"}
+    astroIcon:setFillColor(colorHex('6C6C6C'))
+    birthG:insert(astroIcon)
+  end
+  if zodiacIcon and astroIcon then astroIcon.x = zodiacIcon.x + astroIcon.width end
+  -- ---------------------------------
   local bg = self.elements.bg
   labelBioCap.x, labelBioCap.y = 15, bg.y - bg.height + padding*2.4
   labelBio.x, labelBio.y = 15, labelBioCap.y + padding*1.3
+  birthG.anchorX = 1
+  birthG.x = labelBio.contentBounds.xMax
+  birthG.y = labelBioCap.y + birthG.contentHeight*.5
   self:_attach(labelG, 'capCard')
   self:_attach(labelBioCap)
+  self:_attach(birthG)
   self:_attach(labelBio)
   -- Reheight and reposition capCard to fit full-screened phones
   local crossCut = labelBG.contentBounds.yMax - labelInfo.contentBounds.yMax
@@ -348,7 +386,6 @@ function Moter:layout()
   --labelG.anchorChildren = true
   labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
   labelG.y = self.elements.bg.contentBounds.yMin - labelG.contentHeight*.7
-
 
   local favBtnG = display.newGroup()
   local favoriteIcon = util.createIcon {
