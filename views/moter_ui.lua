@@ -215,7 +215,7 @@ function Moter:initialize(data, sceneGroup)
   -- END DATA BINDING
   -- -------------------
   -- VISUAL INITIALIING
-  local _bg = display.newRect(oX, oY, vW, vH*(1-0.618))
+  local _bg = display.newRect(oX, oY, vW, vH*0.46)
   _bg:setFillColor(colorHex('1A1A19'))
   _bg.anchorY = 1
   _bg.x = cX; _bg.y = vH
@@ -336,7 +336,7 @@ function Moter:layout()
   -- ==============================
   -- BIO DESC SECTION
   local labelBioCap = display.newText {text = '详情资料', x = 0, y = 0, fontSize = 20, font = fontDMFT}
-  local labelBio = display.newText {text = _data.bio,  width = vW*.9, x = leftPadding, y = labelHW.y + padding*.6, fontSize = 14, font = fontSHSans}
+  local labelBio = display.newText {text = _data.bio,  width = vW*.9, x = leftPadding, y = labelHW.y + padding*.6, fontSize = 12, font = fontSHSans}
   labelBioCap:setFillColor(colorHex('C7A680'))
   labelBio:setFillColor(colorHex('6C6C6C'))
   labelBioCap.anchorX, labelBioCap.anchorY = 0, 0
@@ -393,6 +393,36 @@ function Moter:layout()
   --labelG.anchorChildren = true
   labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
   labelG.y = self.elements.bg.contentBounds.yMin - labelG.contentHeight*.7
+  
+  local _lgray = {colorHex('6C6C6C')}
+  local titleFSize = 12
+  local labelFSize = 24
+  local gY = screenH - bg.height*.3
+  local titleScore = display.newEmbossedText {text = '评分', x = vW*.24, y = gY, fontSize = titleFSize, font = fontSHSans}
+  titleScore:setFillColor(unpack(_lgray))
+  local labelScoreCount = display.newText {text = _data.score.count, x = vW*.24, y = titleScore.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+  
+  local titleAlbum = display.newEmbossedText {text = '图集', x = vW*.5, y = gY, fontSize = titleFSize, font = fontSHSans}
+  titleAlbum:setFillColor(unpack(_lgray))
+  local labelNumAlbum = display.newText {text = '162', x = vW*.5, y = titleAlbum.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+
+  local titleHot = display.newEmbossedText {text = '热度', x = vW*.76, y = gY, fontSize = titleFSize, font = fontSHSans}
+  titleHot:setFillColor(unpack(_lgray))
+  local labelNumHot = display.newText {text = '3.6W', x = vW*.76, y = titleHot.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+
+  local triangleShape = display.newPolygon(cX, cY, {-10, 5, 0, -8, 10, 5})
+  triangleShape:setFillColor(unpack(_lgray))
+  triangleShape.anchorY = 1
+  triangleShape.y = labelScoreCount.y + 32
+  --self:_attach(triangleShape, '_tabCursor')
+  triangleShape.x = vW*.24
+
+  local _nextBG = display.newRect(self.layer, cX, cY, vW, vH*.6)
+  _nextBG:setFillColor(unpack(_lgray)) -- golden gray 
+  --util.center(_nextBG)
+  _nextBG.anchorY = 0
+  _nextBG.y = triangleShape.y
+  --self:_attach(_nextBG, 'nextBG')
 
   local favBtnG = display.newGroup()
   local favoriteIcon = util.createIcon {

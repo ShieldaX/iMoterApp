@@ -24,3 +24,4 @@ local composer = require "composer"
 
 -- load app screen
 composer.gotoScene("scenes.moter")
+--composer.gotoScene("scenes.album_list")
