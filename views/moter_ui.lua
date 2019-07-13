@@ -66,20 +66,14 @@ local GridPixelPadding = 8
 
 
 local function makeTimeStamp(dateStringArg)
-
   local inYear, inMonth, inDay, inHour, inMinute, inSecond, inZone =      
   string.match(dateStringArg, '^(%d%d%d%d)-(%d%d)-(%d%d)T(%d%d):(%d%d):(%d%d)(.-)$')
-
   local zHours, zMinutes = string.match(inZone, '^(.-):(%d%d)$')
-
   local returnTime = os.time({year=inYear, month=inMonth, day=inDay, hour=inHour, min=inMinute, sec=inSecond, isdst=false})
-
   if zHours then
     returnTime = returnTime - ((tonumber(zHours)*3600) + (tonumber(zMinutes)*60))
   end
-
   return returnTime
-
 end
 
 local zodiacList = {'鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'}
@@ -272,6 +266,8 @@ function Moter:layout()
   self.layer.alpha = 0
   local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
   local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+  local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+  local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
   --d(inspect(native.getFontNames()))
   local _data = self.rawData
   -- ==============================
@@ -285,7 +281,7 @@ function Moter:layout()
   local labelG = display.newGroup()
 --  local labelScore = _data.score and display.newText{text = _data.score.count, x = vW-50, y = self.elements.bg.y-80, fontSize = 50}
 --  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('gold', .9))) end
-  
+
   local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
   labelBG:setFillColor(colorHex('222222', .99))
   labelBG.strokeWidth = 1; labelBG:setStrokeColor(colorHex('333333', 0.5))
@@ -345,35 +341,46 @@ function Moter:layout()
   labelBio:setFillColor(colorHex('6C6C6C'))
   labelBioCap.anchorX, labelBioCap.anchorY = 0, 0
   labelBio.anchorX, labelBio.anchorY = 0, 0
-  -- ---------------------------------
-  local birthG = display.newGroup()
-  birthG.anchorChildren = true
-  local zodiacIcon
-  if zodiac then
-    local zodiacCode = getZodiacCode(zodiac)
-    zodiacIcon = display.newText{text = zodiacCode, x = vW-50, y = self.elements.bg.y-50, fontSize = 25, align = "center", font = "assets/fonts/Chinese Zodiac.ttf"}
-    zodiacIcon:setFillColor(colorHex('6C6C6C'))
-    birthG:insert(zodiacIcon)
-  end
-  local astroIcon
-  if astroSign then
-    local astroCode = getAstroCode(astroSign)
-    astroIcon = display.newText{text = astroCode, x = vW-50, y = self.elements.bg.y-50, fontSize = 25, align = "center", font = "assets/fonts/華康星座篇.ttf"}
-    astroIcon:setFillColor(colorHex('6C6C6C'))
-    birthG:insert(astroIcon)
-  end
-  if zodiacIcon and astroIcon then astroIcon.x = zodiacIcon.x + astroIcon.width end
-  -- ---------------------------------
   local bg = self.elements.bg
   labelBioCap.x, labelBioCap.y = 15, bg.y - bg.height + padding*2.4
-  labelBio.x, labelBio.y = 15, labelBioCap.y + padding*1.3
-  birthG.anchorX = 1
-  birthG.x = labelBio.contentBounds.xMax
-  birthG.y = labelBioCap.y + birthG.contentHeight*.5
+  labelBio.x, labelBio.y = 15, labelBioCap.y + padding*1.1
   self:_attach(labelG, 'capCard')
   self:_attach(labelBioCap)
-  self:_attach(birthG)
   self:_attach(labelBio)
+  -- ---------------------------------
+  if _data.birthday then
+    local goldenColor = {colorHex('6C6C6C')}
+    local birthG = display.newGroup()
+    local labelBirthday = display.newText{text = parseBirthday(_data.birthday), x = leftPadding, y = labelHW.y + padding*.5, fontSize = 25, font = fontMorganiteSemiBold}
+    labelBirthday:setFillColor(unpack(goldenColor))
+    --labelBirthday.anchorY = 1
+    labelBirthday.x, labelBirthday.y = vW-50, self.elements.bg.y-48
+    birthG:insert(labelBirthday)
+    local zodiacIcon
+    if zodiac then
+      zodiacIcon = display.newText{text = getZodiacCode(zodiac), x = vW-50, y = self.elements.bg.y-50, fontSize = 24, align = "center", font = "assets/fonts/Chinese Zodiac.ttf"}
+      zodiacIcon:setFillColor(unpack(goldenColor))
+      --zodiacIcon.anchorY = 1
+      zodiacIcon.x = labelBirthday.contentBounds.xMax + zodiacIcon.contentWidth*.8
+      birthG:insert(zodiacIcon)
+    end
+    local astroIcon
+    if astroSign then
+      astroIcon = display.newText{text = getAstroCode(astroSign), x = vW-50, y = self.elements.bg.y-50, fontSize = 25, align = "center", font = "assets/fonts/華康星座篇.ttf"}
+--      astroIcon:setFillColor(unpack(goldenColor))
+      astroIcon:setFillColor(unpack(goldenColor))
+      --astroIcon.anchorY = 1
+      astroIcon.x = zodiacIcon.contentBounds.xMax + astroIcon.contentWidth*.6
+      birthG:insert(astroIcon)
+    end
+    --if zodiacIcon and astroIcon then astroIcon.x = zodiacIcon.x + astroIcon.width end
+    birthG.anchorChildren = true
+    birthG.anchorX = 1
+    birthG.x = labelBio.contentBounds.xMax
+    birthG.y = labelBioCap.y + birthG.contentHeight*.5
+    self:_attach(birthG)
+  end
+  -- ---------------------------------
   -- Reheight and reposition capCard to fit full-screened phones
   local crossCut = labelBG.contentBounds.yMax - labelInfo.contentBounds.yMax
   if crossCut > 0 and crossCut < 5 then -- Keep at least 5px space
@@ -389,10 +396,9 @@ function Moter:layout()
 
   local favBtnG = display.newGroup()
   local favoriteIcon = util.createIcon {
-    name = "plus",
     text = "favorite",
-    width = 28,
-    height = 28,
+    width = 25,
+    height = 25,
     x = cX, y = vH*.9,
     isFontIcon = true,
     textColor = { 0.25, 0.75, 1, 1 }
@@ -403,12 +409,12 @@ function Moter:layout()
   favoriteIcon.y = bg.y - bg.height
   local btnCircle = display.newCircle(favoriteIcon.x, favoriteIcon.y, 28)
   btnCircle:setFillColor(colorHex('1B1B19'))
-  btnCircle:setStrokeColor(colorHex('BB9F7D'))
+  btnCircle:setStrokeColor(colorHex('ad7d7e'))
   btnCircle.alpha = 0.96
   btnCircle.strokeWidth = 2
   local btnCircleDeco = display.newCircle(favoriteIcon.x, favoriteIcon.y, 36)
   btnCircleDeco:setFillColor(colorHex('1B1B19'))
-  btnCircleDeco:setStrokeColor(colorHex('BB9F7D'))
+  btnCircleDeco:setStrokeColor(colorHex('ad7d7e'))
   btnCircleDeco.alpha = 0.4
   btnCircleDeco.strokeWidth = 1
   favBtnG:insert(btnCircleDeco)
@@ -435,7 +441,7 @@ function Moter:start()
 
   local green = {colorHex('33ffbb')}
   local blue = {colorHex('3399ff')}
-  local gold = {colorHex('BB9F7D')}
+  local gold = {colorHex('ad7d7e')}
   local _T_ = colorsRGB.RGBA('white', 0) -- Total Transparent
 
   local function pulse2(x, y, color, scale1, scale2, delay, time, parentG)
@@ -483,7 +489,7 @@ function Moter:onLikeTapped(tap)
     favIcon:setFillColor(unpack(colorsRGB.RGBA('white')))
   else
     self.moterLiked = true
-    favIcon:setFillColor(unpack(colorsRGB.RGBA('coral')))
+    favIcon:setFillColor(unpack(colorsRGB.RGBA('crimson')))
   end
 end
 
