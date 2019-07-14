@@ -61,6 +61,16 @@ local function resolveImages(album)
 	return uris, names
 end
 
+
+local function resolveCoverImage(album)
+	local prefix = 'https://t1.onvshen.com:85/gallery/'
+  local subfix = '0.jpg'
+  local moterId, albumId = album.moters[1], album._id
+  local coverURI = prefix .. moterId .. '/' .. albumId .. '/cover/' .. subfix
+  local coverImgName = moterId .. '_' .. albumId .. '_cover_' .. subfix
+  return coverURI, coverImgName
+end
+
 -- 将图片自适应屏幕宽度
 local function fitScreenW(p, top, bottom)
 	top = top or 0
@@ -96,20 +106,33 @@ function AlbumList:initialize(obj, sceneGroup)
   -- -------------------
   -- VISUAL INITIALIING
   local _lgray = {colorHex('6C6C6C')}
-  local titleAlbum = display.newText {text = '图集', x = vW*.24, y = 60, fontSize = 12, font = fontSHSans}
+  local titleFSize = 12
+  local labelFSize = 24
+  local gY = screenH - vH*.42
+  local titleScore = display.newEmbossedText {text = '评分', x = vW*.24, y = gY, fontSize = titleFSize, font = fontSHSans}
+  titleScore:setFillColor(unpack(_lgray))
+  local labelScoreCount = display.newText {text = '9.4', x = vW*.24, y = titleScore.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+  local titleAlbum = display.newEmbossedText {text = '图集', x = vW*.5, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleAlbum:setFillColor(unpack(_lgray))
-  local labelNumAlbum = display.newText {text = '162', x = vW*.24, y = titleAlbum.contentBounds.yMax + 16, fontSize = 26, font = fontSHSans}
-  local _bg = display.newRect(self.layer, oX, oY, vW, vH*.6)
-  _bg:setFillColor(unpack(_lgray)) -- golden gray 
-  util.center(_bg)
-  self:_attach(_bg, '_bg')
-  --self.elements._bg:toBack()
-  local triangleShape = display.newPolygon(cX, cY, {-10, 5, 0, -10, 10, 5})
+  local labelNumAlbum = display.newText {text = '162', x = vW*.5, y = titleAlbum.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+
+  local titleHot = display.newEmbossedText {text = '热度', x = vW*.76, y = gY, fontSize = titleFSize, font = fontSHSans}
+  titleHot:setFillColor(unpack(_lgray))
+  local labelNumHot = display.newText {text = '1.9万', x = vW*.76, y = titleHot.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+
+  local triangleShape = display.newPolygon(cX, cY, {-10, 5, 0, -8, 10, 5})
   triangleShape:setFillColor(unpack(_lgray))
   triangleShape.anchorY = 1
-  triangleShape.y = _bg.y - _bg.contentHeight*.5
-  self:_attach(triangleShape, '_tabCursor')
-  triangleShape.x = vW*.24
+  triangleShape.y = labelScoreCount.y + 32
+  --self:_attach(triangleShape, '_tabCursor')
+  triangleShape.x = vW*.5
+
+  local _nextBG = display.newRect(self.layer, cX, cY, vW, vH*.6)
+  _nextBG:setFillColor(unpack(_lgray)) -- golden gray 
+  --util.center(_nextBG)
+  _nextBG.anchorY = 0
+  _nextBG.y = triangleShape.y
+  --self:_attach(_nextBG, 'nextBG')
   --util.center(triangleShape)
   -- END VISUAL INITIALIING
   -- -------------------
@@ -118,16 +141,18 @@ end
 function AlbumList:open(index)
   index = index or 1
   self.currentPieceId = nil
---  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= APP.Header.elements.TopBar.height}, self)
-  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
-  --self:addView(indicator)
-  self:createPiece(index)
-  -- First Initialize: Update Pieces (C/P) Reference Manually
-  self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
+  --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
+  local album = self._albums[index]
+  self:createCover(album)
   self:setState('STARTED')
-  self:signal('onProgress', {index = index})
+  --self:signal('onProgress', {index = index})
 end
 
+function AlbumList:createCover(album)
+  local coverURI, coverFileName = resolveCoverImage(album)
+  d(coverURI)
+end  
+  
 -- ---
 -- 清除其他预加载的Piece View，（重）新创建一个Piece对象，
 -- 如果预加载的Piece View 和目标一致则直接返回

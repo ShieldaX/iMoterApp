@@ -76,6 +76,39 @@ local function makeTimeStamp(dateStringArg)
   return returnTime
 end
 
+local function getPreciseDecimal(nNum, n)
+  if type(nNum) ~= "number" then
+    return nNum
+  end
+  n = n or 0;
+  n = math.floor(n)
+  if n < 0 then
+    n = 0
+  end
+  local nDecimal = 10 ^ n
+  local nTemp = math.floor(nNum * nDecimal);
+  local nRet = nTemp / nDecimal;
+  return nRet
+end
+
+local function readableNumber(num)
+  if type(num) == 'string' then num = tonumber(num) end
+  local digit
+  if num >= math.pow(10, 4) then
+    digit = getPreciseDecimal(num*math.pow(0.1, 4), 1)
+    d(digit .. '万')
+    return digit .. '万'
+  elseif num >= math.pow(10, 3) then
+    digit = getPreciseDecimal(num*math.pow(0.1, 3), 1)
+    d(digit)
+    return digit .. '千'
+  else
+    d(digit)
+    digit = num
+    return digit
+  end
+end
+
 local zodiacList = {'鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'}
 local function DOB2AgeZodiacAstro(birthday)
   local xyear, xmonth, xday = birthday:match("(%d+)%-(%d+)%-(%d+)")
@@ -393,7 +426,7 @@ function Moter:layout()
   --labelG.anchorChildren = true
   labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
   labelG.y = self.elements.bg.contentBounds.yMin - labelG.contentHeight*.7
-  
+
   local _lgray = {colorHex('6C6C6C')}
   local titleFSize = 12
   local labelFSize = 24
@@ -401,14 +434,14 @@ function Moter:layout()
   local titleScore = display.newEmbossedText {text = '评分', x = vW*.24, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleScore:setFillColor(unpack(_lgray))
   local labelScoreCount = display.newText {text = _data.score.count, x = vW*.24, y = titleScore.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
-  
+  readableNumber(_data.score.votes)
   local titleAlbum = display.newEmbossedText {text = '图集', x = vW*.5, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleAlbum:setFillColor(unpack(_lgray))
   local labelNumAlbum = display.newText {text = '162', x = vW*.5, y = titleAlbum.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
 
   local titleHot = display.newEmbossedText {text = '热度', x = vW*.76, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleHot:setFillColor(unpack(_lgray))
-  local labelNumHot = display.newText {text = '3.6W', x = vW*.76, y = titleHot.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+  local labelNumHot = display.newText {text = readableNumber(_data.score.votes), x = vW*.76, y = titleHot.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
 
   local triangleShape = display.newPolygon(cX, cY, {-10, 5, 0, -8, 10, 5})
   triangleShape:setFillColor(unpack(_lgray))
