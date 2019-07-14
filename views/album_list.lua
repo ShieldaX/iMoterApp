@@ -18,6 +18,7 @@ local d = util.print_r
 local View = require 'libs.view'
 local Piece = require 'views.piece'
 local Album = require 'views.album'
+local Cover = require 'views.cover'
 local Indicator = require 'views.indicator'
 local AlbumList = class('AlbumListView', View)
 local APP = require("classes.application")
@@ -31,6 +32,7 @@ local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
 -- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
 local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 
@@ -64,7 +66,7 @@ end
 
 local function resolveCoverImage(album)
 	local prefix = 'https://t1.onvshen.com:85/gallery/'
-  local subfix = '0.jpg'
+  local subfix = '0'
   local moterId, albumId = album.moters[1], album._id
   local coverURI = prefix .. moterId .. '/' .. albumId .. '/cover/' .. subfix
   local coverImgName = moterId .. '_' .. albumId .. '_cover_' .. subfix
@@ -108,23 +110,27 @@ function AlbumList:initialize(obj, sceneGroup)
   local _lgray = {colorHex('6C6C6C')}
   local titleFSize = 12
   local labelFSize = 24
-  local gY = screenH - vH*.42
+  local gY = screenH - vH*.618
   local titleScore = display.newEmbossedText {text = '评分', x = vW*.24, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleScore:setFillColor(unpack(_lgray))
   local labelScoreCount = display.newText {text = '9.4', x = vW*.24, y = titleScore.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
   local titleAlbum = display.newEmbossedText {text = '图集', x = vW*.5, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleAlbum:setFillColor(unpack(_lgray))
   local labelNumAlbum = display.newText {text = '162', x = vW*.5, y = titleAlbum.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
-
+  self:_attach(titleScore)
+  self:_attach(labelScoreCount)
+  self:_attach(titleAlbum)
+  self:_attach(labelNumAlbum)
   local titleHot = display.newEmbossedText {text = '热度', x = vW*.76, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleHot:setFillColor(unpack(_lgray))
   local labelNumHot = display.newText {text = '1.9万', x = vW*.76, y = titleHot.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
-
+  self:_attach(titleHot)
+  self:_attach(labelNumHot)
   local triangleShape = display.newPolygon(cX, cY, {-10, 5, 0, -8, 10, 5})
   triangleShape:setFillColor(unpack(_lgray))
   triangleShape.anchorY = 1
   triangleShape.y = labelScoreCount.y + 32
-  --self:_attach(triangleShape, '_tabCursor')
+  self:_attach(triangleShape, '_tabCursor')
   triangleShape.x = vW*.5
 
   local _nextBG = display.newRect(self.layer, cX, cY, vW, vH*.6)
@@ -132,7 +138,7 @@ function AlbumList:initialize(obj, sceneGroup)
   --util.center(_nextBG)
   _nextBG.anchorY = 0
   _nextBG.y = triangleShape.y
-  --self:_attach(_nextBG, 'nextBG')
+  self:_attach(_nextBG, 'nextBG')
   --util.center(triangleShape)
   -- END VISUAL INITIALIING
   -- -------------------
@@ -140,7 +146,7 @@ end
 
 function AlbumList:open(index)
   index = index or 1
-  self.currentPieceId = nil
+  self.currentAlbumId = nil
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   local album = self._albums[index]
   self:createCover(album)
@@ -150,7 +156,19 @@ end
 
 function AlbumList:createCover(album)
   local coverURI, coverFileName = resolveCoverImage(album)
+  local coverView = Cover(coverURI, coverFileName, self)
   d(coverURI)
+  coverView:preload()
+  local label = display.newText {
+    text = album.title,
+    x = cX, y = cY, 
+    fontSize = labelFSize, font = fontSHSansBold,
+    width = vH*.24,
+    algin = 'center'
+  }
+  local labelBG = display.newRect(label.x, label.y, vW*.5, label.contentHeight+10)
+  labelBG:setFillColor(unpack(colorsRGB.RGBA('black', 0.6)))
+  label:toFront()
 end  
   
 -- ---
