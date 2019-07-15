@@ -60,7 +60,7 @@ function Cover:initialize(opts, parent)
   self.title = opts.title
   self.index = opts.index or 1
   View.initialize(self, parent)
-  parent.elements.scroller:insert(self.layer)
+  parent.elements.slider:insert(self.layer)
   assert(self.layer, 'Cover View Initialized Failed!')
   --self.layer:toFront()
   --self.layer.anchorChildren = true
@@ -131,11 +131,12 @@ function Cover:onImageLoaded()
   local label = display.newText {
     text = self.title,
     x = cX, y = cY, 
-    fontSize = labelFSize, font = fontSHSans,
+    fontSize = labelFSize, font = fontSHSansBold,
     width = cImage.contentWidth*.96,
     --algin = 'left'
   }
-  label:setFillColor(colorHex('C7A680'))
+--  label:setFillColor(colorHex('C7A680'))
+  label:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
 --  local labelBG = display.newRect(cImage.contentBounds.xMin, cImage.y + cImage.contentHeight*.2, label.contentWidth, label.contentHeight)
 --  labelBG:setFillColor(unpack(colorsRGB.RGBA('black', 0.6)))
   --labelBG.anchorX = 0

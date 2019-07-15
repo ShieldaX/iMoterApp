@@ -1,5 +1,6 @@
 local composer = require( "composer" )
 local widget = require( "widget" )
+local mui = require( "materialui.mui" )
 
 local _ = require 'libs.underscore'
 local class = require 'libs.middleclass'
@@ -37,35 +38,35 @@ local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 
 local function tribleNum(num)
-	local prefix = '00'
-	if num >= 10 then
-		prefix = '0'
-	elseif num >= 100 then
-		prefix = ''
-	end
-	return prefix .. tostring( num )
+  local prefix = '00'
+  if num >= 10 then
+    prefix = '0'
+  elseif num >= 100 then
+    prefix = ''
+  end
+  return prefix .. tostring( num )
 end
 
 -- 根据远端资源命名规则解析图集所包含的图片
 local function resolveImages(album)
-	local numPieces, uris, names = 1, {}, {}
-	numPieces = album.pieces
-	local prefix = 'https://t1.onvshen.com:85/gallery/'
+  local numPieces, uris, names = 1, {}, {}
+  numPieces = album.pieces
+  local prefix = 'https://t1.onvshen.com:85/gallery/'
   local subfix = '0'
   local moterId, albumId = album.moters[1]._id, album._id
   uris[1] = prefix .. moterId .. '/' .. albumId .. '/' .. subfix
   names[1] = moterId .. '_' .. albumId .. '_' .. subfix
-	for i = 2, numPieces do
-		local idx = i - 1
-		uris[i] = prefix .. moterId .. '/' .. albumId .. '/' .. tribleNum(idx)
-		names[i] = moterId .. '_' .. albumId .. '_' .. tribleNum(idx)
-	end
-	return uris, names
+  for i = 2, numPieces do
+    local idx = i - 1
+    uris[i] = prefix .. moterId .. '/' .. albumId .. '/' .. tribleNum(idx)
+    names[i] = moterId .. '_' .. albumId .. '_' .. tribleNum(idx)
+  end
+  return uris, names
 end
 
 
 local function resolveCoverImage(album)
-	local prefix = 'https://t1.onvshen.com:85/gallery/'
+  local prefix = 'https://t1.onvshen.com:85/gallery/'
   local subfix = '0'
   local moterId, albumId = album.moters[1], album._id
   local coverURI = prefix .. moterId .. '/' .. albumId .. '/cover/' .. subfix
@@ -75,20 +76,29 @@ end
 
 -- 将图片自适应屏幕宽度
 local function fitScreenW(p, top, bottom)
-	top = top or 0
-	bottom = bottom or 0
-	local h = viewableScreenH-(top+bottom)
-	if p.width > viewableScreenW or p.height > h then
-		if p.width/viewableScreenW > p.height/h then
-				p.xScale = viewableScreenW/p.width
-				p.yScale = viewableScreenW/p.width
-		else
-				p.xScale = h/p.height
-				p.yScale = h/p.height
-		end
-	end
-	p.x = screenW*.5
-	p.y = h*.5
+  top = top or 0
+  bottom = bottom or 0
+  local h = viewableScreenH-(top+bottom)
+  if p.width > viewableScreenW or p.height > h then
+    if p.width/viewableScreenW > p.height/h then
+      p.xScale = viewableScreenW/p.width
+      p.yScale = viewableScreenW/p.width
+    else
+      p.xScale = h/p.height
+      p.yScale = h/p.height
+    end
+  end
+  p.x = screenW*.5
+  p.y = h*.5
+end
+
+local function createIcon(options)
+  local fontPath = "icon-font/"
+  local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
+  options.font = materialFont
+  options.text = mui.getMaterialFontCodePointByName(options.text)
+  local icon = display.newText(options)
+  return icon
 end
 
 -- 利用获取的图集信息实例化一个图集对象
@@ -140,17 +150,39 @@ function AlbumList:initialize(obj, sceneGroup)
   _nextBG.anchorY = 0
   _nextBG.y = triangleShape.y
   self:_attach(_nextBG, 'nextBG')
-  --util.center(triangleShape)
+
+  -- ScrollView listener
+  local function scrollListener( event )
+    local phase = event.phase
+    if ( phase == "began" ) then print( "Scroll view was touched" )
+    elseif ( phase == "moved" ) then print( "Scroll view was moved" )
+    elseif ( phase == "ended" ) then print( "Scroll view was released" )
+    end
+    -- In the event a scroll limit is reached...
+    if ( event.limitReached ) then
+      if ( event.direction == "up" ) then print( "Reached bottom limit" )
+      elseif ( event.direction == "down" ) then print( "Reached top limit" )
+      elseif ( event.direction == "left" ) then
+        print( "Reached right limit" )
+        self.moreLabel.alpha = 1
+        self.elements.slider:insert(self.moreLabel)
+      elseif ( event.direction == "right" ) then print( "Reached left limit" )
+      end
+    end
+    return true
+  end
+  
   local scrollContainer = widget.newScrollView{
-      top = _nextBG.y, left = oX,
-      width = _nextBG.contentWidth, height = _nextBG.contentHeight,
-      scrollWidth = 1000, scrollHeight = _nextBG.contentHeight,
-      hideBackground = true,
-      hideScrollBar = false,
-      rightPadding = vW*.36*0.8,
-      verticalScrollDisabled = true
-    }
-  self:_attach(scrollContainer, 'scroller')
+    top = _nextBG.y, left = oX,
+    width = _nextBG.contentWidth, height = _nextBG.contentHeight,
+    scrollWidth = 1000, scrollHeight = _nextBG.contentHeight,
+    hideBackground = true,
+    hideScrollBar = false,
+    listener = scrollListener,
+--      rightPadding = vW*.36*0.8,
+    verticalScrollDisabled = true
+  }
+  self:_attach(scrollContainer, 'slider')
   -- END VISUAL INITIALIING
   -- -------------------
 end
@@ -164,11 +196,30 @@ function AlbumList:open(index)
     d(albums[i])
     self:createCover(i)
   end
---  self:createCover(index)
---  self:createCover(index+1)
---  self:createCover(index+2)
+  local moreLabel = display.newText {
+    text = '查看全部...    ',
+    x = cX, y = cY,
+    fontSize = 18, font = fontSHSansBold
+  }
+  local moreIcon = createIcon {
+    x = cX, y = cY,
+    text = 'collections',
+    fontSize = 24
+  }
+  moreIcon.anchorX = 0
+  moreIcon:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
+  moreIcon.y = self.elements.nextBG.contentHeight*.48
+  self.elements.slider:insert(moreIcon)
+--  self.elements.slider:insert(moreLabel)
+  self.moreLabel = moreLabel
+  moreLabel.alpha = 0.01
+  local scaleFactor = 0.36
+  moreIcon.x = oX + self.elements.slider._view.contentWidth + vW*scaleFactor*1.2
+  moreLabel.x = moreIcon.x + moreIcon.width + moreLabel.width*.54
+--  moreLabel.anchorY = 0
+  moreLabel.y = moreIcon.y + moreLabel.height*.2
+--  d(moreLabel.y)
   self:setState('STARTED')
-  --self:signal('onProgress', {index = index})
 end
 
 function AlbumList:createCover(index)
@@ -181,10 +232,10 @@ function AlbumList:createCover(index)
       name = coverFileName,
       title = album.title,
       index = index
-    }, self)
+      }, self)
   coverView:preload() --@index pos?
 end  
-  
+
 -- ---
 -- 清除其他预加载的Piece View，（重）新创建一个Piece对象，
 -- 如果预加载的Piece View 和目标一致则直接返回
@@ -208,10 +259,10 @@ end
 function AlbumList:onAlbumTapped(event)
   event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
   local options = {
-      effect = "fade",
-      time = 500,
-      isModal = true,
-      params = event
+    effect = "fade",
+    time = 500,
+    isModal = true,
+    params = event
   }
   composer.showOverlay( "scenes.piece", options )
 end

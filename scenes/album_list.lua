@@ -171,7 +171,7 @@ function scene:create( event )
     --APP.moterView:layout()
     albumListView:open()
   end
-  iMoter:listAlbums('22162', {skip = 0, limit = 5}, showAlbumsWithData) -- 19702; 22162; 27180
+  iMoter:listAlbums('22162', {skip = 0, limit = 6}, showAlbumsWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
   -----------------------------------------------------------------------------
 end

@@ -23,5 +23,5 @@ _mui_debug = true
 local composer = require "composer"
 
 -- load app screen
-composer.gotoScene("scenes.moter")
---composer.gotoScene("scenes.album_list")
+--composer.gotoScene("scenes.moter")
+composer.gotoScene("scenes.album_list")
