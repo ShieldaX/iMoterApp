@@ -1,10 +1,7 @@
 local composer = require( "composer" )
--- Constants List:
-local oX = display.screenOriginX
-local oY = display.screenOriginY
-local vW = display.viewableContentWidth
-local vH = display.viewableContentHeight
+local widget = require( "widget" )
 
+local _ = require 'libs.underscore'
 local class = require 'libs.middleclass'
 local Stateful = require 'libs.stateful'
 local inspect = require 'libs.inspect'
@@ -12,7 +9,6 @@ local colorHex = require('libs.convertcolor').hex
 
 local util = require 'util'
 local d = util.print_r
---util.show_fps()
 
 -- Classes
 local View = require 'libs.view'
@@ -23,7 +19,11 @@ local Indicator = require 'views.indicator'
 local AlbumList = class('AlbumListView', View)
 local APP = require("classes.application")
 
--- local forward references should go here --
+-- Constants List:
+local oX = display.screenOriginX
+local oY = display.screenOriginY
+local vW = display.viewableContentWidth
+local vH = display.viewableContentHeight
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
@@ -141,6 +141,16 @@ function AlbumList:initialize(obj, sceneGroup)
   _nextBG.y = triangleShape.y
   self:_attach(_nextBG, 'nextBG')
   --util.center(triangleShape)
+  local scrollContainer = widget.newScrollView{
+      top = _nextBG.y, left = oX,
+      width = _nextBG.contentWidth, height = _nextBG.contentHeight,
+      scrollWidth = 1000, scrollHeight = _nextBG.contentHeight,
+      hideBackground = true,
+      hideScrollBar = false,
+      rightPadding = vW*.36*0.8,
+      verticalScrollDisabled = true
+    }
+  self:_attach(scrollContainer, 'scroller')
   -- END VISUAL INITIALIING
   -- -------------------
 end
@@ -150,9 +160,13 @@ function AlbumList:open(index)
   self.cursorAlbumId = nil
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   local albums = self._albums
-  self:createCover(index)
-  self:createCover(index+1)
-  self:createCover(index+2)
+  for i = index, #albums, 1 do
+    d(albums[i])
+    self:createCover(i)
+  end
+--  self:createCover(index)
+--  self:createCover(index+1)
+--  self:createCover(index+2)
   self:setState('STARTED')
   --self:signal('onProgress', {index = index})
 end

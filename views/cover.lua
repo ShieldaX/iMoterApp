@@ -60,8 +60,10 @@ function Cover:initialize(opts, parent)
   self.title = opts.title
   self.index = opts.index or 1
   View.initialize(self, parent)
+  parent.elements.scroller:insert(self.layer)
   assert(self.layer, 'Cover View Initialized Failed!')
   --self.layer:toFront()
+  --self.layer.anchorChildren = true
   -- =============================
 end
 
@@ -90,11 +92,11 @@ function Cover:preload()
       local _image = event.target
       fitImage(_image, vW*scaleFactor, vH*scaleFactor)
       _image.alpha = 0
-      self.imageTransiton = transition.to( _image, { alpha = 1 } )
+      self.imageTransiton = transition.to( _image, { alpha = 1, time = 1000 } )
       self:_attach(_image, 'image')
       local nextBG = self.parent.elements.nextBG
       --util.center(self.layer)
-      self.layer.y = nextBG.y + nextBG.contentHeight*.42
+      self.layer.y = nextBG.contentHeight*.42
       --self.layer.x = oX + _image.contentWidth*.618
       self:send('onImageLoaded')
     end

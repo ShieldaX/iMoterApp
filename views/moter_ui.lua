@@ -522,6 +522,7 @@ function Moter:start()
     transition.to(effect2, {xScale = scale2, yScale = scale2, time = time + delay})
     transition.to(effect2, {alpha = 0, strokeWidth = 0, delay = delay, time = time, onComplete = display.remove})
   end
+  self.pulse = pulse2
 
   local scale1 = 2
   local scale2 = 4
@@ -536,7 +537,7 @@ function Moter:start()
 
   local function tapListener(tap)
     self:signal('onLikeTapped', tap)
-    pulse2(0, 0, gold, scale1, scale2, 250, 500, effectG)
+    --self.pulse(0, 0, gold, scale1, scale2, 250, 500, effectG)
     --favBtnG[4]:setFillColor(unpack(colorsRGB.RGBA('red')))
   end
   favIcon:addEventListener('tap', tapListener)
@@ -546,13 +547,29 @@ end
 
 function Moter:onLikeTapped(tap)
   --d(tap.numTaps)
+  local scale1 = 2
+  local scale2 = 4
+  local favColor = {colorHex('ad7d7e')}
+  local unFavColor = colorsRGB.RGBA('white', .5)
   local favIcon = self.elements.favBtnG[self.elements.favBtnG.numChildren]
   if self.moterLiked then
     self.moterLiked = false
-    favIcon:setFillColor(unpack(colorsRGB.RGBA('white')))
+    transition.cancel(favIcon.animation)
+    favIcon.animation = transition.to(favIcon, {time = 300, xScale = 0.1, yScale = 0.1, transition = easing.inBack })
+    timer.performWithDelay(300, function()
+        self.pulse(0, 0, unFavColor, scale1, scale2, 250, 500, self.elements.favBtnG.effectG)
+        favIcon:setFillColor(unpack(colorsRGB.RGBA('white')))
+        favIcon.animation = transition.to(favIcon, {time = 300, xScale = 1, yScale = 1, transition = easing.outBack })
+      end)
   else
     self.moterLiked = true
-    favIcon:setFillColor(unpack(colorsRGB.RGBA('crimson')))
+    transition.cancel(favIcon.animation)
+    favIcon.animation = transition.to(favIcon, {time = 300, xScale = 0.1, yScale = 0.1, transition = easing.inBack })
+    timer.performWithDelay(300, function()
+        self.pulse(0, 0, favColor, scale1, scale2, 250, 500, self.elements.favBtnG.effectG)
+        favIcon:setFillColor(unpack(colorsRGB.RGBA('crimson')))
+        favIcon.animation = transition.to(favIcon, {time = 300, xScale = 1, yScale = 1, transition = easing.outBack })
+      end)
   end
 end
 
