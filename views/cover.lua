@@ -44,7 +44,7 @@ Cover.STATUS.RELEASED = 100
 -- TODO: Try to load piece image from this dir firstly
 Cover.static.DEFAULT_DIRECTORY = system.CachesDirectory
 
-function Cover:initialize(uri, name, parent)
+function Cover:initialize(uri, name, title, parent)
   d('创建封面对象: '..name)
   self.uri = uri .. '.jpg'
   self.fileName = name .. '.jpg'
@@ -53,8 +53,21 @@ function Cover:initialize(uri, name, parent)
   assert(self.layer, 'Cover View Initialized Failed!')
   self.layer:toFront()
   -- =============================
---  self.label = display.newText(self.title, )
-  
+  local label = display.newText {
+    text = title,
+    x = cX, y = cY, 
+    fontSize = labelFSize, font = fontSHSansBold,
+    width = vH*.24,
+    algin = 'center'
+  }
+  --self.label = label
+  local labelBG = display.newRect(label.contentBounds.xMin - 10, label.y, vW*.4, label.contentHeight+10)
+  labelBG:setFillColor(unpack(colorsRGB.RGBA('black', 0.6)))
+  labelBG.anchorX = 0
+  labelBG.anchorY = 0
+  self:_attach(labelBG)
+  self:_attach(label, 'label')
+  self.layer.anchorChildren = true
   d(self.name..' '..self:getState())
 end
 
@@ -89,10 +102,14 @@ function Cover:preload()
       local _image = event.target
       fitImage(_image, vW*0.5, vH*0.5)
       _image.alpha = 0
-      util.center(_image)
-      _image.y = vH*0.8
-      self.imageTransiton = transition.to( _image, { alpha = 1.0, time = 1000 } )
+      --util.center(_image)
+      --_image.y = vH*0.8
+      self.imageTransiton = transition.to( _image, { alpha = .9, time = 1000 } )
       self:_attach(_image, 'image')
+      _image:toBack()
+      local nextBG = self.parent.elements.nextBG
+      util.center(self.layer)
+      self.layer.y = nextBG.y + nextBG.contentHeight*.5 
     end
     self.fileName = event.response.filename
     self.baseDir = event.response.baseDirectory

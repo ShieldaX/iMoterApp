@@ -133,7 +133,7 @@ function AlbumList:initialize(obj, sceneGroup)
   self:_attach(triangleShape, '_tabCursor')
   triangleShape.x = vW*.5
 
-  local _nextBG = display.newRect(self.layer, cX, cY, vW, vH*.6)
+  local _nextBG = display.newRect(self.layer, cX, cY, vW, vH*.5)
   _nextBG:setFillColor(unpack(_lgray)) -- golden gray 
   --util.center(_nextBG)
   _nextBG.anchorY = 0
@@ -156,19 +156,9 @@ end
 
 function AlbumList:createCover(album)
   local coverURI, coverFileName = resolveCoverImage(album)
-  local coverView = Cover(coverURI, coverFileName, self)
+  local coverView = Cover(coverURI, coverFileName, album.title, self)
   d(coverURI)
   coverView:preload()
-  local label = display.newText {
-    text = album.title,
-    x = cX, y = cY, 
-    fontSize = labelFSize, font = fontSHSansBold,
-    width = vH*.24,
-    algin = 'center'
-  }
-  local labelBG = display.newRect(label.x, label.y, vW*.5, label.contentHeight+10)
-  labelBG:setFillColor(unpack(colorsRGB.RGBA('black', 0.6)))
-  label:toFront()
 end  
   
 -- ---
