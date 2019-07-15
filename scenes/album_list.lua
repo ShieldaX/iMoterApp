@@ -14,6 +14,7 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+local colorHex = require('libs.convertcolor').hex
 
 -- Constants List:
 local oX = display.screenOriginX
@@ -144,7 +145,7 @@ function scene:create( event )
     vW - ( leftInset + rightInset ),
     vH - ( topInset + bottomInset )
   )
-  background:setFillColor( 1, 1, 1, 0.8 )
+  background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
   
@@ -160,9 +161,9 @@ function scene:create( event )
     end
     local _albumList = res.data.albums
     local _data = res.data
-    APP.Header.elements.TopBar:setLabel('Hot Albums')
+    APP.Header.elements.TopBar:setLabel('Hot Albums') --TODO: show _data.moter.name
     APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
-    print(inspect(_albumList))
+    print(inspect(_data))
     local albumListView = AlbumList:new(_data, sceneGroup)
     APP.albumListView = albumListView
     APP.Header.layer:toFront()

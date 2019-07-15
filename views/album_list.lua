@@ -111,19 +111,20 @@ function AlbumList:initialize(obj, sceneGroup)
   local titleFSize = 12
   local labelFSize = 24
   local gY = screenH - vH*.618
-  local titleScore = display.newEmbossedText {text = '评分', x = vW*.24, y = gY, fontSize = titleFSize, font = fontSHSans}
+  local padding = labelFSize*.618
+  local titleScore = display.newText {text = '评分', x = vW*.24, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleScore:setFillColor(unpack(_lgray))
-  local labelScoreCount = display.newText {text = '9.4', x = vW*.24, y = titleScore.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
-  local titleAlbum = display.newEmbossedText {text = '图集', x = vW*.5, y = gY, fontSize = titleFSize, font = fontSHSans}
+  local labelScoreCount = display.newText {text = '9.4', x = vW*.24, y = titleScore.contentBounds.yMax + padding, fontSize = labelFSize, font = fontDMFT}
+  local titleAlbum = display.newText {text = '图集', x = vW*.5, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleAlbum:setFillColor(unpack(_lgray))
-  local labelNumAlbum = display.newText {text = '162', x = vW*.5, y = titleAlbum.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+  local labelNumAlbum = display.newText {text = '162', x = vW*.5, y = titleAlbum.contentBounds.yMax + padding, fontSize = labelFSize, font = fontDMFT}
   self:_attach(titleScore)
   self:_attach(labelScoreCount)
   self:_attach(titleAlbum)
   self:_attach(labelNumAlbum)
-  local titleHot = display.newEmbossedText {text = '热度', x = vW*.76, y = gY, fontSize = titleFSize, font = fontSHSans}
+  local titleHot = display.newText {text = '热度', x = vW*.76, y = gY, fontSize = titleFSize, font = fontSHSans}
   titleHot:setFillColor(unpack(_lgray))
-  local labelNumHot = display.newText {text = '1.9万', x = vW*.76, y = titleHot.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
+  local labelNumHot = display.newText {text = '1.9万', x = vW*.76, y = titleHot.contentBounds.yMax + padding, fontSize = labelFSize, font = fontDMFT}
   self:_attach(titleHot)
   self:_attach(labelNumHot)
   local triangleShape = display.newPolygon(cX, cY, {-10, 5, 0, -8, 10, 5})
@@ -133,7 +134,7 @@ function AlbumList:initialize(obj, sceneGroup)
   self:_attach(triangleShape, '_tabCursor')
   triangleShape.x = vW*.5
 
-  local _nextBG = display.newRect(self.layer, cX, cY, vW, vH*.5)
+  local _nextBG = display.newRect(self.layer, cX, cY, vW, screenH - triangleShape.y)
   _nextBG:setFillColor(unpack(_lgray)) -- golden gray 
   --util.center(_nextBG)
   _nextBG.anchorY = 0
@@ -146,19 +147,28 @@ end
 
 function AlbumList:open(index)
   index = index or 1
-  self.currentAlbumId = nil
+  self.cursorAlbumId = nil
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
-  local album = self._albums[index]
-  self:createCover(album)
+  local albums = self._albums
+  self:createCover(index)
+  self:createCover(index+1)
+  self:createCover(index+2)
   self:setState('STARTED')
   --self:signal('onProgress', {index = index})
 end
 
-function AlbumList:createCover(album)
+function AlbumList:createCover(index)
+  local albums = self._albums
+  local album = albums[index]
+  if not album then return false end
   local coverURI, coverFileName = resolveCoverImage(album)
-  local coverView = Cover(coverURI, coverFileName, album.title, self)
-  d(coverURI)
-  coverView:preload()
+  local coverView = Cover({
+      uri = coverURI,
+      name = coverFileName,
+      title = album.title,
+      index = index
+    }, self)
+  coverView:preload() --@index pos?
 end  
   
 -- ---
