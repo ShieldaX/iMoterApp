@@ -99,36 +99,36 @@ function M.isPlugin()
 end
 
 function M.init(mui_modules, options)
-    local baseModules = {
-      "mui-base",
-    }
-    for i=1, #baseModules do
-        local t = require(muiPath .. baseModules[i])
-        table.insert(parents, t)
-        if M.isPlugin() then
-          for k,v in pairs(t) do
-              M.muiReferences[k] = v
-          end
-        end
+  local baseModules = {
+    "mui-base",
+  }
+  for i=1, #baseModules do
+    local t = require(muiPath .. baseModules[i])
+    table.insert(parents, t)
+    if M.isPlugin() then
+      for k,v in pairs(t) do
+        M.muiReferences[k] = v
+      end
     end
-    M.loadModule(M, parents)
-    M.init_base(options)
-    if mui_modules ~= nil then modules = mui_modules end
-    for i=1, #modules do
-        if string.find(modules[i], "materialui.") ~= nil then
-          modules[i] = string.gsub(modules[i], "materialui.", "")
-        end
-        local t = require(muiPath .. modules[i])
-        table.insert(parents, t)
-        if M.isPlugin() then
-          for k,v in pairs(t) do
-              M.muiReferences[k] = v
-          end
-        end
+  end
+  M.loadModule(M, parents)
+  M.init_base(options)
+  if mui_modules ~= nil then modules = mui_modules end
+  for i=1, #modules do
+    if string.find(modules[i], "materialui.") ~= nil then
+      modules[i] = string.gsub(modules[i], "materialui.", "")
     end
-    M.loadModule(M, parents)
-    M.init_calls()
-    return
+    local t = require(muiPath .. modules[i])
+    table.insert(parents, t)
+    if M.isPlugin() then
+      for k,v in pairs(t) do
+        M.muiReferences[k] = v
+      end
+    end
+  end
+  M.loadModule(M, parents)
+  M.init_calls()
+  return
 end
 
 return M

@@ -34,7 +34,7 @@ local scene = composer.newScene()
 -- Our modules
 local APP = require( "classes.application" )
 --local utility = require( "libs.utility" )
-
+local mui = require( "materialui.mui" )
 local iMoter = iMoterAPI:new()
 
 ---------------------------------------------------------------------------------
@@ -49,9 +49,8 @@ function scene:create( event )
 --  display.setStatusBar( display.HiddenStatusBar )
 --  display.setDefault("background", 0, 1, 1)
 
-  --mui.init(nil, { parent=self.view })
+  mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
-
   --      CREATE display objects and add them to 'group' here.
 
   -- Gather insets (function returns these in the order of top, left, bottom, right)
@@ -68,7 +67,7 @@ function scene:create( event )
   sceneGroup:insert( background )
   
   APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
-  APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
+  APP.Footer = FooterView:new({name = 'AppTabs'}, display.getCurrentStage())
   
   local function openAlbumWithData(res)
     if not res or not res.data then

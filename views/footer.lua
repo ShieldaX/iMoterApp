@@ -1,5 +1,7 @@
 local widget = require( "widget" )
 local widgetExtras = require("libs.widget-extras")
+local mui = require( "materialui.mui" )
+local muiData = require( "materialui.mui-data" )
 -- Set a default theme
 widget.setTheme("widget_theme_ios7")
 
@@ -22,12 +24,28 @@ local d = util.print_r
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
 
+-- Fonts
+local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
+local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
+local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 -- ---
 -- CLASSES Declaration
 --
 local View = require "libs.view"
 local Footer = class('FooterView', View)
+
+local function createIcon(options)
+  local fontPath = "icon-font/"
+  local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
+  options.font = materialFont
+  options.text = mui.getMaterialFontCodePointByName(options.text)
+  local icon = display.newText(options)
+  return icon
+end
 
 -- ---
 -- Resize Image Display Object to Fit Screen WIDTH
@@ -92,8 +110,101 @@ function Footer:initialize(opts, parent)
   self:_attach(tabBar, 'tabBar')
   ]]
   --self:_attach(panel, 'tabBar')
+
+  local function panelTransDone( target )
+    --native.showAlert( "Panel", "Complete", { "Okay" } )
+    if ( target.completeState ) then
+      print( "PANEL STATE IS: "..target.completeState )
+    end
+  end
+
+-- Configure the tab buttons to appear within the bar
+  local tabButtons = {
+    {
+      label = "Explore",
+      id = "tab_xplr",
+      selected = true,
+      labelYOffset = -8,
+      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} },
+      onPress = handleTabBarEvent
+    },
+    {
+      label = "Search",
+      id = "tab_search",
+      labelYOffset = -8,
+      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} }, 
+      onPress = handleTabBarEvent
+    },
+    {
+      label = "User",
+      id = "tab_mine",
+      labelYOffset = -8,
+      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} },
+      onPress = handleTabBarEvent
+    }
+  }
+
+  local panel = widget.newPanel{
+    location = "bottom",
+    onComplete = panelTransDone,
+    width = display.contentWidth,
+    height = 80,
+    speed = 420,
+    inEasing = easing.outBack,
+    outEasing = easing.outCubic
+  }
+  local backgroundRect = display.newRoundedRect( 0, 0, panel.width, 80, 36 )
+  backgroundRect:setFillColor(colorHex('1A1A19'))
+  local beyondRect = display.newRect(0, 20, panel.width, 40)
+  beyondRect:setFillColor(colorHex('1A1A19'))
+  local background = display.newGroup()
+  background:insert(beyondRect)
+  background:insert(backgroundRect)
+  panel.background = background
+  panel:insert( panel.background )
+
+  local xplrIcon = createIcon {
+    x = -vW*0.32, y = 0,
+    text = 'pages',
+    fontSize = 36
+  }
+  xplrIcon:setFillColor(colorHex('C7A680'))
+  local labelExplr = display.newText( "Explore", xplrIcon.x + 50, 0, fontMorganiteSemiBold, 32 )
+  labelExplr:setFillColor(colorHex('C7A680'))
+  panel.labelExplr = labelExplr
+  panel:insert(xplrIcon)
+  panel:insert( panel.labelExplr )
+  --
+  local iconSearch = createIcon {
+    x = 32, y = 6,
+    text = 'search',
+    fontSize = 36
+  }
+  iconSearch:setFillColor(colorHex('6C6C6C'))
+  panel.tabSearch = iconSearch
+  panel:insert(iconSearch)
+  
+  local iconUser = createIcon {
+    x = vW*0.32, y = 5,
+    text = 'person_outline',
+    fontSize = 36
+  }
+  iconUser:setFillColor(colorHex('6C6C6C'))
+  panel.tabMine = iconUser
+  panel:insert(iconUser)
+  self:_attach(panel, 'TabBar')
+  timer.performWithDelay(200, function() panel:show() end)
   -- END VISUAL INITIALIING
   -- -------------------
+end
+
+function Footer:hide()
+  self.elements.TabBar:hide()
+end
+
+function Footer:toggle()
+  self.elements.TabBar:hide()
+  self.elements.TabBar:show()
 end
 
 return Footer
