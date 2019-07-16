@@ -89,7 +89,7 @@ function Header:initialize(opts, parent)
 		title = "= MEOW =",
 		titleColor = theme.navBarTextColor,
 		font = fontSHSans, fontSize = 14,
-		height = 42,
+		height = screenOffsetH + 42,
 		includeStatusBar = false,
 		--leftButton = leftButton
 	})

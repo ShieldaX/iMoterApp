@@ -87,6 +87,7 @@ function scene:show( event )
   if ( phase == "will" ) then
     self.bgTransiton = transition.to( background, { alpha = 0.9 } )
     self.imageTransiton = transition.to( _pieceImage.layer, { alpha = 1 } )
+    APP.Footer:hide()
   elseif ( phase == "did" ) then
 
   end
@@ -101,6 +102,7 @@ function scene:hide( event )
 
   if ( phase == "will" ) then
     self.imageTransiton = transition.to( _pieceImage.layer, { alpha = 0 } )
+    APP.Footer:show()
   elseif ( phase == "did" ) then
     
   end

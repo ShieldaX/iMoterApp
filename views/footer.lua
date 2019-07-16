@@ -150,8 +150,8 @@ function Footer:initialize(opts, parent)
     width = display.contentWidth,
     height = 80,
     speed = 420,
-    inEasing = easing.outBack,
-    outEasing = easing.outCubic
+    inEasing = easing.outCubic,
+    outEasing = easing.inOutBack
   }
   local backgroundRect = display.newRoundedRect( 0, 0, panel.width, 80, 36 )
   backgroundRect:setFillColor(colorHex('1A1A19'))
@@ -193,18 +193,28 @@ function Footer:initialize(opts, parent)
   panel.tabMine = iconUser
   panel:insert(iconUser)
   self:_attach(panel, 'TabBar')
-  timer.performWithDelay(200, function() panel:show() end)
+  self:show()
+  --timer.performWithDelay(200, function() self:show() end)
   -- END VISUAL INITIALIING
   -- -------------------
 end
 
+function Footer:show()
+  self.hidden = false
+  self.elements.TabBar:show()
+end
+
 function Footer:hide()
+  self.hidden = true
   self.elements.TabBar:hide()
 end
 
 function Footer:toggle()
-  self.elements.TabBar:hide()
-  self.elements.TabBar:show()
+  if self.hidden then
+    self:show()
+  else
+    self:hide()
+  end
 end
 
 return Footer

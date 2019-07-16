@@ -9,20 +9,24 @@ local oY = display.screenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
 local visibleAspectRatio = vW/vH
-
-local class = require 'libs.middleclass'
---local Stateful = require 'libs.stateful'
---local inspect = require 'libs.inspect'
-
-local util = require 'util'
-local d = util.print_r
---util.show_fps()
-
--- local forward references should go here --
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+
+-- Fonts
+local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
+local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
+local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+
+local class = require 'libs.middleclass'
+--local Stateful = require 'libs.stateful'
+--local inspect = require 'libs.inspect'
+local colorHex = require('libs.convertcolor').hex
+local util = require 'util'
+local d = util.print_r
 
 -- ---
 -- CLASSES Declaration
@@ -65,12 +69,13 @@ function Toast:initialize(text, duration, delay)
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
-  local _text = display.newText { text = text, x = cX, y = cY, fontSize = 18, align = 'center', font = Helvetica }
+  local _text = display.newText { text = text, x = cX, y = cY, fontSize = 18, align = 'center', font = fontSHSansBold }
 --  _text.alpha = 0
---  _text:setFillColor:setFillColor( 1, 0, 0 )
+  _text:setFillColor(colorHex('C7A680'))
   local _bg_width, _bg_height = _text.width + 25, _text.height + 20
   local _bg = display.newRoundedRect(self.layer, cX, cY, _bg_width, _bg_height, self.cornerRadius)
-  _bg:setFillColor(unpack( colorsRGB.RGBA('royalblue', 0.8) )) -- Pure White
+--  _bg:setFillColor(unpack( colorsRGB.RGBA('royalblue', 0.8) )) -- Pure White
+  _bg:setFillColor(colorHex('1A1A19'), 0.8) -- Golden
   util.center(_bg)
   self:_attach(_bg, '_bg')
   self:_attach(_text, '_text')

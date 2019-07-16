@@ -79,10 +79,10 @@ function scene:create( event )
     --print(inspect(_album))
     APP.albumView = AlbumView:new(_album, sceneGroup)
     APP.Header.layer:toFront()
-    APP.Footer.layer:toFront()
+    --APP.Footer.layer:toFront()
     APP.albumView:open()
   end
-  iMoter:getAlbumById('30291', openAlbumWithData)
+  iMoter:getAlbumById('30266', openAlbumWithData)
   -----------------------------------------------------------------------------
 end
 
