@@ -102,7 +102,7 @@ function Album:open(index)
   index = index or 1
   self.currentPieceId = nil
 --  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= APP.Header.elements.TopBar.height}, self)
-  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
+  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 42}, self)
   --self:addView(indicator)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually

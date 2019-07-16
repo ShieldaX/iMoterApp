@@ -1,6 +1,7 @@
-local widget = require( "widget" ) 
+local widget = require( "widget" )
+local widgetExtras = require("libs.widget-extras")
 -- Set a default theme
-widget.setTheme( "widget_theme_ios7" )
+widget.setTheme("widget_theme_ios7")
 
 -- Constants List:
 local oX = display.screenOriginX
@@ -12,7 +13,7 @@ local visibleAspectRatio = vW/vH
 local class = require 'libs.middleclass'
 --local Stateful = require 'libs.stateful'
 --local inspect = require 'libs.inspect'
-
+local colorHex = require('libs.convertcolor').hex
 local util = require 'util'
 local d = util.print_r
 --util.show_fps()
@@ -47,39 +48,50 @@ function Footer:initialize(opts, parent)
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
-  -- Configure topbar
+  -- Configure Bottom Panel
   -- Function to handle button events
+
+--[[
   local function handleTabBarEvent( event )
     print( event.target.id )  -- Reference to button's 'id' parameter
   end
   -- Configure the tab buttons to appear within the bar
   local tabButtons = {
     {
-      label = "Tab1",
-      id = "tab1",
+      label = "Explore",
+      id = "tab_xplr",
       selected = true,
+      labelYOffset = -8,
+      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} },
       onPress = handleTabBarEvent
     },
     {
-      label = "Tab2",
-      id = "tab2",
+      label = "Search",
+      id = "tab_search",
+      labelYOffset = -8,
+      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} }, 
       onPress = handleTabBarEvent
     },
     {
-      label = "Tab3",
-      id = "tab3",
+      label = "User",
+      id = "tab_mine",
+      labelYOffset = -8,
+      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} },
       onPress = handleTabBarEvent
     }
   }
   -- Create the widget
   local tabBar = widget.newTabBar(
     {
-      top = vH - 62, left = 10,
-      width = vW - 20,
+      top = vH - 62, left = oX,
+      width = vW, height = 62,
+      backgroundColor = colorHex('1A1A19'),
       buttons = tabButtons
     }
   )
   self:_attach(tabBar, 'tabBar')
+  ]]
+  --self:_attach(panel, 'tabBar')
   -- END VISUAL INITIALIING
   -- -------------------
 end

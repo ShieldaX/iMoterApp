@@ -13,8 +13,8 @@ local M = {}
 
 M.backgroundColor = { 0.95, 0.95, 0.95 }
 M.textColor = { 0, 0, 0 }
-M.navBarBackgroundColor = { 1, 1, 1 }
-M.navBarTextColor = { 0, 0, 0 }
+M.navBarBackgroundColor = colorsRGB.RGBA('black', 0.9)
+M.navBarTextColor = colorsRGB.RGBA('white', 0.9)
 M.rowBackgroundColor = { 1, 1, 1 }
 M.font = "assets/fonts/Roboto-Thin.ttf"
 M.fontBold = "assets/fonts/SourceHanSansK-Bold.ttf"

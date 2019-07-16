@@ -10,25 +10,30 @@ widget.setTheme("widget_theme_ios7")
 --
 local theme = require( "classes.theme" )
 
--- Constants List:
-local oX = display.screenOriginX
-local oY = display.screenOriginY
-local vW = display.viewableContentWidth
-local vH = display.viewableContentHeight
-local visibleAspectRatio = vW/vH
-
 local class = require 'libs.middleclass'
 --local Stateful = require 'libs.stateful'
 --local inspect = require 'libs.inspect'
 
 local util = require 'util'
 local d = util.print_r
---util.show_fps()
 
--- local forward references should go here --
+-- Constants List:
+local oX = display.screenOriginX
+local oY = display.screenOriginY
+local vW = display.viewableContentWidth
+local vH = display.viewableContentHeight
+local visibleAspectRatio = vW/vH
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+
+-- Fonts
+local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
+local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
+local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 
 -- Our modules
 local APP = require( "classes.application" )
@@ -78,15 +83,13 @@ function Header:initialize(opts, parent)
 	}
 --  local tColor = colorsRGB.RGBA('dodgerblue', 0.618)
 --  local tColor = colorsRGB.RGBA('whitesmoke', 0.24)
-  local tColor = colorsRGB.RGBA('black', 0.24)
-  local navBarBackgroundColor = tColor or theme.navBarBackgroundColor
   local topBar = widget.newNavigationBar({
 		isTransluscent = true,
-		backgroundColor = navBarBackgroundColor,
+		backgroundColor = theme.navBarBackgroundColor,
 		title = "= MEOW =",
 		titleColor = theme.navBarTextColor,
-		font = theme.fontBold, fontSize = 14,
-		height = 45,
+		font = fontSHSans, fontSize = 14,
+		height = 42,
 		includeStatusBar = false,
 		--leftButton = leftButton
 	})

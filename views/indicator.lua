@@ -67,7 +67,8 @@ function Indicator:initialize(opts, parent)
       }
     self:_attach(_progbar, 'bar')
   end
-
+  
+--  TODO: use native indicator instead: native.setActivityIndicator( state ) --boolean
   local _spinner = widget.newSpinner {
       id = '_spinner',
       x = halfW, y = halfH,
@@ -76,6 +77,7 @@ function Indicator:initialize(opts, parent)
     }
   _spinner.alpha = 0
   self:_attach(_spinner, 'spinner')
+  self.layer:toFront()
   -- END VISUAL INITIALIING
   -- -------------------
 end

@@ -132,8 +132,8 @@ function Cover:onImageLoaded()
     text = self.title,
     x = cX, y = cY, 
     fontSize = labelFSize, font = fontSHSansBold,
-    width = cImage.contentWidth*.96,
-    --algin = 'left'
+    width = cImage.contentWidth,
+    algin = 'center'
   }
 --  label:setFillColor(colorHex('C7A680'))
   label:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))

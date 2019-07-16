@@ -67,7 +67,7 @@ function scene:create( event )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
   
-  APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
+  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
   APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
   
   local function openAlbumWithData(res)
