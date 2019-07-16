@@ -63,8 +63,7 @@ function scene:create( event )
   background:setFillColor( 0, 0, 0 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
-  
-  _pieceImage = PieceImage:new(currentPieceId, baseDir, cX, cY, true)
+  _pieceImage = PieceImage:new(currentPieceId, baseDir, cX, cY, composer.getVariable( "autoRotate" ))
   _pieceImage.layer.alpha = 0
 --  _pieceImage = display.newImage( sceneGroup, currentPieceId, baseDir, cX, cY )
   sceneGroup:insert(_pieceImage.layer)

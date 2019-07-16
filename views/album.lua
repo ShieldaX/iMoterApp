@@ -82,7 +82,8 @@ function Album:initialize(obj, sceneGroup)
   self.imgURIs, self.imgNames = resolveImages(obj)
   self.currentPieceId = nil
   self.paintedPieceId = nil
-  self.pieceAutoRotate = 1
+  self.pieceAutoRotate = composer.getVariable('autoRotate')
+  composer.setVariable( "autoRotate", self.pieceAutoRotate )
   APP.CurrentAlbum = self
   -- END DATA BINDING
   -- -------------------

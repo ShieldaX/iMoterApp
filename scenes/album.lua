@@ -74,9 +74,10 @@ function scene:create( event )
       native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
+    composer.setVariable( "autoRotate", 1 )
     local _album = res.data.album
     APP.Header.elements.TopBar:setLabel(_album.title)
-    --print(inspect(_album))
+    print(inspect(_album))
     APP.albumView = AlbumView:new(_album, sceneGroup)
     APP.Header.layer:toFront()
     --APP.Footer.layer:toFront()

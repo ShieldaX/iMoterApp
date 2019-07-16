@@ -151,7 +151,7 @@ function Footer:initialize(opts, parent)
     height = 80,
     speed = 420,
     inEasing = easing.outCubic,
-    outEasing = easing.inOutBack
+    outEasing = easing.inCirc
   }
   local backgroundRect = display.newRoundedRect( 0, 0, panel.width, 80, 36 )
   backgroundRect:setFillColor(colorHex('1A1A19'))
@@ -215,6 +215,12 @@ function Footer:toggle()
   else
     self:hide()
   end
+end
+
+function Footer:setSelected(tab_id)
+  if self.selection == tab_id then return end
+  local tabBtn = self.elements[tab_id]
+  --tabBtn:active()
 end
 
 return Footer
