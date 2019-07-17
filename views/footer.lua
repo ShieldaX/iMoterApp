@@ -47,6 +47,8 @@ local function createIcon(options)
   return icon
 end
 
+
+
 -- ---
 -- Resize Image Display Object to Fit Screen WIDTH
 --
@@ -67,80 +69,44 @@ function Footer:initialize(opts, parent)
   -- -------------------
   -- VISUAL INITIALIING
   -- Configure Bottom Panel
-  -- Function to handle button events
-
---[[
-  local function handleTabBarEvent( event )
-    print( event.target.id )  -- Reference to button's 'id' parameter
-  end
-  -- Configure the tab buttons to appear within the bar
-  local tabButtons = {
-    {
-      label = "Explore",
-      id = "tab_xplr",
-      selected = true,
-      labelYOffset = -8,
-      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} },
-      onPress = handleTabBarEvent
-    },
-    {
-      label = "Search",
-      id = "tab_search",
-      labelYOffset = -8,
-      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} }, 
-      onPress = handleTabBarEvent
-    },
-    {
-      label = "User",
-      id = "tab_mine",
-      labelYOffset = -8,
-      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} },
-      onPress = handleTabBarEvent
-    }
-  }
-  -- Create the widget
-  local tabBar = widget.newTabBar(
-    {
-      top = vH - 62, left = oX,
-      width = vW, height = 62,
-      backgroundColor = colorHex('1A1A19'),
-      buttons = tabButtons
-    }
-  )
-  self:_attach(tabBar, 'tabBar')
-  ]]
-  --self:_attach(panel, 'tabBar')
-
   local function panelTransDone( target )
     --native.showAlert( "Panel", "Complete", { "Okay" } )
     if ( target.completeState ) then
       print( "PANEL STATE IS: "..target.completeState )
     end
   end
-
+  
+  -- Function to handle button events
+  local function handleTabBarEvent( event )
+    print( event.target.id )  -- Reference to button's 'id' parameter
+  end
 -- Configure the tab buttons to appear within the bar
   local tabButtons = {
     {
-      label = "Explore",
+      labelFont = fontSHSans,
+      labelFontSize = 24,
+      labelColor = { default={colorHex('6C6C6C')}, over={colorHex('C7A680')} },
+      onPress = handleTabBarEvent
+    },
+    {
       id = "tab_xplr",
-      selected = true,
-      labelYOffset = -8,
-      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} },
-      onPress = handleTabBarEvent
+      label = {text = "Explore", font = fontMorganiteSemiBold, fontSize = 32, xOffset = 30},
+      icon = {name = 'pages', fontSize = 36},
+      xOffset = -vW*0.32, yOffset = 0,
+      selected = true
     },
     {
-      label = "Search",
       id = "tab_search",
-      labelYOffset = -8,
-      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} }, 
-      onPress = handleTabBarEvent
+      icon = {name = 'search', fontSize = 36},
+      xOffset = 32, yOffset = 6
     },
     {
-      label = "User",
-      id = "tab_mine",
-      labelYOffset = -8,
-      labelColor = { default={ 0, 0, 0, 0.4 }, over={colorHex('C7A680')} },
-      onPress = handleTabBarEvent
+      id = "tab_ming",
+      icon = {
+        name = { default = 'person_outline', over = 'person'},
+        fontSize = 36
+      },
+      xOffset = vW*0.32, yOffset = 5,
     }
   }
 
@@ -183,7 +149,7 @@ function Footer:initialize(opts, parent)
   iconSearch:setFillColor(colorHex('6C6C6C'))
   panel.tabSearch = iconSearch
   panel:insert(iconSearch)
-  
+
   local iconUser = createIcon {
     x = vW*0.32, y = 5,
     text = 'person_outline',
@@ -197,6 +163,36 @@ function Footer:initialize(opts, parent)
   --timer.performWithDelay(200, function() self:show() end)
   -- END VISUAL INITIALIING
   -- -------------------
+end
+
+function Footer:createTab(options)
+  local tab = display.newGroup()
+  local selected = options.selected
+  local defaultColor = options.defaultColor or {1, 1, 1}
+  local overColor = options.overColor or { 0, 0, 0, 0.5 }
+  local fillColor = selected and overColor or defaultColor
+  
+  if options.icon and type(options.icon) == 'table' then
+    local opts = options.icon
+    local iconName = type(opts.name) == 'table' and opts.name.default
+    local icon = createIcon {
+      x = opts.xOffset, y = opts.yOffset,
+      text = iconName,
+      fontSize = opts.fontSize or 32
+    }
+    icon:setFillColor(fillColor)
+    tab:insert(icon)
+  end
+
+  if options.label and type(options.label) == 'table' then
+    local opts = options.label
+    local label = display.newText(tab, opts.text, opts.xOffset, opts.yOffset, opts.font or fontMorganiteSemiBold, opts.fontSize or 32 )
+    label:setFillColor(fillColor)
+    tab:insert(label)
+  end
+
+  local bar = self.elements.TabBar
+  bar:inser(tab)
 end
 
 function Footer:show()

@@ -130,34 +130,16 @@ function Button:touch(touch)
   d(touch.phase)
 end
 
-function Button:onProgress(event)
-  local i = event.index
-  self.elements.bar:setProgress(i/self.total)
+local activeButton = Button:addState('Active')
+  
+function activeButton:touch(touch)
+  local phase = touch.phase
+  self:send('active')
+  
 end
 
-function Button:onPieceLoad(event)
-  self.elements.spinner.alpha = 1
-  self.elements.spinner:start()
-end
-
-function Button:onPieceLoaded(event)
-  self.elements.spinner.alpha = 0
-  self.elements.spinner:stop()
-end
-
-function Button:onAlbumLimitReached(event)
-  local direction = event.direction or 0
-  local _toast
-  if direction == -1 then
-    d('This is already the first piece!')
-    --APP.repeated = APP.repeated + 1
-    Toast('上滑翻页发现更多精彩'):show()
-  elseif direction == 1 then
-    d('This is already the foot piece!')
-    Toast('你已经看到我的底线了'):show()
-  elseif direction == 0 then
-    d('You have reached the limitation')
-  end
+function activeButton:active()
+  
 end
 
 return Button

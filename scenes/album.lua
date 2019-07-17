@@ -83,7 +83,7 @@ function scene:create( event )
     --APP.Footer.layer:toFront()
     APP.albumView:open()
   end
-  iMoter:getAlbumById('30266', openAlbumWithData)
+  iMoter:getAlbumById('29711', openAlbumWithData)
   -----------------------------------------------------------------------------
 end
 
