@@ -18,7 +18,7 @@ local class = require 'libs.middleclass'
 local colorHex = require('libs.convertcolor').hex
 local util = require 'util'
 local d = util.print_r
---local _ = require 'libs.underscore'
+local _ = require 'libs.underscore'
 
 -- local forward references should go here --
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
@@ -75,13 +75,13 @@ function Footer:initialize(opts, parent)
       print( "PANEL STATE IS: "..target.completeState )
     end
   end
-  
+
   -- Function to handle button events
   local function handleTabBarEvent( event )
     print( event.target.id )  -- Reference to button's 'id' parameter
   end
 -- Configure the tab buttons to appear within the bar
-  local tabButtons = {
+  local tabOptions = {
     {
       labelFont = fontSHSans,
       labelFontSize = 24,
@@ -90,9 +90,9 @@ function Footer:initialize(opts, parent)
     },
     {
       id = "tab_xplr",
-      label = {text = "Explore", font = fontMorganiteSemiBold, fontSize = 32, xOffset = 30},
+      label = {text = "Explore", font = fontMorganiteSemiBold, fontSize = 32, xOffset = 10},
       icon = {name = 'pages', fontSize = 36},
-      xOffset = vW*0.32, yOffset = 0,
+      xOffset = -vW*0.32, yOffset = 0,
       selected = true
     },
     {
@@ -128,79 +128,100 @@ function Footer:initialize(opts, parent)
   background:insert(backgroundRect)
   panel.background = background
   panel:insert( panel.background )
-  --[[
-  local xplrIcon = createIcon {
-    x = -vW*0.32, y = 0,
-    text = 'pages',
-    fontSize = 36
-  }
-  xplrIcon:setFillColor(colorHex('C7A680'))
-  local labelExplr = display.newText( "Explore", xplrIcon.x + 50, 0, fontMorganiteSemiBold, 32 )
-  labelExplr:setFillColor(colorHex('C7A680'))
-  panel.labelExplr = labelExplr
-  panel:insert(xplrIcon)
-  panel:insert( panel.labelExplr )
-  --
-  local iconSearch = createIcon {
-    x = 32, y = 6,
-    text = 'search',
-    fontSize = 36
-  }
-  iconSearch:setFillColor(colorHex('6C6C6C'))
-  panel.tabSearch = iconSearch
-  panel:insert(iconSearch)
-
-  local iconUser = createIcon {
-    x = vW*0.32, y = 5,
-    text = 'person_outline',
-    fontSize = 36
-  }
-  iconUser:setFillColor(colorHex('6C6C6C'))
-  panel.tabMine = iconUser
-  panel:insert(iconUser)
-  ]]
   self:_attach(panel, 'TabBar')
-  self:createTab(tabButtons[3])
+  self:buildTabs(tabOptions)
   self:show()
-  --timer.performWithDelay(200, function() self:show() end)
   -- END VISUAL INITIALIING
   -- -------------------
 end
 
+function Footer:buildTabs(options)
+  local commonOpts = _.first(options)
+  local tabButtons = _.rest(options)
+  self.tabs = {}
+  _.each(tabButtons,
+    function(tabOption)
+      _.extend(tabOption, commonOpts)
+      self:createTab(tabOption)
+    end
+  )
+end
+
 function Footer:createTab(options)
   local tab = display.newGroup()
-  --tab.anchorChildren = true
   local selected = options.selected
-  local defaultColor = options.defaultColor or {colorHex('6C6C6C')}
-  local overColor = options.overColor or {colorHex('C7A680')}
+  local defaultColor = options.labelColor.default or {colorHex('6C6C6C')}
+  local overColor = options.labelColor.over or {colorHex('C7A680')}
   local fillColor = selected and overColor or defaultColor
-  
+
+  tab.defaultColor = defaultColor
+  tab.overColor = overColor
   local icon
   if options.icon and type(options.icon) == 'table' then
-    local opts = options.icon
-    d(opts)
-    local iconName = type(opts.name) == 'table' and opts.name.default or opts.name
+    local _icon = options.icon
+    local iconName = type(_icon.name) == 'table' and _icon.name.default or _icon.name
     icon = createIcon {
-      x = opts.xOffset or options.xOffset, y = opts.yOffset or options.yOffset,
+      x = _icon.xOffset or options.xOffset, y = _icon.yOffset or options.yOffset,
       text = iconName,
-      fontSize = opts.fontSize or 32
+      fontSize = _icon.fontSize or 32
     }
     icon:setFillColor(unpack(fillColor))
     tab:insert(icon)
-    d(icon.x .. ':' ..icon.y)
   end
 
   if options.label and type(options.label) == 'table' then
-    local opts = options.label
-    d(opts)
-    if icon then opts.xOffset = icon.x + icon.contentWidth + opts.xOffset end
-    local label = display.newText(tab, opts.text, opts.xOffset, opts.yOffset or 0, opts.font or fontMorganiteSemiBold, opts.fontSize or 32 )
+    local _label = options.label
+    if icon then _label.xOffset = icon.x + icon.contentWidth + (_label.xOffset or 10) end
+    local label = display.newText(
+      tab,
+      _label.text,
+      _label.xOffset or options.xOffset, _label.yOffset or options.yOffset,
+      _label.font or options.labelFont, _label.fontSize or options.labelFontSize
+    )
     label:setFillColor(unpack(fillColor))
     tab:insert(label)
   end
+  
+  local id = options.id
+  self.tabs[id] = tab
+  if selected then self.tabSeleted = id end
+  tab.id = id
+  self.elements.TabBar:insert(tab)
+  tab:addEventListener('touch', self)
+end
 
-  local bar = self.elements.TabBar
-  bar:insert(tab)
+function Footer:touch(event)
+  local id = event.target.id
+  if ( event.phase == "began" ) then
+    print( "Touch event began on: " .. event.target.id )
+  elseif ( event.phase == "ended" ) then
+    print( "Touch event ended on: " .. event.target.id )
+    if self.tabSelected == id then
+      d('Tab already seleted')
+    else
+      self:selectTab(event.target.id)
+    end
+  end
+  return true
+end
+
+function Footer:selectTab(tab_id)
+  local tabs = self.tabs
+  local tab = tabs[tab_id]
+  --tab:setFillColor(tab.overColor)
+  local overColor = tab.overColor
+  if tab.numChildren > 1 then
+    for i=1, tab.numChildren, 1 do
+      local entity = tab[i]
+      entity:setFillColor(unpack(overColor))
+      transition.to(entity, {time = 260, transition = easing.outBack, xScale = 1.2, yScale = 1.2})
+    end
+  else
+    local entity = tab[1]
+    transition.to(entity, {time = 260, transition = easing.outBack, xScale = 1.2, yScale = 1.2})
+    entity:setFillColor(unpack(overColor))
+  end
+  self.tabSelected = tab_id
 end
 
 function Footer:show()
