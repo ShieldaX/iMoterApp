@@ -18,7 +18,7 @@ local class = require 'libs.middleclass'
 local colorHex = require('libs.convertcolor').hex
 local util = require 'util'
 local d = util.print_r
---util.show_fps()
+--local _ = require 'libs.underscore'
 
 -- local forward references should go here --
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
@@ -92,7 +92,7 @@ function Footer:initialize(opts, parent)
       id = "tab_xplr",
       label = {text = "Explore", font = fontMorganiteSemiBold, fontSize = 32, xOffset = 30},
       icon = {name = 'pages', fontSize = 36},
-      xOffset = -vW*0.32, yOffset = 0,
+      xOffset = vW*0.32, yOffset = 0,
       selected = true
     },
     {
@@ -101,7 +101,7 @@ function Footer:initialize(opts, parent)
       xOffset = 32, yOffset = 6
     },
     {
-      id = "tab_ming",
+      id = "tab_mine",
       icon = {
         name = { default = 'person_outline', over = 'person'},
         fontSize = 36
@@ -128,7 +128,7 @@ function Footer:initialize(opts, parent)
   background:insert(backgroundRect)
   panel.background = background
   panel:insert( panel.background )
-
+  --[[
   local xplrIcon = createIcon {
     x = -vW*0.32, y = 0,
     text = 'pages',
@@ -158,7 +158,9 @@ function Footer:initialize(opts, parent)
   iconUser:setFillColor(colorHex('6C6C6C'))
   panel.tabMine = iconUser
   panel:insert(iconUser)
+  ]]
   self:_attach(panel, 'TabBar')
+  self:createTab(tabButtons[3])
   self:show()
   --timer.performWithDelay(200, function() self:show() end)
   -- END VISUAL INITIALIING
@@ -167,32 +169,38 @@ end
 
 function Footer:createTab(options)
   local tab = display.newGroup()
+  --tab.anchorChildren = true
   local selected = options.selected
-  local defaultColor = options.defaultColor or {1, 1, 1}
-  local overColor = options.overColor or { 0, 0, 0, 0.5 }
+  local defaultColor = options.defaultColor or {colorHex('6C6C6C')}
+  local overColor = options.overColor or {colorHex('C7A680')}
   local fillColor = selected and overColor or defaultColor
   
+  local icon
   if options.icon and type(options.icon) == 'table' then
     local opts = options.icon
-    local iconName = type(opts.name) == 'table' and opts.name.default
-    local icon = createIcon {
-      x = opts.xOffset, y = opts.yOffset,
+    d(opts)
+    local iconName = type(opts.name) == 'table' and opts.name.default or opts.name
+    icon = createIcon {
+      x = opts.xOffset or options.xOffset, y = opts.yOffset or options.yOffset,
       text = iconName,
       fontSize = opts.fontSize or 32
     }
-    icon:setFillColor(fillColor)
+    icon:setFillColor(unpack(fillColor))
     tab:insert(icon)
+    d(icon.x .. ':' ..icon.y)
   end
 
   if options.label and type(options.label) == 'table' then
     local opts = options.label
-    local label = display.newText(tab, opts.text, opts.xOffset, opts.yOffset, opts.font or fontMorganiteSemiBold, opts.fontSize or 32 )
-    label:setFillColor(fillColor)
+    d(opts)
+    if icon then opts.xOffset = icon.x + icon.contentWidth + opts.xOffset end
+    local label = display.newText(tab, opts.text, opts.xOffset, opts.yOffset or 0, opts.font or fontMorganiteSemiBold, opts.fontSize or 32 )
+    label:setFillColor(unpack(fillColor))
     tab:insert(label)
   end
 
   local bar = self.elements.TabBar
-  bar:inser(tab)
+  bar:insert(tab)
 end
 
 function Footer:show()
