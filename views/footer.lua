@@ -167,6 +167,7 @@ function Footer:createTab(options)
     }
     icon:setFillColor(unpack(fillColor))
     tab:insert(icon)
+    if selected then icon.xScale, icon.yScale = 1.1, 1.1 end
   end
 
   if options.label and type(options.label) == 'table' then
@@ -180,6 +181,7 @@ function Footer:createTab(options)
     )
     label:setFillColor(unpack(fillColor))
     tab:insert(label)
+    if selected then label.xScale, label.yScale = 1.1, 1.1 end
   end
   
   local id = options.id
@@ -205,21 +207,33 @@ function Footer:touch(event)
   return true
 end
 
-function Footer:selectTab(tab_id)
-  local tabs = self.tabs
-  local tab = tabs[tab_id]
-  --tab:setFillColor(tab.overColor)
-  local overColor = tab.overColor
+local function animateTab(tab, isSelect)
+  local fillColor = isSelect and tab.overColor or tab.defaultColor
+  local scaleFactor = isSelect and 1.2 or 1
   if tab.numChildren > 1 then
     for i=1, tab.numChildren, 1 do
       local entity = tab[i]
-      entity:setFillColor(unpack(overColor))
-      transition.to(entity, {time = 260, transition = easing.outBack, xScale = 1.2, yScale = 1.2})
+      entity:setFillColor(unpack(fillColor))
+      transition.to(entity, {time = 260, transition = easing.outBack, xScale = scaleFactor, yScale = scaleFactor})
     end
   else
     local entity = tab[1]
-    transition.to(entity, {time = 260, transition = easing.outBack, xScale = 1.2, yScale = 1.2})
-    entity:setFillColor(unpack(overColor))
+    transition.to(entity, {time = 260, transition = easing.outBack, xScale = scaleFactor, yScale = scaleFactor})
+    entity:setFillColor(unpack(fillColor))
+  end
+end
+
+function Footer:selectTab(tab_id)
+  local tabs = self.tabs
+  for id, tab in pairs(tabs) do
+    local isSelect = false
+    if id == tab_id then
+      isSelect = true
+      d('dddd')
+    else 
+      d('funk')
+    end
+    animateTab(tabs[id], isSelect)
   end
   self.tabSelected = tab_id
 end
