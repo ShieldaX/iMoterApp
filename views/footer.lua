@@ -5,12 +5,17 @@ local muiData = require( "materialui.mui-data" )
 -- Set a default theme
 widget.setTheme("widget_theme_ios7")
 
--- Constants List:
-local oX = display.screenOriginX
-local oY = display.screenOriginY
+--Display Constants List:
+local oX = display.safeScreenOriginX
+local oY = display.safeScreenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
 local visibleAspectRatio = vW/vH
+local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
+local cX, cY = display.contentCenterX, display.contentCenterY
+local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
+local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 local class = require 'libs.middleclass'
 --local Stateful = require 'libs.stateful'
@@ -19,12 +24,6 @@ local colorHex = require('libs.convertcolor').hex
 local util = require 'util'
 local d = util.print_r
 local _ = require 'libs.underscore'
-
--- local forward references should go here --
-local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
-local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
-local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
 
 -- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
@@ -46,9 +45,6 @@ local function createIcon(options)
   local icon = display.newText(options)
   return icon
 end
-
-
-
 -- ---
 -- Resize Image Display Object to Fit Screen WIDTH
 --
@@ -63,7 +59,8 @@ function Footer:initialize(opts, parent)
   d('创建底部对象: '..self.name)
   -- -------------------
   -- DATA BINDING
-  --
+  self.barHeight = opts.barHeight or 62
+  self.barWidth = opts.barWidth or vW
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -90,15 +87,15 @@ function Footer:initialize(opts, parent)
     },
     {
       id = "tab_xplr",
-      label = {text = "Explore", font = fontMorganiteSemiBold, fontSize = 32, xOffset = 10},
+      label = {text = "Explore", font = fontMorganiteSemiBold, fontSize = 32, xOffset = 5},
       icon = {name = 'pages', fontSize = 36},
-      xOffset = -vW*0.32, yOffset = 0,
+      xOffset = -vW*0.32, yOffset = 4,
       selected = true
     },
     {
       id = "tab_search",
       icon = {name = 'search', fontSize = 36},
-      xOffset = 32, yOffset = 6
+      xOffset = vW*0.06, yOffset = 4
     },
     {
       id = "tab_mine",
@@ -106,25 +103,25 @@ function Footer:initialize(opts, parent)
         name = { default = 'person_outline', over = 'person'},
         fontSize = 36
       },
-      xOffset = vW*0.32, yOffset = 5,
+      xOffset = vW*0.3, yOffset = 4,
     }
   }
 
   local panel = widget.newPanel{
     location = "bottom",
     onComplete = panelTransDone,
-    width = display.contentWidth,
-    height = 80,
-    speed = 420,
+    width = self.barWidth,
+    height = self.barHeight + bottomInset,
+    speed = 360,
     inEasing = easing.outCubic,
     outEasing = easing.inCirc
   }
-  local backgroundRect = display.newRoundedRect( 0, 0, panel.width, 80, 36 )
+  local backgroundRect = display.newRoundedRect( 0, 0, panel.width, panel.height, panel.height*.4 )
   backgroundRect:setFillColor(colorHex('1A1A19'))
-  local beyondRect = display.newRect(0, 20, panel.width, 40)
-  beyondRect:setFillColor(colorHex('1A1A19'))
+  local _patchRect = display.newRect(0, backgroundRect.y + backgroundRect.height*.25, panel.width, backgroundRect.height*.5)
+  _patchRect:setFillColor(colorHex('1A1A19'))
   local background = display.newGroup()
-  background:insert(beyondRect)
+  background:insert(_patchRect)
   background:insert(backgroundRect)
   panel.background = background
   panel:insert( panel.background )
@@ -149,6 +146,7 @@ end
 
 function Footer:createTab(options)
   local tab = display.newGroup()
+  tab.anchorChildren = true
   local selected = options.selected
   local defaultColor = options.labelColor.default or {colorHex('6C6C6C')}
   local overColor = options.labelColor.over or {colorHex('C7A680')}
@@ -156,39 +154,64 @@ function Footer:createTab(options)
 
   tab.defaultColor = defaultColor
   tab.overColor = overColor
+  tab.yOffset = options.yOffset - bottomInset*.5
   local icon
   if options.icon and type(options.icon) == 'table' then
     local _icon = options.icon
     local iconName = type(_icon.name) == 'table' and _icon.name.default or _icon.name
     icon = createIcon {
-      x = _icon.xOffset or options.xOffset, y = _icon.yOffset or options.yOffset,
+      x = 0, y = 0,
       text = iconName,
       fontSize = _icon.fontSize or 32
     }
     icon:setFillColor(unpack(fillColor))
     tab:insert(icon)
-    if selected then icon.xScale, icon.yScale = 1.1, 1.1 end
+    tab.x = _icon.xOffset or options.xOffset
+    tab.y = _icon.yOffset or options.yOffset
+    tab.y = tab.y - bottomInset*.5
+    --tab.yOffset = tab.y
+    if type(_icon.name) == 'table' then
+      d(_icon.name)
+      local overIcon = createIcon {
+        x = 0, y = 0,
+        text = _icon.name.over,
+        fontSize = _icon.fontSize or 32
+      }
+      overIcon:setFillColor(unpack(fillColor)) 
+      tab:insert(overIcon)
+      tab.overIcon = overIcon
+      overIcon.alpha = .5
+    end
   end
-
+  local label
   if options.label and type(options.label) == 'table' then
     local _label = options.label
     if icon then _label.xOffset = icon.x + icon.contentWidth + (_label.xOffset or 10) end
-    local label = display.newText(
+    label = display.newText(
       tab,
       _label.text,
-      _label.xOffset or options.xOffset, _label.yOffset or options.yOffset,
+      _label.xOffset or options.xOffset, _label.yOffset or 0,
       _label.font or options.labelFont, _label.fontSize or options.labelFontSize
     )
     label:setFillColor(unpack(fillColor))
-    tab:insert(label)
-    if selected then label.xScale, label.yScale = 1.1, 1.1 end
   end
-  
+
+  if icon and label then
+    tab.x = tab.x + icon.contentWidth*.5 
+  end
+
+--  local bounds = tab.contentBounds
+--  local touchDelegate = display.newRect(tab, bounds.xMin, bounds.yMin, tab.contentWidth, tab.contentHeight)
+--  touchDelegate:toBack()
+
   local id = options.id
   self.tabs[id] = tab
-  if selected then self.tabSeleted = id end
   tab.id = id
   self.elements.TabBar:insert(tab)
+  if selected then
+    --self.tabSeleted = id
+    self:selectTab(id)
+  end
   tab:addEventListener('touch', self)
 end
 
@@ -209,18 +232,16 @@ end
 
 local function animateTab(tab, isSelect)
   local fillColor = isSelect and tab.overColor or tab.defaultColor
-  local scaleFactor = isSelect and 1.2 or 1
-  if tab.numChildren > 1 then
-    for i=1, tab.numChildren, 1 do
-      local entity = tab[i]
-      entity:setFillColor(unpack(fillColor))
-      transition.to(entity, {time = 260, transition = easing.outBack, xScale = scaleFactor, yScale = scaleFactor})
-    end
-  else
-    local entity = tab[1]
-    transition.to(entity, {time = 260, transition = easing.outBack, xScale = scaleFactor, yScale = scaleFactor})
-    entity:setFillColor(unpack(fillColor))
+  local scaleFactor = isSelect and 1.1 or 1
+  local offSet = isSelect and  - bottomInset*.5 or tab.yOffset
+  for i=1, tab.numChildren, 1 do
+    tab[i]:setFillColor(unpack(fillColor))
   end
+  if tab.overIcon then
+    d('scallllllllllllll')
+    transition.to(tab.over, {time = 460, transition = easing.outBack, alpha = isSelect and 1 or 0, y = offSet})
+  end
+  transition.to(tab, {time = 460, transition = easing.outBack, xScale = scaleFactor, yScale = scaleFactor, y = offSet})
 end
 
 function Footer:selectTab(tab_id)
@@ -229,9 +250,6 @@ function Footer:selectTab(tab_id)
     local isSelect = false
     if id == tab_id then
       isSelect = true
-      d('dddd')
-    else 
-      d('funk')
     end
     animateTab(tabs[id], isSelect)
   end

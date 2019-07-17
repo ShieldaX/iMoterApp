@@ -17,16 +17,17 @@ local class = require 'libs.middleclass'
 local util = require 'util'
 local d = util.print_r
 
--- Constants List:
-local oX = display.screenOriginX
-local oY = display.screenOriginY
+--Display Constants List:
+local oX = display.safeScreenOriginX
+local oY = display.safeScreenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
 local visibleAspectRatio = vW/vH
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
+local cX, cY = display.contentCenterX, display.contentCenterY
+local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
-local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 -- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
@@ -89,8 +90,9 @@ function Header:initialize(opts, parent)
 		title = "= MEOW =",
 		titleColor = theme.navBarTextColor,
 		font = fontSHSans, fontSize = 14,
-		height = screenOffsetH + 42,
+		height = 42,
 		includeStatusBar = false,
+    --top = topInset
 		--leftButton = leftButton
 	})
   self:_attach(topBar, 'TopBar')

@@ -2,12 +2,17 @@ local widget = require( "widget" )
 -- Set a default theme
 widget.setTheme( "widget_theme_ios7" )
 
--- Constants List:
-local oX = display.screenOriginX
-local oY = display.screenOriginY
+--Display Constants List:
+local oX = display.safeScreenOriginX
+local oY = display.safeScreenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
 local visibleAspectRatio = vW/vH
+local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
+local cX, cY = display.contentCenterX, display.contentCenterY
+local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
+local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 local class = require 'libs.middleclass'
 --local Stateful = require 'libs.stateful'
@@ -16,11 +21,6 @@ local class = require 'libs.middleclass'
 local util = require 'util'
 local d = util.print_r
 --util.show_fps()
-
--- local forward references should go here --
-local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
-local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 
 -- ---
 -- CLASSES Declaration

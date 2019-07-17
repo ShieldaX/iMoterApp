@@ -434,14 +434,14 @@ function widget.newTextField(options)
   return field
 end  
 
-
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 function widget.newNavigationBar( options )
   local customOptions = options or {}
   local opt = {}
   opt.left = customOptions.left or nil
   opt.top = customOptions.top or nil
   opt.width = customOptions.width or display.contentWidth
-  opt.height = customOptions.height or 50
+  opt.height = customOptions.height or 50 + topInset
   if customOptions.includeStatusBar == nil then
     opt.includeStatusBar = true -- assume status bars for business apps
   else
@@ -472,11 +472,12 @@ function widget.newNavigationBar( options )
     opt.x = opt.left + opt.width * 0.5
   end
   if opt.top then
-    opt.y = opt.top + (opt.height + statusBarPad) * 0.5
+    opt.y = opt.top + (opt.height + statusBarPad ) * 0.5
   end
 
   local barContainer = display.newGroup()
-  local background = display.newRect(barContainer, opt.x, opt.y, opt.width, opt.height + statusBarPad )
+  print(topInset)
+  local background = display.newRect(barContainer, opt.x, opt.y + topInset*.5, opt.width, opt.height + statusBarPad + topInset)
   if opt.background then
     background.fill = { type = "image", filename=opt.background}
   elseif opt.backgroundColor then
@@ -489,7 +490,7 @@ function widget.newNavigationBar( options )
     end
   end
 
-  barContainer._title = display.newText(opt.title, background.x, background.y + statusBarPad * 0.5, opt.font, opt.fontSize)
+  barContainer._title = display.newText(opt.title, background.x, background.y + topInset*.5 + statusBarPad * 0.5, opt.font, opt.fontSize)
   barContainer._title:setFillColor(unpack(opt.titleColor))
   barContainer:insert(barContainer._title)
 

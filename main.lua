@@ -6,7 +6,7 @@
 
 -- show default status bar (iOS)
 display.setStatusBar(display.HiddenStatusBar)
-display.setDefault("background", 0)
+display.setDefault("background", 1)
 --
 -- utility - various handy add on functions
 --
@@ -33,3 +33,13 @@ local composer = require "composer"
 composer.gotoScene("scenes.album")
 --composer.gotoScene("scenes.album_list")
 --APP.Footer:toFront()
+
+-- Create a vector rectangle sized exactly to the "safe area"
+local safeArea = display.newRect(
+    display.safeScreenOriginX,
+    display.safeScreenOriginY,
+    display.safeActualContentWidth,
+    display.safeActualContentHeight
+)
+safeArea.alpha = 0
+safeArea:translate( safeArea.width*0.5, safeArea.height*0.5 )
