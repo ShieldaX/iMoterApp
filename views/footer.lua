@@ -169,18 +169,20 @@ function Footer:createTab(options)
     tab.x = _icon.xOffset or options.xOffset
     tab.y = _icon.yOffset or options.yOffset
     tab.y = tab.y - bottomInset*.5
-    --tab.yOffset = tab.y
+
     if type(_icon.name) == 'table' then
-      d(_icon.name)
-      local overIcon = createIcon {
+      local overIcon = createIcon{
         x = 0, y = 0,
         text = _icon.name.over,
         fontSize = _icon.fontSize or 32
       }
-      overIcon:setFillColor(unpack(fillColor)) 
+      overIcon:setFillColor(unpack(fillColor))
       tab:insert(overIcon)
+      d(overIcon)
       tab.overIcon = overIcon
-      overIcon.alpha = .5
+      tab.hasOverIcon = true
+      d(tab.overIcon)
+      overIcon.alpha = 0
     end
   end
   local label
@@ -216,7 +218,7 @@ function Footer:createTab(options)
 end
 
 function Footer:touch(event)
-  local id = event.target.id
+  local id = event.target.id or event.target.parent.id
   if ( event.phase == "began" ) then
     print( "Touch event began on: " .. event.target.id )
   elseif ( event.phase == "ended" ) then
@@ -238,8 +240,7 @@ local function animateTab(tab, isSelect)
     tab[i]:setFillColor(unpack(fillColor))
   end
   if tab.overIcon then
-    d('scallllllllllllll')
-    transition.to(tab.over, {time = 460, transition = easing.outBack, alpha = isSelect and 1 or 0, y = offSet})
+    transition.to(tab.overIcon, {time = 200, transition = easing.outBack, alpha = isSelect and 1 or 0})
   end
   transition.to(tab, {time = 460, transition = easing.outBack, xScale = scaleFactor, yScale = scaleFactor, y = offSet})
 end
@@ -250,8 +251,10 @@ function Footer:selectTab(tab_id)
     local isSelect = false
     if id == tab_id then
       isSelect = true
+      animateTab(tab, isSelect)
+    elseif self.tabSelected == id then
+      animateTab(tab, isSelect)
     end
-    animateTab(tabs[id], isSelect)
   end
   self.tabSelected = tab_id
 end
