@@ -51,18 +51,11 @@ function scene:create( event )
   local params = event.params
   currentPieceId = params.pieceId
   baseDir = params.baseDir
-  -- Gather insets (function returns these in the order of top, left, bottom, right)
-  local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
-  -- Create a vector rectangle sized exactly to the "safe area"
-  background = display.newRect(
-    oX + leftInset,
-    oY + topInset,
-    vW - ( leftInset + rightInset ),
-    vH - ( topInset + bottomInset )
-  )
-  background:setFillColor( 0, 0, 0 )
+  
+  background = display.newRect(sceneGroup, oX, oY, vW, vH)
+  background:setFillColor( 0 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
-  sceneGroup:insert( background )
+  
   _pieceImage = PieceImage:new(currentPieceId, baseDir, cX, cY, composer.getVariable( "autoRotate" ))
   _pieceImage.layer.alpha = 0
 --  _pieceImage = display.newImage( sceneGroup, currentPieceId, baseDir, cX, cY )
@@ -86,7 +79,7 @@ function scene:show( event )
   if ( phase == "will" ) then
     self.bgTransiton = transition.to( background, { alpha = 0.9 } )
     self.imageTransiton = transition.to( _pieceImage.layer, { alpha = 1 } )
-    --APP.Footer:hide()
+    APP.Footer:hide()
   elseif ( phase == "did" ) then
 
   end

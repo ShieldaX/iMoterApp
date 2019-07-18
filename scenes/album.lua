@@ -3,10 +3,18 @@
 --      Scene notes
 ---------------------------------------------------------------------------------
 local composer = require( "composer" )
--- forward declarations and other locals
-local screenW, screenH, halfW = display.contentWidth, display.contentHeight, display.contentWidth*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
+
+--Display Constants List:
+local oX = display.safeScreenOriginX
+local oY = display.safeScreenOriginY
+local vW = display.viewableContentWidth
+local vH = display.viewableContentHeight
+local visibleAspectRatio = vW/vH
+local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
+local cX, cY = display.contentCenterX, display.contentCenterY
+local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 local background = nil
 local widget = require( "widget" )
@@ -52,19 +60,9 @@ function scene:create( event )
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
   --      CREATE display objects and add them to 'group' here.
-
-  -- Gather insets (function returns these in the order of top, left, bottom, right)
-  local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
-  -- Create a vector rectangle sized exactly to the "safe area"
-  background = display.newRect(
-    display.screenOriginX + leftInset,
-    display.screenOriginY + topInset,
-    display.viewableContentWidth - ( leftInset + rightInset ),
-    display.viewableContentHeight - ( topInset + bottomInset )
-  )
+  background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor( 0 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
-  sceneGroup:insert( background )
   
   APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
   APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())

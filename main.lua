@@ -6,7 +6,7 @@
 
 -- show default status bar (iOS)
 display.setStatusBar(display.HiddenStatusBar)
-display.setDefault("background", 1)
+display.setDefault("background", 0)
 --
 -- utility - various handy add on functions
 --
