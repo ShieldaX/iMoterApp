@@ -26,48 +26,54 @@ local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.v
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 
 local function tribleNum(num)
-	local prefix = '00'
-	if num >= 10 then
-		prefix = '0'
-	elseif num >= 100 then
-		prefix = ''
-	end
-	return prefix .. tostring( num )
+  local prefix = '00'
+  if num >= 10 then
+    prefix = '0'
+  elseif num >= 100 then
+    prefix = ''
+  end
+  return prefix .. tostring( num )
 end
 
 -- 根据远端资源命名规则解析图集所包含的图片
-local function resolveImages(album)
-	local numPieces, uris, names = 1, {}, {}
-	numPieces = album.pieces
-	local prefix = 'https://t1.onvshen.com:85/gallery/'
+local function resolveImages(album, includeCover)
+  local numPieces, uris, names = 1, {}, {}
+  numPieces = album.pieces
+  local prefix = 'https://t1.onvshen.com:85/gallery/'
   local subfix = '0'
   local moterId, albumId = album.moters[1]._id, album._id
   uris[1] = prefix .. moterId .. '/' .. albumId .. '/' .. subfix
   names[1] = moterId .. '_' .. albumId .. '_' .. subfix
-	for i = 2, numPieces do
-		local idx = i - 1
-		uris[i] = prefix .. moterId .. '/' .. albumId .. '/' .. tribleNum(idx)
-		names[i] = moterId .. '_' .. albumId .. '_' .. tribleNum(idx)
-	end
-	return uris, names
+  for i = 2, numPieces do
+    local idx = i - 1
+    uris[i] = prefix .. moterId .. '/' .. albumId .. '/' .. tribleNum(idx)
+    names[i] = moterId .. '_' .. albumId .. '_' .. tribleNum(idx)
+  end
+  if includeCover then
+    local coverURI = prefix .. moterId .. '/' .. albumId .. '/cover/' .. subfix
+    local coverName = moterId .. '_' .. albumId .. '_cover_' .. subfix
+    table.insert(uris, 1, coverURI)
+    table.insert(names, 1, coverName)
+  end
+  return uris, names
 end
 
 -- 将图片自适应屏幕宽度
 local function fitScreenW(p, top, bottom)
-	top = top or 0
-	bottom = bottom or 0
-	local h = viewableScreenH-(top+bottom)
-	if p.width > viewableScreenW or p.height > h then
-		if p.width/viewableScreenW > p.height/h then
-				p.xScale = viewableScreenW/p.width
-				p.yScale = viewableScreenW/p.width
-		else
-				p.xScale = h/p.height
-				p.yScale = h/p.height
-		end
-	end
-	p.x = screenW*.5
-	p.y = h*.5
+  top = top or 0
+  bottom = bottom or 0
+  local h = viewableScreenH-(top+bottom)
+  if p.width > viewableScreenW or p.height > h then
+    if p.width/viewableScreenW > p.height/h then
+      p.xScale = viewableScreenW/p.width
+      p.yScale = viewableScreenW/p.width
+    else
+      p.xScale = h/p.height
+      p.yScale = h/p.height
+    end
+  end
+  p.x = screenW*.5
+  p.y = h*.5
 end
 
 -- 利用获取的图集信息实例化一个图集对象
@@ -150,6 +156,13 @@ function Album:switchPiece(direction)
   local targetIndex = currentIndex + direction
   local pieceId = self.imgNames[targetIndex]
   --TODO: prompt head or foot page if any
+  if direction > 0 then
+    APP.Header:hide()
+    APP.Footer:hide()
+  else
+    APP.Header:show()
+    APP.Footer:show()
+  end
   if pieceId == nil then
     if direction == -1 then
       d('This is already the first pix!') 
@@ -189,22 +202,22 @@ function Album:turnOver()
   -- Blocking Piece to Avoid Unexpect Interaction while Transition (Moving)
   targetPiece.isBlocked = true
   transition.to( targetPiece.layer, {
-    --onStart = function() targetPiece.isBlocked = true end,
-    time = transTime,
-    x = 0, y = 0,
-    xScale = 1, yScale = 1,
-    alpha = 1,
-    transition = easeType,
-    onComplete = function()
-      targetPiece.isBlocked = false
-      currentPiece:cleanup()
-      self.elements[self.currentPieceId] = nil
-      -- exchange avatars in plus view
-      self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
-      if self.currentPieceId and self.elements[self.currentPieceId].state >= View.STATUS.PRELOADED then
-        self.elements[self.currentPieceId]:start()
+      --onStart = function() targetPiece.isBlocked = true end,
+      time = transTime,
+      x = 0, y = 0,
+      xScale = 1, yScale = 1,
+      alpha = 1,
+      transition = easeType,
+      onComplete = function()
+        targetPiece.isBlocked = false
+        currentPiece:cleanup()
+        self.elements[self.currentPieceId] = nil
+        -- exchange avatars in plus view
+        self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
+        if self.currentPieceId and self.elements[self.currentPieceId].state >= View.STATUS.PRELOADED then
+          self.elements[self.currentPieceId]:start()
+        end
       end
-    end
     }
   )
 end
@@ -228,10 +241,10 @@ end
 function Album:onPieceTapped(event)
   event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
   local options = {
-      effect = "fade",
-      time = 500,
-      isModal = true,
-      params = event
+    effect = "fade",
+    time = 500,
+    isModal = true,
+    params = event
   }
   composer.showOverlay( "scenes.piece", options )
 end

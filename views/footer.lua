@@ -59,7 +59,7 @@ function Footer:initialize(opts, parent)
   d('创建底部对象: '..self.name)
   -- -------------------
   -- DATA BINDING
-  self.barHeight = opts.barHeight or 62
+  self.barHeight = opts.barHeight or 64
   self.barWidth = opts.barWidth or vW
   -- END DATA BINDING
   -- -------------------

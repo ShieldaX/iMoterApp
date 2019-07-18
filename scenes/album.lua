@@ -67,7 +67,7 @@ function scene:create( event )
   sceneGroup:insert( background )
   
   APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
-  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 60}, display.getCurrentStage())
+  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
   
   local function openAlbumWithData(res)
     if not res or not res.data then

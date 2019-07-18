@@ -32,11 +32,11 @@ local APP = require("classes.application")
 
 -- Enum of Indicator Types
 Indicator.static.TYPE = {
-    DEFAULT = 10,
-    NUMERIC = 10, -- DEFAULT
-    BAR = 20,
-    ROUNDED = 30
-  }
+  DEFAULT = 10,
+  NUMERIC = 10, -- DEFAULT
+  BAR = 20,
+  ROUNDED = 30
+}
 -- ---
 -- Resize Image Display Object to Fit Screen WIDTH
 --
@@ -61,20 +61,20 @@ function Indicator:initialize(opts, parent)
   local _progbar
   if self.total then
     _progbar = widget.newProgressView {
-        id = '_indicator_progressv',
-        left = oX, top = oY + self.topPadding, width = vW,
-        isAnimated = true
-      }
+      id = '_indicator_progressv',
+      left = oX, top = oY + self.topPadding, width = vW,
+      isAnimated = true
+    }
     self:_attach(_progbar, 'bar')
   end
-  
+
 --  TODO: use native indicator instead: native.setActivityIndicator( state ) --boolean
   local _spinner = widget.newSpinner {
-      id = '_spinner',
-      x = halfW, y = halfH,
-      deltaAngle = 10,
-      incrementEvery = 20
-    }
+    id = '_spinner',
+    x = halfW, y = halfH,
+    deltaAngle = 10,
+    incrementEvery = 20
+  }
   _spinner.alpha = 0
   self:_attach(_spinner, 'spinner')
   self.layer:toFront()
@@ -95,6 +95,16 @@ end
 function Indicator:onPieceLoaded(event)
   self.elements.spinner.alpha = 0
   self.elements.spinner:stop()
+end
+
+function Indicator:onHeaderMove(event)
+  local bar = self.elements.bar
+  local dist = APP.Header.elements.TopBar.contentHeight
+  if event.hidden then
+    self.animation = transition.to(bar, {delta = true, time = 450, transition = easing.outExpo, y = -dist})
+  else
+    self.animation = transition.to(bar, {delta = true, time = 450, transition = easing.outExpo, y = dist})
+  end
 end
 
 function Indicator:onAlbumLimitReached(event)

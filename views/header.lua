@@ -99,6 +99,22 @@ function Header:initialize(opts, parent)
   -- END VISUAL INITIALIING
   -- -------------------
 end
-  
+
+function Header:hide()
+  local topBar = self.elements.TopBar
+  if not topBar or self.isHidden then return false end
+  self.animation = transition.to(topBar, {time = 450, transition = easing.outExpo, y = -topBar.contentHeight})
+  self:signal('onHeaderMove', {hidden = true})
+  self.isHidden = true
+end
+
+function Header:show()
+  local topBar = self.elements.TopBar
+  if not topBar or not self.isHidden then return false end
+  self.animation = transition.to(topBar, {time = 450, transition = easing.outExpo, y = 0})
+  self:signal('onHeaderMove', {hidden = false})
+  self.isHidden = false
+end 
+
 return Header
 
