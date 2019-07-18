@@ -94,7 +94,8 @@ function Piece:preload()
       d(event)
     end
     if ( event.isError ) then
-      print ( "Network error - download failed" )
+      print ( "Network error - piece image download failed" )
+      native.showAlert("网络错误!", "网络似乎开小差了，联网后重试!", { "好的" } )
       return false
     else
       self:signal('onPieceLoaded')
