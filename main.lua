@@ -30,7 +30,7 @@ local FooterView = require("views.footer")
 -- include the Corona "composer" module
 local composer = require "composer"
 -- load app screen
-composer.gotoScene("scenes.album")
+composer.gotoScene("scenes.home")
 --composer.gotoScene("scenes.album_list")
 --APP.Footer:toFront()
 
