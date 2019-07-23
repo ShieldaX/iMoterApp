@@ -14,11 +14,17 @@ return {
       required_params = {"album_id"},
     },
     
-    listAlbums = {
+    listAlbumsOfMoter = {
       method = "GET",
       path = "api/albums",
       optional_params = { "skip", "limit" },
       required_params = {"moter"},
+    },
+    
+    listAlbums = {
+      method = "GET",
+      path = "api/albums",
+      optional_params = { "skip", "limit" },
     },
     
     -- Moter

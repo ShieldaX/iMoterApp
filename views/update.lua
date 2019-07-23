@@ -41,6 +41,7 @@ local function resolveCoverImage(album)
   local prefix = 'https://t1.onvshen.com:85/gallery/'
   local subfix = '0'
   local moterId, albumId = album.moters[#album.moters], album._id
+  if not moterId then d(album.moters) end
   local coverURI = prefix .. moterId .. '/' .. albumId .. '/cover/' .. subfix
   local coverImgName = moterId .. '_' .. albumId .. '_cover_' .. subfix
   return coverURI, coverImgName
