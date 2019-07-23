@@ -9,11 +9,6 @@ local composer = require( "composer" )
 
 local util = require 'util'
 local d = util.print_r
--- forward declarations and other locals
-local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
-local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
-local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
 local colorHex = require('libs.convertcolor').hex
 
 -- Constants List:
@@ -21,6 +16,18 @@ local oX = display.screenOriginX
 local oY = display.screenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
+local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
+local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
+local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+
+-- Fonts
+local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
+local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
+local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 
 local background = nil
 local widget = require( "widget" )
@@ -148,10 +155,28 @@ function scene:create( event )
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
+  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
+  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
   
-  APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
-  --APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
+  local _lgray = {colorHex('6C6C6C')}
+  local titleFSize = 12
+  local labelFSize = 20
+  local padding = labelFSize*.618
+  local gY = APP.Header.elements.TopBar.contentBounds.yMax + padding*2
 
+  local labelScoreCount = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
+  local labelNumAlbum = display.newText {text = '热门', x = vW*.5, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
+  local labelNumHot = display.newText {text = ' ', x = vW*.76, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
+  sceneGroup:insert(labelScoreCount)
+  sceneGroup:insert(labelNumAlbum)
+  sceneGroup:insert(labelNumHot)
+  local cursorRect = display.newRect(cX, cY, vW*.2, 4)
+  cursorRect:setFillColor(colorHex('C7A680'))
+  cursorRect.anchorY = 1
+  cursorRect.y = labelScoreCount.y + padding*2
+  sceneGroup:insert(cursorRect)
+  cursorRect.x = labelScoreCount.x  
+  
 --  TODO: Show Indicator Before Moter View Really Loaded
   indicator:send('onAlbumListLoad')
   local function showAlbumsWithData(res)
@@ -171,7 +196,7 @@ function scene:create( event )
     --APP.moterView:layout()
     albumListView:open()
   end
-  iMoter:listAlbums('22162', {skip = 0, limit = 6}, showAlbumsWithData) -- 19702; 22162; 27180
+  --iMoter:listAlbums('22162', {skip = 0, limit = 6}, showAlbumsWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
   -----------------------------------------------------------------------------
 end
