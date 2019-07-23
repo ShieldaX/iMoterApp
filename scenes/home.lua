@@ -175,7 +175,7 @@ function scene:create( event )
   cursorRect.anchorY = 1
   cursorRect.y = labelScoreCount.y + padding*2
   sceneGroup:insert(cursorRect)
-  cursorRect.x = labelScoreCount.x  
+  cursorRect.x = labelScoreCount.x
   
 --  TODO: Show Indicator Before Moter View Really Loaded
   indicator:send('onAlbumListLoad')
@@ -186,7 +186,7 @@ function scene:create( event )
     end
     local _albumList = res.data.albums
     local _data = res.data
-    APP.Header.elements.TopBar:setLabel('模图云') --TODO: show _data.moter.name
+    APP.Header.elements.TopBar:setLabel('模云') --TODO: show _data.moter.name
     APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
     print(inspect(_data))
     local albumListView = AlbumList:new(_data, sceneGroup)

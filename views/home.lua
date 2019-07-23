@@ -16,8 +16,9 @@ local View = require 'libs.view'
 local Piece = require 'views.piece'
 local Album = require 'views.album'
 local Cover = require 'views.cover'
+local CoverFlow = require 'views.cover_flow'
 local Indicator = require 'views.indicator'
-local AlbumList = class('AlbumListView', View)
+local Update = class('AlbumListView', View)
 local APP = require("classes.application")
 
 -- Constants List:
@@ -102,9 +103,9 @@ local function createIcon(options)
 end
 
 -- 利用获取的图集信息实例化一个图集对象
-function AlbumList:initialize(obj, sceneGroup)
+function Update:initialize(obj, sceneGroup)
   d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-  d('- Prototype of AlbumList View -')
+  d('- Prototype of Update View -')
   d('- ======================== -')
   View.initialize(self, sceneGroup)
   -- -------------------
@@ -153,7 +154,7 @@ function AlbumList:initialize(obj, sceneGroup)
   -- -------------------
 end
 
-function AlbumList:open(index)
+function Update:open(index)
   index = index or 1
   self.cursorAlbumId = nil
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
@@ -163,7 +164,7 @@ function AlbumList:open(index)
     self:createCover(i)
   end
   local moreLabel = display.newText {
-    text = '查看全部...    ',
+    text = '加载更多...',
     x = cX, y = cY,
     fontSize = 18, font = fontSHSansBold
   }
@@ -188,25 +189,26 @@ function AlbumList:open(index)
   self:setState('STARTED')
 end
 
-function AlbumList:createCover(index)
+function Update:createCover(index)
   local albums = self._albums
   local album = albums[index]
   if not album then return false end
   local coverURI, coverFileName = resolveCoverImage(album)
-  local coverView = Cover({
+  local coverFlow = CoverFlow({
       uri = coverURI,
       name = coverFileName,
       title = album.title,
+      col = 2,
       index = index
       }, self)
-  coverView:preload() --@index pos?
+  coverFlow:preload() --@index pos?
 end  
 
 -- ---
 -- 清除其他预加载的Piece View，（重）新创建一个Piece对象，
 -- 如果预加载的Piece View 和目标一致则直接返回
 -- 如果有预加载回调任务则置入Piece View的预加载中
-function AlbumList:loadAlbum(index)
+function Update:loadAlbum(index)
   if self.paintedPieceId then
     d('FOUND EXISIST IN MEMORY: ' .. self.paintedPieceId)
     if self.elements[self.paintedPieceId] then
@@ -222,7 +224,7 @@ function AlbumList:loadAlbum(index)
   self.paintedPieceId = _piece.name
 end
 
-function AlbumList:onAlbumTapped(event)
+function Update:onAlbumTapped(event)
   event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
   local options = {
     effect = "fade",
@@ -233,14 +235,14 @@ function AlbumList:onAlbumTapped(event)
   composer.showOverlay( "scenes.piece", options )
 end
 
-function AlbumList:start()
+function Update:start()
   if self.state == 30 then return false end
   --local e = self.elements
   self:setState('STARTED')
 end
 
-function AlbumList:stop()
+function Update:stop()
   self:cleanup()
 end
 
-return AlbumList
+return Update
