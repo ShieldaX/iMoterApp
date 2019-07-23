@@ -71,7 +71,7 @@ end
 -- Preload Image Display Object
 -- Then Try to Start Self if not blocked
 --
-function Cover:preload()
+function Cover:preload(yTop)
   if self.state > View.STATUS.INITIALIZED then
     d("Try to preload Cover already @ "..self.getState())
     return false
@@ -94,9 +94,8 @@ function Cover:preload()
       _image.alpha = 0
       self.imageTransiton = transition.to( _image, { alpha = 1, time = 1000 } )
       self:_attach(_image, 'image')
-      local nextBG = self.parent.elements.nextBG
       --util.center(self.layer)
-      self.layer.y = nextBG.contentHeight*.42
+      self.layer.y = yTop or vH*.18
       --self.layer.x = oX + _image.contentWidth*.618
       self:send('onImageLoaded')
     end

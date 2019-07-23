@@ -186,7 +186,7 @@ function scene:create( event )
     end
     local _albumList = res.data.albums
     local _data = res.data
-    APP.Header.elements.TopBar:setLabel('iMoter') --TODO: show _data.moter.name
+    APP.Header.elements.TopBar:setLabel('模图云') --TODO: show _data.moter.name
     APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
     print(inspect(_data))
     local albumListView = AlbumList:new(_data, sceneGroup)
@@ -196,7 +196,7 @@ function scene:create( event )
     --APP.moterView:layout()
     albumListView:open()
   end
-  --iMoter:listAlbums('22162', {skip = 0, limit = 6}, showAlbumsWithData) -- 19702; 22162; 27180
+  iMoter:listAlbums('22162', {skip = 0, limit = 10}, showAlbumsWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
   -----------------------------------------------------------------------------
 end

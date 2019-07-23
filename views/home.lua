@@ -139,9 +139,9 @@ function AlbumList:initialize(obj, sceneGroup)
   end
   
   local scrollContainer = widget.newScrollView{
-    top = _nextBG.y, left = oX,
-    width = _nextBG.contentWidth, height = _nextBG.contentHeight,
-    scrollWidth = 1000, scrollHeight = _nextBG.contentHeight,
+    top = vH*.18, left = oX,
+    width = vW, height = vH,
+    scrollWidth = 1000, scrollHeight = vH,
     hideBackground = true,
     hideScrollBar = false,
     listener = scrollListener,
@@ -174,7 +174,7 @@ function AlbumList:open(index)
   }
   moreIcon.anchorX = 0
   moreIcon:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
-  moreIcon.y = self.elements.nextBG.contentHeight*.48
+--  moreIcon.y = self.elements.nextBG.contentHeight*.48
   self.elements.slider:insert(moreIcon)
 --  self.elements.slider:insert(moreLabel)
   self.moreLabel = moreLabel
