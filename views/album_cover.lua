@@ -44,15 +44,15 @@ end
 -- CLASSES Declaration
 --
 local View = require "libs.view"
-local CoverFlow = class('CoverFlowView', View)
-CoverFlow.STATUS.RELEASED = 100
+local Cover = class('AlbumCoverView', View)
+Cover.STATUS.RELEASED = 100
 
 -- ---
 -- Default Image File Cache Directory
--- TODO: Try to load piece image from this dir firstly
-CoverFlow.static.DEFAULT_DIRECTORY = system.CachesDirectory
+-- TODO: Try to load cover image from this dir firstly
+Cover.static.DEFAULT_DIRECTORY = system.CachesDirectory
 
-function CoverFlow:initialize(opts, parent)
+function Cover:initialize(opts, parent)
   d('创建封面对象: '..opts.name)
   self.uri = opts.uri .. '.jpg'
   self.fileName = opts.name .. '.jpg'
@@ -60,20 +60,18 @@ function CoverFlow:initialize(opts, parent)
   self.title = opts.title
   self.index = opts.index or 1
   View.initialize(self, parent)
-  parent.elements.slider:insert(self.layer)
-  assert(self.layer, 'CoverFlow View Initialized Failed!')
   --self.layer:toFront()
-  --self.layer.anchorChildren = true
+  self.layer.anchorChildren = true
+  self.layer.anchorY = 1
   -- =============================
 end
 
 -- ---
--- Preload Image Display Object
--- Then Try to Start Self if not blocked
+-- Preload Cover Image Display Object
 --
-function CoverFlow:preload(yTop, cols)
+function Cover:preload(row, col)
   if self.state > View.STATUS.INITIALIZED then
-    d("Try to preload CoverFlow already @ "..self.getState())
+    d("Try to preload Cover already @ "..self.getState())
     return false
   end
   -- ------------------
@@ -82,8 +80,11 @@ function CoverFlow:preload(yTop, cols)
   self:signal('onImageLoad')
   -- Load image
   local scaleFactor = 0.42
-  local _index = self.index
-  self.layer.x = oX + (vW*scaleFactor)*.618 + (_index - 1)*(vW*scaleFactor*1.14)
+  local _row = row
+  local _col = col
+  self.row = row
+  self.col = col
+  self.layer.x = oX + (vW*scaleFactor)*.618 + (_col-1)*(vW*scaleFactor*1.14)
 	local function networkListener( event )
     if ( event.isError ) then
       print ( "Network error - download failed" )
@@ -94,9 +95,6 @@ function CoverFlow:preload(yTop, cols)
       _image.alpha = 0
       self.imageTransiton = transition.to( _image, { alpha = 1, time = 1000 } )
       self:_attach(_image, 'image')
-      --util.center(self.layer)
-      self.layer.y = yTop or vH*.18
-      --self.layer.x = oX + _image.contentWidth*.618
       self:send('onImageLoaded')
     end
     self.fileName = event.response.filename
@@ -106,15 +104,15 @@ function CoverFlow:preload(yTop, cols)
       self:cleanup()
     else
       self:setState('PRELOADED')
-      d('Start CoverFlow '..self.name..' '..self:getState())
+      d('Start Cover '..self.name..' '..self:getState())
       self.isBlocked = false
       self:start()
     end
 	end
-  display.loadRemoteImage( self.uri, "GET", networkListener, self.fileName, CoverFlow.DEFAULT_DIRECTORY, oX, oY)
+  display.loadRemoteImage( self.uri, "GET", networkListener, self.fileName, Cover.DEFAULT_DIRECTORY, oX, oY)
 end
 
-function CoverFlow:onImageLoaded()
+function Cover:onImageLoaded()
   local cImage = self.elements.image
   if not cImage then return false end
   local bounds = cImage.contentBounds
@@ -134,25 +132,21 @@ function CoverFlow:onImageLoaded()
     width = cImage.contentWidth,
     algin = 'center'
   }
---  label:setFillColor(colorHex('C7A680'))
   label:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
---  local labelBG = display.newRect(cImage.contentBounds.xMin, cImage.y + cImage.contentHeight*.2, label.contentWidth, label.contentHeight)
---  labelBG:setFillColor(unpack(colorsRGB.RGBA('black', 0.6)))
-  --labelBG.anchorX = 0
---  labelBG.anchorY = 0
---  self:_attach(labelBG)
   self:_attach(label, 'label')
   label.x = cImage.x
   label.y = cImage.y + cImage.contentHeight*.5 + label.contentHeight*.5 + 10
+  self.layer.y = self.row*self.layer.contentHeight*1.06
+  self.parent.elements.slider:insert(self.layer)
   --self.layer.anchorChildren = true
 end
 
 -- ---
 -- Begin to receive touch or tap events, then give reflection back properly
 --
-function CoverFlow:start()
+function Cover:start()
 --{{{
-  d('Try to start CoverFlow '..self.name..' @ '..self:getState())
+  d('Try to start Cover '..self.name..' @ '..self:getState())
   if (self.state < View.STATUS.PRELOADED) or self.isBlocked then
     d(self.name .. ' is Not Ready to Start!')
     return false
@@ -160,7 +154,6 @@ function CoverFlow:start()
     d(self.name .. ' already Started!')
     return false
   end
-  
   if (self.state <= View.STATUS.STOPPED) then
     --self:unblock()
   end
@@ -168,12 +161,11 @@ function CoverFlow:start()
   self.layer:addEventListener('touch', self)
   self.layer:addEventListener('tap', self)
   self:setState('STARTED')
-  d(self.name..' '..self:getState())
 --}}}
 end
 
-function CoverFlow:tap(tap)
+function Cover:tap(tap)
   d('TODO: open album: '..self.title)
 end
 
-return CoverFlow
+return Cover

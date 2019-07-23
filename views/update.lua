@@ -15,8 +15,7 @@ local d = util.print_r
 local View = require 'libs.view'
 local Piece = require 'views.piece'
 local Album = require 'views.album'
-local Cover = require 'views.cover'
-local CoverFlow = require 'views.cover_flow'
+local Cover = require 'views.album_cover'
 local Indicator = require 'views.indicator'
 local Update = class('AlbumListView', View)
 local APP = require("classes.application")
@@ -38,38 +37,10 @@ local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 
-local function tribleNum(num)
-  local prefix = '00'
-  if num >= 10 then
-    prefix = '0'
-  elseif num >= 100 then
-    prefix = ''
-  end
-  return prefix .. tostring( num )
-end
-
--- 根据远端资源命名规则解析图集所包含的图片
-local function resolveImages(album)
-  local numPieces, uris, names = 1, {}, {}
-  numPieces = album.pieces
-  local prefix = 'https://t1.onvshen.com:85/gallery/'
-  local subfix = '0'
-  local moterId, albumId = album.moters[1]._id, album._id
-  uris[1] = prefix .. moterId .. '/' .. albumId .. '/' .. subfix
-  names[1] = moterId .. '_' .. albumId .. '_' .. subfix
-  for i = 2, numPieces do
-    local idx = i - 1
-    uris[i] = prefix .. moterId .. '/' .. albumId .. '/' .. tribleNum(idx)
-    names[i] = moterId .. '_' .. albumId .. '_' .. tribleNum(idx)
-  end
-  return uris, names
-end
-
-
 local function resolveCoverImage(album)
   local prefix = 'https://t1.onvshen.com:85/gallery/'
   local subfix = '0'
-  local moterId, albumId = album.moters[1], album._id
+  local moterId, albumId = album.moters[#album.moters], album._id
   local coverURI = prefix .. moterId .. '/' .. albumId .. '/cover/' .. subfix
   local coverImgName = moterId .. '_' .. albumId .. '_cover_' .. subfix
   return coverURI, coverImgName
@@ -103,7 +74,7 @@ local function createIcon(options)
 end
 
 -- 利用获取的图集信息实例化一个图集对象
-function Update:initialize(obj, sceneGroup)
+function Update:initialize(obj, topPadding, sceneGroup)
   d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
   d('- Prototype of Update View -')
   d('- ======================== -')
@@ -120,9 +91,20 @@ function Update:initialize(obj, sceneGroup)
   -- VISUAL INITIALIING
   -- ScrollView listener
   local function scrollListener( event )
+    local _t = event.target
     local phase = event.phase
     if ( phase == "began" ) then print( "Scroll view was touched" )
+      _t.xStart, _t.yStart = _t:getContentPosition()
+      d(_t.yStart)
     elseif ( phase == "moved" ) then print( "Scroll view was moved" )
+      _t.xLast, _t.yLast = _t:getContentPosition()
+      _t.motion = _t.yLast - _t.yStart
+      local isTabBarHidden = APP.Footer.hidden
+      if _t.motion <= -30 and not isTabBarHidden then
+        APP.Footer:hide()
+      elseif _t.motion >= 30 and isTabBarHidden then
+        APP.Footer:show()
+      end
     elseif ( phase == "ended" ) then print( "Scroll view was released" )
     end
     -- In the event a scroll limit is reached...
@@ -131,23 +113,23 @@ function Update:initialize(obj, sceneGroup)
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )
-        self.moreLabel.alpha = 1
-        self.elements.slider:insert(self.moreLabel)
+--        self.moreLabel.alpha = 1
+--        self.elements.slider:insert(self.moreLabel)
       elseif ( event.direction == "right" ) then print( "Reached left limit" )
       end
     end
     return true
   end
-  
+  local padding = topPadding or 0
   local scrollContainer = widget.newScrollView{
-    top = vH*.18, left = oX,
-    width = vW, height = vH,
-    scrollWidth = 1000, scrollHeight = vH,
+    top = oY, left = oX,
+    width = vW, height = vH - padding,
+    scrollWidth = vW, scrollHeight = vH,
     hideBackground = true,
-    hideScrollBar = false,
+    hideScrollBar = true,
+    friction = 0.946,
     listener = scrollListener,
---      rightPadding = vW*.36*0.8,
-    verticalScrollDisabled = true
+    horizontalScrollDisabled = true
   }
   self:_attach(scrollContainer, 'slider')
   -- END VISUAL INITIALIING
@@ -160,9 +142,9 @@ function Update:open(index)
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   local albums = self._albums
   for i = index, #albums, 1 do
-    d(albums[i])
-    self:createCover(i)
+    self:loadCover(i)
   end
+  --[[
   local moreLabel = display.newText {
     text = '加载更多...',
     x = cX, y = cY,
@@ -186,42 +168,23 @@ function Update:open(index)
 --  moreLabel.anchorY = 0
   moreLabel.y = moreIcon.y + moreLabel.height*.2
 --  d(moreLabel.y)
+  ]]
   self:setState('STARTED')
 end
 
-function Update:createCover(index)
-  local albums = self._albums
-  local album = albums[index]
+function Update:loadCover(index)
+  local album = self._albums[index]
   if not album then return false end
   local coverURI, coverFileName = resolveCoverImage(album)
-  local coverFlow = CoverFlow({
+  local cover = Cover({
       uri = coverURI,
       name = coverFileName,
       title = album.title,
-      col = 2,
       index = index
       }, self)
-  coverFlow:preload() --@index pos?
-end  
-
--- ---
--- 清除其他预加载的Piece View，（重）新创建一个Piece对象，
--- 如果预加载的Piece View 和目标一致则直接返回
--- 如果有预加载回调任务则置入Piece View的预加载中
-function Update:loadAlbum(index)
-  if self.paintedPieceId then
-    d('FOUND EXISIST IN MEMORY: ' .. self.paintedPieceId)
-    if self.elements[self.paintedPieceId] then
-      d('ALREADY ATTACHED: @' .. self.elements[self.paintedPieceId].state)
-      return false
-    end
-  end
-  self:turnOut()
-  local _piece = Piece:new(self.imgURIs[index], self.imgNames[index])
-  self:_attach(_piece)
-  _piece:preload()
-  --d(_piece.name)
-  self.paintedPieceId = _piece.name
+  local row = math.round(index/2)
+  local col = index - (row - 1)*2
+  cover:preload(row, col)
 end
 
 function Update:onAlbumTapped(event)

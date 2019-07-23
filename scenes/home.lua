@@ -37,7 +37,7 @@ local iMoterAPI = require( "classes.iMoter" )
 
 --local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
-local AlbumList = require("views.home")
+local AlbumList = require("views.update")
 local MoterView = require("views.moter_ui")
 local HeaderView = require("views.header")
 local FooterView = require("views.footer")
@@ -146,23 +146,18 @@ function scene:create( event )
   -- Gather insets (function returns these in the order of top, left, bottom, right)
   local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
   -- Create a vector rectangle sized exactly to the "safe area"
-  background = display.newRect(
-    oX + leftInset,
-    oY + topInset,
-    vW - ( leftInset + rightInset ),
-    vH - ( topInset + bottomInset )
-  )
+  background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
-  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
+--  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
   APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
   
   local _lgray = {colorHex('6C6C6C')}
   local titleFSize = 12
   local labelFSize = 20
   local padding = labelFSize*.618
-  local gY = APP.Header.elements.TopBar.contentBounds.yMax + padding*2
+  local gY = topInset + padding*2
 
   local labelScoreCount = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
   local labelNumAlbum = display.newText {text = '热门', x = vW*.5, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
@@ -186,17 +181,16 @@ function scene:create( event )
     end
     local _albumList = res.data.albums
     local _data = res.data
-    APP.Header.elements.TopBar:setLabel('模云') --TODO: show _data.moter.name
-    APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
-    print(inspect(_data))
-    local albumListView = AlbumList:new(_data, sceneGroup)
+--    APP.Header.elements.TopBar:setLabel('模云')
+--    APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
+    local topPadding = topInset
+    local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
     APP.albumListView = albumListView
-    APP.Header.layer:toFront()
-    --APP.Footer.layer:toFront()
-    --APP.moterView:layout()
+    albumListView.layer.y = albumListView.layer.y + cursorRect.y + padding
     albumListView:open()
   end
-  iMoter:listAlbums('22162', {skip = 0, limit = 10}, showAlbumsWithData) -- 19702; 22162; 27180
+  iMoter:listAlbums('22162', {skip = 0, limit = 100}, showAlbumsWithData) -- 19702; 22162; 27180
+--  iMoter:listAlbums({skip = 0, limit = 100}, showAlbumsWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
   -----------------------------------------------------------------------------
 end
