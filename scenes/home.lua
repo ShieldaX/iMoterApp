@@ -39,7 +39,7 @@ local iMoterAPI = require( "classes.iMoter" )
 local AlbumView = require("views.album")
 local AlbumList = require("views.update")
 local MoterView = require("views.moter_ui")
-local HeaderView = require("views.header")
+local HeaderView = require("views.home_header")
 local FooterView = require("views.footer")
 local Indicator = require 'views.indicator'
 
@@ -150,28 +150,11 @@ function scene:create( event )
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
---  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
+  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
   APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
-  
-  local _lgray = {colorHex('6C6C6C')}
-  local titleFSize = 12
+--  local _lgray = {colorHex('6C6C6C')}
   local labelFSize = 20
   local padding = labelFSize*.618
-  local gY = topInset + padding*2
-
-  local labelScoreCount = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
-  local labelNumAlbum = display.newText {text = '热门', x = vW*.5, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
-  local labelNumHot = display.newText {text = ' ', x = vW*.76, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
-  sceneGroup:insert(labelScoreCount)
-  sceneGroup:insert(labelNumAlbum)
-  sceneGroup:insert(labelNumHot)
-  local cursorRect = display.newRect(cX, cY, vW*.2, 4)
-  cursorRect:setFillColor(colorHex('C7A680'))
-  cursorRect.anchorY = 1
-  cursorRect.y = labelScoreCount.y + padding*2
-  sceneGroup:insert(cursorRect)
-  cursorRect.x = labelScoreCount.x
-  
 --  TODO: Show Indicator Before Moter View Really Loaded
   indicator:send('onAlbumListLoad')
   local function showAlbumsWithData(res)
@@ -187,7 +170,8 @@ function scene:create( event )
     local topPadding = topInset
     local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
     APP.albumListView = albumListView
-    albumListView.layer.y = albumListView.layer.y + cursorRect.y + padding
+    local cursor = APP.Header.elements.cursor
+    albumListView.layer.y = albumListView.layer.y + cursor.y + padding
     albumListView:open()
   end
 --  iMoter:listAlbums('22162', {skip = 0, limit = 100}, showAlbumsWithData) -- 19702; 22162; 27180

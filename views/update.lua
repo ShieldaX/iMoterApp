@@ -111,7 +111,9 @@ function Update:initialize(obj, topPadding, sceneGroup)
     end
     -- In the event a scroll limit is reached...
     if ( event.limitReached ) then
-      if ( event.direction == "up" ) then print( "Reached bottom limit" )
+      if ( event.direction == "up" ) then
+        print( "Reached bottom limit" )
+        
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )
