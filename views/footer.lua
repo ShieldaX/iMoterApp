@@ -178,10 +178,8 @@ function Footer:createTab(options)
       }
       overIcon:setFillColor(unpack(fillColor))
       tab:insert(overIcon)
-      d(overIcon)
       tab.overIcon = overIcon
       tab.hasOverIcon = true
-      d(tab.overIcon)
       overIcon.alpha = 0
     end
   end

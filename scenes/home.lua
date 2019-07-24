@@ -181,6 +181,7 @@ function scene:create( event )
     end
     local _albumList = res.data.albums
     local _data = res.data
+--    d(_albumList)
 --    APP.Header.elements.TopBar:setLabel('模云')
 --    APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
     local topPadding = topInset
@@ -190,7 +191,7 @@ function scene:create( event )
     albumListView:open()
   end
 --  iMoter:listAlbums('22162', {skip = 0, limit = 100}, showAlbumsWithData) -- 19702; 22162; 27180
-  iMoter:listAlbums({skip = 0, limit = 39}, showAlbumsWithData) -- 19702; 22162; 27180
+  iMoter:listAlbums({skip = 0, limit = 10}, showAlbumsWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
   -----------------------------------------------------------------------------
 end

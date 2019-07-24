@@ -85,6 +85,7 @@ function Update:initialize(obj, topPadding, sceneGroup)
   self.rawData = obj
   self._albums = obj.albums
   self.name = 'album list'
+  self.covers = {}
   APP.CurrentAlbumList = self
   -- END DATA BINDING
   -- -------------------
@@ -185,6 +186,9 @@ function Update:loadCover(index)
       }, self)
   local row = math.round(index/2)
   local col = index - (row - 1)*2
+  local covers = self.covers
+  covers[row] = covers[row] or {}
+  covers[row][col] = cover
   cover:preload(row, col)
 end
 

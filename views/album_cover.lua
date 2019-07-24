@@ -26,19 +26,97 @@ local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 
 local function fitImage( displayObject, fitWidth, fitHeight, enlarge )
-	--
-	-- first determine which edge is out of bounds
-	--
-	local scaleFactor = fitHeight / displayObject.contentHeight 
-	local newWidth = displayObject.contentWidth * scaleFactor
-	if newWidth > fitWidth then
-		scaleFactor = fitWidth / displayObject.contentWidth 
-	end
-	if not enlarge and scaleFactor > 1 then
-		return
-	end
-	displayObject:scale( scaleFactor, scaleFactor )
+  --
+  -- first determine which edge is out of bounds
+  --
+  local scaleFactor = fitHeight / displayObject.contentHeight 
+  local newWidth = displayObject.contentWidth * scaleFactor
+  if newWidth > fitWidth then
+    scaleFactor = fitWidth / displayObject.contentWidth 
+  end
+  if not enlarge and scaleFactor > 1 then
+    return
+  end
+  displayObject:scale( scaleFactor, scaleFactor )
 end
+
+--------------------- 
+local function StringToTable(s)
+  local tb = {}
+  --[[
+    UTF8的编码规则：
+    1. 字符的第一个字节范围： 0x00—0x7F(0-127),或者 0xC2—0xF4(194-244); UTF8 是兼容 ascii 的，所以 0~127 就和 ascii 完全一致
+    2. 0xC0, 0xC1,0xF5—0xFF(192, 193 和 245-255)不会出现在UTF8编码中 
+    3. 0x80—0xBF(128-191)只会出现在第二个及随后的编码中(针对多字节编码，如汉字) 
+    ]]
+  for utfChar in string.gmatch(s, "[%z\1-\127\194-\244][\128-\191]*") do
+    table.insert(tb, utfChar)
+  end
+
+  return tb
+end
+
+local function GetUTFLen(s)
+  local sTable = StringToTable(s)
+
+  local len = 0
+  local charLen = 0
+
+  for i=1,#sTable do
+    local utfCharLen = string.len(sTable[i])
+    if utfCharLen > 1 then -- 长度大于1的就认为是中文
+      charLen = 2
+    else
+      charLen = 1
+    end
+
+    len = len + charLen
+  end
+
+  return len
+end
+
+local function GetUTFLenWithCount(s, count)
+  local sTable = StringToTable(s)
+
+  local len = 0
+  local charLen = 0
+  local isLimited = (count >= 0)
+
+  for i=1,#sTable do
+    local utfCharLen = string.len(sTable[i])
+    if utfCharLen > 1 then -- 长度大于1的就认为是中文
+      charLen = 2
+    else
+      charLen = 1
+    end
+
+    len = len + utfCharLen
+
+    if isLimited then
+      count = count - charLen
+      if count <= 0 then
+        break
+      end
+    end
+  end
+
+  return len
+end
+
+local function GetMaxLenString(s, maxLen)
+  local len = GetUTFLen(s)
+
+  local dstString = s
+  -- 超长，裁剪，加...
+  if len > maxLen then
+    dstString = string.sub(s, 1, GetUTFLenWithCount(s, maxLen))
+    dstString = dstString.."..."
+  end
+
+  return dstString
+end
+--------------------- 
 
 -- ---
 -- CLASSES Declaration
@@ -85,7 +163,7 @@ function Cover:preload(row, col)
   self.row = row
   self.col = col
   self.layer.x = oX + (vW*scaleFactor)*.618 + (_col-1)*(vW*scaleFactor*1.14)
-	local function networkListener( event )
+  local function networkListener( event )
     if ( event.isError ) then
       print ( "Network error - download failed" )
       return false
@@ -108,7 +186,7 @@ function Cover:preload(row, col)
       self.isBlocked = false
       self:start()
     end
-	end
+  end
   display.loadRemoteImage( self.uri, "GET", networkListener, self.fileName, Cover.DEFAULT_DIRECTORY, oX, oY)
 end
 
@@ -126,7 +204,7 @@ function Cover:onImageLoaded()
   -- ---------------------------
   local labelFSize = 12
   local label = display.newText {
-    text = self.title,
+    text = GetMaxLenString(self.title, 34),
     x = cX, y = cY, 
     fontSize = labelFSize, font = fontSHSansBold,
     width = cImage.contentWidth,
@@ -136,7 +214,7 @@ function Cover:onImageLoaded()
   self:_attach(label, 'label')
   label.x = cImage.x
   label.y = cImage.y + cImage.contentHeight*.5 + label.contentHeight*.5 + 10
-  self.layer.y = self.row*self.layer.contentHeight*1.06
+  self.layer.y = self.row*(self.layer.contentHeight + 10)
   self.parent.elements.slider:insert(self.layer)
   --self.layer.anchorChildren = true
 end
