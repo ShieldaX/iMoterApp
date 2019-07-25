@@ -89,7 +89,7 @@ function Header:initialize(opts, parent)
 		backgroundColor = theme.navBarBackgroundColor,
 		title = "= MEOW =",
 		titleColor = theme.navBarTextColor,
-		font = fontSHSansBold, fontSize = 16,
+		font = fontSHSans, fontSize = 12,
 		height = 42,
 		includeStatusBar = false,
     --top = topInset

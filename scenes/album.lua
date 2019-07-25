@@ -70,7 +70,7 @@ function scene:create( event )
 --  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
   
   local album_id = params.album_id
-  local title = util.GetMaxLenString(params.title, 34)
+  local title = util.GetMaxLenString(params.title, 30)
   local function openAlbumWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
@@ -83,6 +83,7 @@ function scene:create( event )
     print(inspect(_album))
     APP.albumView = AlbumView:new(_album, sceneGroup)
     APP.Header.layer:toFront()
+    APP.albumView:open()
     --APP.Footer.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
@@ -98,7 +99,7 @@ function scene:show( event )
   local phase = event.phase
 
   if ( phase == "will" ) then
-    APP.albumView:open()
+
   elseif ( phase == "did" ) then
 
   end
