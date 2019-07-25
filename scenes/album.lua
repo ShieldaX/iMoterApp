@@ -18,6 +18,8 @@ local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 local background = nil
 local widget = require( "widget" )
+local util = require 'util'
+local d = util.print_r
 
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
@@ -52,7 +54,7 @@ local iMoter = iMoterAPI:new()
 -- Called when the scene's view does not exist:
 function scene:create( event )
 	local sceneGroup = self.view
-
+  local params = event.params
   --Hide status bar from the beginning
 --  display.setStatusBar( display.HiddenStatusBar )
 --  display.setDefault("background", 0, 1, 1)
@@ -65,8 +67,10 @@ function scene:create( event )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   
   APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
-  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
+--  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
   
+  local album_id = params.album_id
+  local title = util.GetMaxLenString(params.title, 34)
   local function openAlbumWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
@@ -74,14 +78,14 @@ function scene:create( event )
     end
     composer.setVariable( "autoRotate", 1 )
     local _album = res.data.album
-    APP.Header.elements.TopBar:setLabel(_album.title)
+--    local title = util.GetMaxLenString(_album.title, 34)
+    APP.Header.elements.TopBar:setLabel(title)
     print(inspect(_album))
     APP.albumView = AlbumView:new(_album, sceneGroup)
     APP.Header.layer:toFront()
     --APP.Footer.layer:toFront()
-    APP.albumView:open()
   end
-  iMoter:getAlbumById('30266', openAlbumWithData)
+  iMoter:getAlbumById(album_id, openAlbumWithData)
 --  iMoter:getAlbumById('29711', openAlbumWithData)
   -----------------------------------------------------------------------------
 end
@@ -91,16 +95,13 @@ end
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
 	local sceneGroup = self.view
-  --APP.Footer.layer:toFront()
-  local options =
-  {
-    effect = "fade",
-    time = 600,
-    params = {
-      sampleVar1 = "my sample variable",
-      sampleVar2 = "another sample variable"
-    }
-  }
+  local phase = event.phase
+
+  if ( phase == "will" ) then
+    APP.albumView:open()
+  elseif ( phase == "did" ) then
+
+  end
   --timer.performWithDelay(2000, function() composer.gotoScene('scenes.moter', options) end)
   -----------------------------------------------------------------------------
 

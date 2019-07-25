@@ -115,10 +115,7 @@ function Album:open(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
   self:setState('STARTED')
-  self:signal('onProgress', {index = index})
 end
-
-
 
 -- ---
 -- 清除其他预加载的Piece View，（重）新创建一个Piece对象，
@@ -138,6 +135,7 @@ function Album:createPiece(index)
   _piece:preload()
   --d(_piece.name)
   self.paintedPieceId = _piece.name
+  self:signal('onProgress', {index = index})
 end
 
 -- ---

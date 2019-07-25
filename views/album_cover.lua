@@ -104,7 +104,7 @@ local function GetUTFLenWithCount(s, count)
   return len
 end
 
-local function GetMaxLenString(s, maxLen)
+function util.GetMaxLenString(s, maxLen)
   local len = GetUTFLen(s)
 
   local dstString = s
@@ -137,6 +137,7 @@ function Cover:initialize(opts, parent)
   self.name = opts.name
   self.title = opts.title
   self.index = opts.index or 1
+  self.id = opts.id
   View.initialize(self, parent)
   --self.layer:toFront()
   self.layer.anchorChildren = true
@@ -204,7 +205,7 @@ function Cover:onImageLoaded()
   -- ---------------------------
   local labelFSize = 12
   local label = display.newText {
-    text = GetMaxLenString(self.title, 34),
+    text = util.GetMaxLenString(self.title, 34),
     x = cX, y = cY, 
     fontSize = labelFSize, font = fontSHSansBold,
     width = cImage.contentWidth,
@@ -244,6 +245,7 @@ end
 
 function Cover:tap(tap)
   d('TODO: open album: '..self.title)
+  self:signal('onCoverTapped', {album_id = self.id, title = self.title})
 end
 
 return Cover

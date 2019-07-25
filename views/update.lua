@@ -16,7 +16,7 @@ local View = require 'libs.view'
 local Piece = require 'views.piece'
 local Album = require 'views.album'
 local Cover = require 'views.album_cover'
-local Indicator = require 'views.indicator'
+--local Indicator = require 'views.indicator'
 local Update = class('AlbumListView', View)
 local APP = require("classes.application")
 
@@ -184,6 +184,7 @@ function Update:loadCover(index)
       uri = coverURI,
       name = coverFileName,
       title = album.title,
+      id = album._id,
       index = index
       }, self)
   local row = math.round(index/2)
@@ -202,7 +203,17 @@ function Update:onAlbumTapped(event)
     isModal = true,
     params = event
   }
-  composer.showOverlay( "scenes.piece", options )
+  composer.showOverlay( "scenes.album", options )
+end
+
+function Update:onCoverTapped(event)
+--  event.coverImageURI = 
+  local options = {
+    effect = "slideLeft",
+    time = 600,
+    params = event
+  }
+  composer.gotoScene( "scenes.album", options )
 end
 
 function Update:start()

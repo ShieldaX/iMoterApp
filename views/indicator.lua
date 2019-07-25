@@ -20,7 +20,6 @@ local class = require 'libs.middleclass'
 
 local util = require 'util'
 local d = util.print_r
---util.show_fps()
 
 -- ---
 -- CLASSES Declaration
@@ -84,7 +83,12 @@ end
 
 function Indicator:onProgress(event)
   local i = event.index
-  self.elements.bar:setProgress(i/self.total)
+  d(self.elements)
+  d(self.state)
+  local bar = self.elements.bar
+  if bar then
+    self.elements.bar:setProgress(i/self.total)
+  end
 end
 
 function Indicator:onPieceLoad(event)
