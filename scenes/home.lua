@@ -41,7 +41,7 @@ local AlbumList = require("views.update")
 local MoterView = require("views.moter_ui")
 local HeaderView = require("views.home_header")
 local FooterView = require("views.footer")
-local Indicator = require 'views.indicator'
+--local Indicator = require 'views.indicator'
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
@@ -123,18 +123,6 @@ function util.createIcon(options)
   return _icon
 end
 
-local indicator = Indicator:new({name= 'loadingIn', top= 0}, scene.view)
-indicator.elements.spinner.y = vH*.36
---indicator:send('onPieceLoad')
-
-function indicator:onMoterLoad(event)
-  self:onPieceLoad(event)
-end
-
-function indicator:onMoterLoaded(event)
-  self:onPieceLoaded(event)
-end
-
 -- Called when the scene's view does not exist:
 function scene:create( event )
   local sceneGroup = self.view
@@ -156,7 +144,7 @@ function scene:create( event )
   local labelFSize = 20
   local padding = labelFSize*.618
 --  TODO: Show Indicator Before Moter View Really Loaded
-  indicator:send('onAlbumListLoad')
+  --indicator:send('onAlbumListLoad')
   local function showAlbumsWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )

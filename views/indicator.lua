@@ -84,7 +84,7 @@ end
 function Indicator:onProgress(event)
   local i = event.index
   d(self.elements)
-  d(self.state)
+  d(self:getState())
   local bar = self.elements.bar
   if bar then
     self.elements.bar:setProgress(i/self.total)
