@@ -17,7 +17,7 @@ local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 local class = require 'libs.middleclass'
 --local Stateful = require 'libs.stateful'
 --local inspect = require 'libs.inspect'
-
+local colorHex = require('libs.convertcolor').hex
 local util = require 'util'
 local d = util.print_r
 
@@ -65,6 +65,14 @@ function Indicator:initialize(opts, parent)
       isAnimated = true
     }
     self:_attach(_progbar, 'bar')
+    local goldenPaint = {colorHex('C7A680')}
+    local whitePaint  = colorsRGB.RGBA('lightgray')
+    _progbar._view._fillLeft.fill = goldenPaint
+    _progbar._view._fillMiddle.fill = goldenPaint
+    _progbar._view._fillRight.fill = goldenPaint
+    _progbar._view._outerLeft.fill = whitePaint
+    _progbar._view._outerMiddle.fill = whitePaint
+    _progbar._view._outerRight.fill = whitePaint
   end
 
 --  TODO: use native indicator instead: native.setActivityIndicator( state ) --boolean
@@ -83,11 +91,12 @@ end
 
 function Indicator:onProgress(event)
   local i = event.index
-  d(self.elements)
+  --d(self.elements)
   d(self:getState())
   local bar = self.elements.bar
   if bar then
     self.elements.bar:setProgress(i/self.total)
+    self.layer:toFront()
   end
 end
 
@@ -104,10 +113,11 @@ end
 function Indicator:onHeaderMove(event)
   local bar = self.elements.bar
   local dist = APP.Header.elements.TopBar.contentHeight
+  local barMargin = bar.contentHeight*.5
   if event.hidden then
-    self.animation = transition.to(bar, {delta = true, time = 450, transition = easing.outExpo, y = -dist})
+    self.animation = transition.to(bar, {time = 450, transition = easing.outExpo, y = oY + barMargin})
   else
-    self.animation = transition.to(bar, {delta = true, time = 450, transition = easing.outExpo, y = dist})
+    self.animation = transition.to(bar, {time = 450, transition = easing.outExpo, y = oY + dist + barMargin})
   end
 end
 
