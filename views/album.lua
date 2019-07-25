@@ -96,10 +96,11 @@ function Album:initialize(obj, sceneGroup)
   -- -------------------
   -- VISUAL INITIALIING
   --local _bg = display.newRoundedRect(self.layer, oX, oY, vW, vH, 8)
-  local _bg = display.newRect(self.layer, oX, oY, vW, vH)
---  _bg:setFillColor(colorHex('1A1A19')) -- Pure White
-  util.center(_bg)
+  local _bg = display.newRect(oX, oY, vW, vH)
+  _bg:setFillColor(colorHex('1A1A19'))
+  _bg:translate( _bg.contentWidth*0.5, _bg.contentHeight*0.5 )
   self:_attach(_bg, '_bg')
+  --util.center(_bg)
   self.elements._bg:toBack()
   -- END VISUAL INITIALIING
   -- -------------------
