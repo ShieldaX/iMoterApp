@@ -213,6 +213,7 @@ function Footer:createTab(options)
     self:selectTab(id)
   end
   tab:addEventListener('touch', self)
+  tab:addEventListener('tap', self)
 end
 
 function Footer:touch(event)
@@ -235,6 +236,11 @@ function Footer:touch(event)
       _t.isFocus = false
     end
   end
+  return true
+end
+
+function Footer:tap(event)
+--  stop any tap/touch propgation
   return true
 end
 
