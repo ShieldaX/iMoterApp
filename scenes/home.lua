@@ -171,14 +171,9 @@ end
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
   local sceneGroup = self.view
-  composer.removeHidden()
-  --APP.Footer.layer:toFront()
-  -----------------------------------------------------------------------------
-
-  --      This event requires build 2012.782 or later.
-
-  -----------------------------------------------------------------------------
-
+  if event.phase == "did" then
+    --composer.removeHidden(true)
+  end
 end
 
 function scene:hide( event )

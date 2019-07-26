@@ -41,9 +41,9 @@ Indicator.static.TYPE = {
 --
 function Indicator:initialize(opts, parent)
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create an indicator")
+  self.name = opts.name or '_indicator' -- timestamp
   View.initialize(self, parent)
   assert(self.layer, 'Piece View Initialized Failed!')
-  self.name = opts.name or '_indicator' -- timestamp
   d('创建指示器对象: '..self.name)
   d(self.name..' began with '..self:getState())
   -- -------------------
@@ -133,6 +133,11 @@ function Indicator:onAlbumLimitReached(event)
   elseif direction == 0 then
     d('You have reached the limitation')
   end
+end
+
+function Indicator:stop()
+  d('Destroy Indicator View')
+  self:cleanup()
 end
 
 return Indicator

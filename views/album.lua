@@ -110,7 +110,7 @@ function Album:open(index)
   index = index or 1
   self.currentPieceId = nil
 --  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= APP.Header.elements.TopBar.height}, self)
-  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 42}, self)
+  local indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42}, self)
   indicator.layer:toFront()
   --self:addView(indicator)
   self:createPiece(index)
@@ -256,6 +256,8 @@ function Album:start()
 end
 
 function Album:stop()
+  d('Destroy Album View')
+  self.elements.indicator:stop()
   self:cleanup()
 end
 

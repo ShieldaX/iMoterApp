@@ -55,10 +55,7 @@ local iMoter = iMoterAPI:new()
 function scene:create( event )
 	local sceneGroup = self.view
   local params = event.params
-  --Hide status bar from the beginning
---  display.setStatusBar( display.HiddenStatusBar )
---  display.setDefault("background", 0, 1, 1)
-
+  composer.setVariable( "autoRotate", 1 )
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
   --      CREATE display objects and add them to 'group' here.
@@ -66,8 +63,7 @@ function scene:create( event )
   background:setFillColor( 0 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   
-  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
---  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
+  self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
   
   local album_id = params.album_id
   local title = util.GetMaxLenString(params.title, 30)
@@ -76,15 +72,11 @@ function scene:create( event )
       native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
-    composer.setVariable( "autoRotate", 1 )
     local _album = res.data.album
---    local title = util.GetMaxLenString(_album.title, 34)
-    APP.Header.elements.TopBar:setLabel(title)
-    print(inspect(_album))
+--    print(inspect(_album))
     APP.albumView = AlbumView:new(_album, sceneGroup)
-    APP.Header.layer:toFront()
     APP.albumView:open()
-    --APP.Footer.layer:toFront()
+    self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
 --  iMoter:getAlbumById('29711', openAlbumWithData)
@@ -95,11 +87,13 @@ end
 function scene:show( event )
 	local sceneGroup = self.view
   local phase = event.phase
+  local params = event.params
 
   if ( phase == "will" ) then
-
+    local title = util.GetMaxLenString(params.title, 30)
+    self.header.elements.TopBar:setLabel(title)
   elseif ( phase == "did" ) then
-
+    
   end
   --timer.performWithDelay(2000, function() composer.gotoScene('scenes.moter', options) end)
   -----------------------------------------------------------------------------
@@ -107,7 +101,6 @@ function scene:show( event )
   --      This event requires build 2012.782 or later.
 
   -----------------------------------------------------------------------------
-
 end
 
 function scene:hide( event )
@@ -116,13 +109,15 @@ function scene:hide( event )
   if ( phase == "will" ) then
 
   elseif ( phase == "did" ) then
-    composer.removeHidden()
+
   end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-  network.cancel(self.requestId)
+  --network.cancel(self.requestId)
+  --APP.Header:cleanup()
+  --APP.albumView:stop()
   d('Album scene destoried success!')
 end
 

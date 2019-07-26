@@ -216,15 +216,23 @@ function Footer:createTab(options)
 end
 
 function Footer:touch(event)
-  local id = event.target.id or event.target.parent.id
+--  local id = event.target.id or event.target.parent.id
+  local _t = event.target
+  local id = _t.id
   if ( event.phase == "began" ) then
+    display.getCurrentStage():setFocus( _t )
+    _t.isFocus = true
     print( "Touch event began on: " .. event.target.id )
-  elseif ( event.phase == "ended" ) then
-    print( "Touch event ended on: " .. event.target.id )
-    if self.tabSelected == id then
-      d('Tab already seleted')
-    else
-      self:selectTab(event.target.id)
+  elseif _t.isFocus then
+    if ( event.phase == "ended" ) then
+      print( "Touch event ended on: " .. event.target.id )
+      if self.tabSelected == id then
+        d('Tab already seleted')
+      else
+        self:selectTab(event.target.id)
+      end
+      display.getCurrentStage():setFocus( nil )
+      _t.isFocus = false
     end
   end
   return true
