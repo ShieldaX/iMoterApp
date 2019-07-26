@@ -116,6 +116,12 @@ function util.GetMaxLenString(s, maxLen)
 
   return dstString
 end
+
+local function snapTitle(title, maxLen)
+  maxLen = maxLen or 34
+  --title = title:gsub("%d+%.", '', 1)
+  return util.GetMaxLenString(title, maxLen)
+end
 --------------------- 
 
 -- ---
@@ -209,9 +215,14 @@ function Cover:onImageLoaded()
     text = util.GetMaxLenString(self.title, 34),
     x = cX, y = cY, 
     fontSize = labelFSize, font = fontSHSansBold,
-    width = cImage.contentWidth,
-    algin = 'center'
+    width = cImage.contentWidth+4,
+    align = 'Left'
   }
+  if label.height > labelFSize*2.8 then
+    label.text = label.text:gsub("%d+%.", '', 1)
+  elseif label.height < labelFSize*2 then
+    label.text = self.title
+  end
   label:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
   self:_attach(label, 'label')
   label.x = cImage.x
