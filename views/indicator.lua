@@ -1,3 +1,4 @@
+local composer = require( "composer" )
 local widget = require( "widget" ) 
 -- Set a default theme
 widget.setTheme( "widget_theme_ios7" )
@@ -57,14 +58,13 @@ function Indicator:initialize(opts, parent)
   -- -------------------
   -- VISUAL INITIALIING
   -- Configure topbar
-  local _progbar
   if self.total then
-    _progbar = widget.newProgressView {
+    local _progbar = widget.newProgressView {
       id = '_indicator_progressv',
       left = oX, top = oY + self.topPadding, width = vW,
       isAnimated = true
     }
-    self:_attach(_progbar, 'bar')
+    self:_attach(_progbar, 'progressBar')
     local goldenPaint = {colorHex('C7A680')}
     local whitePaint  = colorsRGB.RGBA('lightgray')
     _progbar._view._fillLeft.fill = goldenPaint
@@ -75,7 +75,6 @@ function Indicator:initialize(opts, parent)
     _progbar._view._outerRight.fill = whitePaint
   end
 
---  TODO: use native indicator instead: native.setActivityIndicator( state ) --boolean
   local _spinner = widget.newSpinner {
     id = '_spinner',
     x = halfW, y = halfH,
@@ -84,7 +83,7 @@ function Indicator:initialize(opts, parent)
   }
   _spinner.alpha = 0
   self:_attach(_spinner, 'spinner')
-  self.layer:toFront()
+  --self.layer:toFront()
   -- END VISUAL INITIALIING
   -- -------------------
 end
@@ -93,9 +92,9 @@ function Indicator:onProgress(event)
   local i = event.index
   --d(self.elements)
   d(self:getState())
-  local bar = self.elements.bar
-  if bar then
-    self.elements.bar:setProgress(i/self.total)
+  local progressBar = self.elements.progressBar
+  if progressBar then
+    self.elements.progressBar:setProgress(i/self.total)
     self.layer:toFront()
   end
 end
@@ -111,13 +110,15 @@ function Indicator:onPieceLoaded(event)
 end
 
 function Indicator:onHeaderMove(event)
-  local bar = self.elements.bar
-  local dist = APP.Header.elements.TopBar.contentHeight
-  local barMargin = bar.contentHeight*.5
+  local progressBar = self.elements.progressBar
+  local header = composer.getScene(composer.getSceneName('current')).header
+  local dist = header.elements.navBar.contentHeight
+  local barMargin = progressBar.contentHeight*.5
+  local targetY = event.targetYPos + dist
   if event.hidden then
-    self.animation = transition.to(bar, {time = 450, transition = easing.outExpo, y = oY + barMargin})
+    self.animation = transition.to(progressBar, {time = 450, transition = easing.outExpo, y = targetY - barMargin})
   else
-    self.animation = transition.to(bar, {time = 450, transition = easing.outExpo, y = oY + dist + barMargin})
+    self.animation = transition.to(progressBar, {time = 450, transition = easing.outExpo, y = targetY - barMargin})
   end
 end
 

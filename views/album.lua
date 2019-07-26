@@ -90,7 +90,7 @@ function Album:initialize(obj, sceneGroup)
   self.paintedPieceId = nil
   self.pieceAutoRotate = composer.getVariable('autoRotate')
   composer.setVariable( "autoRotate", self.pieceAutoRotate )
-  APP.CurrentAlbum = self
+  --APP.CurrentAlbum = self
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -98,6 +98,7 @@ function Album:initialize(obj, sceneGroup)
   --local _bg = display.newRoundedRect(self.layer, oX, oY, vW, vH, 8)
   local _bg = display.newRect(oX, oY, vW, vH)
   _bg:setFillColor(colorHex('1A1A19'))
+  _bg:setFillColor(1)
   _bg:translate( _bg.contentWidth*0.5, _bg.contentHeight*0.5 )
   self:_attach(_bg, '_bg')
   --util.center(_bg)
@@ -111,7 +112,7 @@ function Album:open(index)
   self.currentPieceId = nil
 --  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= APP.Header.elements.TopBar.height}, self)
   local indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42}, self)
-  indicator.layer:toFront()
+  --indicator.layer:toFront()
   --self:addView(indicator)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
@@ -156,11 +157,12 @@ function Album:switchPiece(direction)
   local targetIndex = currentIndex + direction
   local pieceId = self.imgNames[targetIndex]
   --TODO: prompt head or foot page if any
+  local header = composer.getScene(composer.getSceneName('current')).header
   if direction > 0 then
-    APP.Header:hide()
+    header:hide()
     APP.Footer:hide()
   else
-    APP.Header:show()
+    header:show()
     APP.Footer:show()
   end
   if pieceId == nil then

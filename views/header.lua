@@ -13,7 +13,7 @@ local theme = require( "classes.theme" )
 local class = require 'libs.middleclass'
 --local Stateful = require 'libs.stateful'
 --local inspect = require 'libs.inspect'
-
+local colorHex = require('libs.convertcolor').hex
 local util = require 'util'
 local d = util.print_r
 
@@ -57,6 +57,8 @@ local function leftButtonEvent( event )
 	return true
 end
 
+local navBarHeight = nil
+
 -- ---
 -- TOP UI Components Navbar ProgressBar...
 --
@@ -77,43 +79,44 @@ function Header:initialize(opts, parent)
   -- Configure topbar
 	local leftButton = {
     id = 'backBtn',
-    label = '返回',
+    label = '< 返回',
 		fontSize = 35,
 		onEvent = leftButtonEvent,
+    labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
 	}
---  local tColor = colorsRGB.RGBA('dodgerblue', 0.618)
---  local tColor = colorsRGB.RGBA('whitesmoke', 0.24)
-  local topBar = widget.newNavigationBar({
+  navBarHeight = 42
+  local navBar = widget.newNavigationBar({
 		isTransluscent = true,
 		backgroundColor = theme.navBarBackgroundColor,
 		title = "= MEOW =",
 		titleColor = theme.navBarTextColor,
-		font = fontSHSans, fontSize = 12,
-		height = 42,
+		font = fontSHSansBold, fontSize = 12,
+		height = navBarHeight,
 		includeStatusBar = false,
-    --top = topInset
 		leftButton = leftButton
 	})
-  self:_attach(topBar, 'TopBar')
+  self.navBarYPos = navBar.y
+  self:_attach(navBar, 'navBar')
   -- END VISUAL INITIALIING
   -- -------------------
 end
 
 function Header:hide()
-  local topBar = self.elements.TopBar
-  if not topBar or self.isHidden then return false end
-  self.animation = transition.to(topBar, {time = 450, transition = easing.outExpo, y = -topBar.contentHeight})
-  self:signal('onHeaderMove', {hidden = true})
+  local navBar = self.elements.navBar
+  if not navBar or self.isHidden then return false end
+  local targetY = oY-navBar.contentHeight
+  self:signal('onHeaderMove', {hidden = true, targetYPos = targetY})
+  self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
   self.isHidden = true
 end
 
 function Header:show()
-  local topBar = self.elements.TopBar
-  if not topBar or not self.isHidden then return false end
-  self.animation = transition.to(topBar, {time = 450, transition = easing.outExpo, y = 0})
-  self:signal('onHeaderMove', {hidden = false})
+  local navBar = self.elements.navBar
+  if not navBar or not self.isHidden then return false end
+  local targetY = self.navBarYPos
+  self:signal('onHeaderMove', {hidden = false, targetYPos = targetY})
+  self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
   self.isHidden = false
 end 
 
 return Header
-

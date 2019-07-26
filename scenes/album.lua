@@ -91,7 +91,7 @@ function scene:show( event )
 
   if ( phase == "will" ) then
     local title = util.GetMaxLenString(params.title, 30)
-    self.header.elements.TopBar:setLabel(title)
+    self.header.elements.navBar:setLabel(title)
   elseif ( phase == "did" ) then
     
   end
