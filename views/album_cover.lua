@@ -167,6 +167,7 @@ function Cover:preload(row, col)
   local function networkListener( event )
     if ( event.isError ) then
       print ( "Network error - download failed" )
+      native.showAlert("网络错误!", "网络似乎开小差了，联网后重试!", { "好的" } )
       return false
     else
       local _image = event.target

@@ -47,9 +47,9 @@ local Header = class('HeaderView', View)
 
 local function leftButtonEvent( event )
 	if event.phase == "ended" then
-		local currScene = composer.getSceneName( "overlay" )
-		if currScene then
-			--composer.hideOverlay( "fromRight", 250 )
+		local prevScene = composer.getSceneName( "previous" )
+		if prevScene then
+			composer.gotoScene( prevScene, {effect = 'slideRight', time = 600} )
 		else
 			--composer.showOverlay( "scenes.menu", { isModal=true, time=250, effect="fromLeft" } )
 		end
@@ -76,10 +76,9 @@ function Header:initialize(opts, parent)
   -- VISUAL INITIALIING
   -- Configure topbar
 	local leftButton = {
-		width = 35,
-		height = 35,
-		defaultFile = "assets/images/hamburger-" .. theme.name .. ".png",
-		overFile = "assets/images/hamburger-" .. theme.name .. ".png",
+    id = 'backBtn',
+    label = '返回',
+		fontSize = 35,
 		onEvent = leftButtonEvent,
 	}
 --  local tColor = colorsRGB.RGBA('dodgerblue', 0.618)
@@ -93,7 +92,7 @@ function Header:initialize(opts, parent)
 		height = 42,
 		includeStatusBar = false,
     --top = topInset
-		--leftButton = leftButton
+		leftButton = leftButton
 	})
   self:_attach(topBar, 'TopBar')
   -- END VISUAL INITIALIING

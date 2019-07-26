@@ -171,6 +171,7 @@ end
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
   local sceneGroup = self.view
+  composer.removeHidden()
   --APP.Footer.layer:toFront()
   -----------------------------------------------------------------------------
 

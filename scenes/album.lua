@@ -91,8 +91,6 @@ function scene:create( event )
   -----------------------------------------------------------------------------
 end
 
-
-
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
 	local sceneGroup = self.view
@@ -115,15 +113,17 @@ end
 function scene:hide( event )
 	local sceneGroup = self.view
 	-- nothing to do here
-	if event.phase == "will" then
+  if ( phase == "will" ) then
 
-	end
-
+  elseif ( phase == "did" ) then
+    composer.removeHidden()
+  end
 end
 
 function scene:destroy( event )
 	local sceneGroup = self.view
-	-- nothing to do here
+  network.cancel(self.requestId)
+  d('Album scene destoried success!')
 end
 
 ---------------------------------------------------------------------------------
