@@ -121,8 +121,7 @@ end
 function scene:destroy( event )
 	local sceneGroup = self.view
   --network.cancel(self.requestId)
-  --APP.Header:cleanup()
-  --APP.albumView:stop()
+  APP.albumView:stop()
   d('Album scene destoried success!')
 end
 

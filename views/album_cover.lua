@@ -256,7 +256,7 @@ function Cover:start()
 end
 
 function Cover:tap(tap)
-  d('TODO: open album: '..self.title)
+  d('Open album: '..self.title)
   self:signal('onCoverTapped', {album_id = self.id, title = self.title})
 end
 

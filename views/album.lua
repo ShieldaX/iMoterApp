@@ -81,6 +81,7 @@ function Album:initialize(obj, sceneGroup)
   d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
   d('- Prototype of Album View -')
   d('- ======================== -')
+  self.name = obj.name or obj._id
   View.initialize(self, sceneGroup)
   -- -------------------
   -- DATA BINDING
@@ -112,8 +113,10 @@ function Album:open(index)
 --  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= APP.Header.elements.TopBar.height}, self)
   --indicator.layer:toFront()
   --self:addView(indicator)
-  local curScene = composer.getScene(composer.getSceneName('current')) 
-  curScene.indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42}, sceneGroup)
+--  local curScene = composer.getScene(composer.getSceneName('current')) 
+  local indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42})
+  self:_attach(indicator)
+  d(self.elements.indicator.layer)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
@@ -136,7 +139,6 @@ function Album:createPiece(index)
   local _piece = Piece:new(self.imgURIs[index], self.imgNames[index])
   self:_attach(_piece)
   _piece:preload()
-  --d(_piece.name)
   self.paintedPieceId = _piece.name
   self:signal('onProgress', {index = index})
 end
@@ -156,7 +158,7 @@ function Album:switchPiece(direction)
   local currentIndex = table.indexOf(self.imgNames, self.currentPieceId)
   local targetIndex = currentIndex + direction
   local pieceId = self.imgNames[targetIndex]
-  --TODO: prompt head or foot page if any
+  
   local header = composer.getScene(composer.getSceneName('current')).header
   if direction > 0 then
     header:hide()
@@ -165,6 +167,7 @@ function Album:switchPiece(direction)
     header:show()
     APP.Footer:show()
   end
+  
   if pieceId == nil then
     if direction == -1 then
       d('This is already the first pix!') 
@@ -258,8 +261,7 @@ function Album:start()
 end
 
 function Album:stop()
-  d('Destroy Album View')
-  self.elements.indicator:stop()
+  d('Try to destroy Album: '..self.name)
   self:cleanup()
 end
 

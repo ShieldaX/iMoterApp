@@ -79,7 +79,7 @@ function Header:initialize(opts, parent)
   -- Configure topbar
 	local leftButton = {
     id = 'backBtn',
-    label = '< 返回',
+    label = '<< 返回',
 		fontSize = 35,
 		onEvent = leftButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }

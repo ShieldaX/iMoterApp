@@ -104,8 +104,9 @@ end
 
 function Indicator:onHeaderMove(event)
   local progressBar = self.elements.progressBar
-  local barMargin = progressBar.height
-  d(event.targetYPos)
+  local barMargin = progressBar.height or 100
+  d('BarHeight:')
+  d(barMargin)
   local targetY = event.targetYPos
   self.animation = transition.to(progressBar, {time = 450, transition = easing.outExpo, y =  targetY + barMargin/2})
 end
@@ -126,7 +127,16 @@ end
 
 function Indicator:stop()
   d('Destroy Indicator View')
+  
   self:cleanup()
+end
+
+function Indicator:cleanup()
+  d('CLEANUP ' .. self.name..' @ '..self:getState())
+  View.cleanup(self)
+  Runtime:removeEventListener('receive', self)
+  self:setState('DESTROYED')
+  d(self.name..' @ '..self:getState())
 end
 
 return Indicator
