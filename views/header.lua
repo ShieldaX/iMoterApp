@@ -90,12 +90,12 @@ function Header:initialize(opts, parent)
   local navBar = widget.newNavigationBar({
 		isTransluscent = true,
 		backgroundColor = theme.navBarBackgroundColor,
-		title = "= MEOW =",
+		title = "图鉴",
 		titleColor = theme.navBarTextColor,
 		font = fontZcoolHuangYou, fontSize = 14,
 		height = navBarHeight,
 		includeStatusBar = false,
-		leftButton = leftButton
+		leftButton = leftButton,
 	})
   self.navBarYPos = navBar.y
   self:_attach(navBar, 'navBar')

@@ -84,10 +84,13 @@ function Header:initialize(opts, parent)
 
   local labelUpdate = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
   local labelHot = display.newText {text = '热门', x = vW*.5, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
+  local labelTag = display.newText {text = '标签', x = vW*.76, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
   self:_attach(labelUpdate, 'labelUpdate')
   self:_attach(labelHot, 'labelHot')
+  self:_attach(labelTag, 'labelTag')
   labelUpdate.id = 'labelUpdate'
   labelHot.id = 'labelHot'
+  labelTag.id = 'labelTag'
   local cursorRect = display.newRect(cX, cY, vW*.2, 4)
   cursorRect:setFillColor(colorHex('C7A680'))
   cursorRect.anchorY = 1

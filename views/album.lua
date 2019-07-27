@@ -96,8 +96,9 @@ function Album:initialize(obj, sceneGroup)
   -- -------------------
   -- VISUAL INITIALIING
   local _bg = display.newRect(oX, oY, vW, vH)
-  _bg:setFillColor(colorHex('1A1A19'))
-  _bg:setFillColor(1)
+--  _bg:setFillColor(colorHex('1A1A19'))
+  _bg:setFillColor(colorHex('6C6C6C'), .32)
+--  _bg:setFillColor(unpack(colorsRGB.RGBA('whitesmoke')))
   _bg:translate( _bg.contentWidth*0.5, _bg.contentHeight*0.5 )
   self:_attach(_bg, '_bg')
 --  local indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42}, self)

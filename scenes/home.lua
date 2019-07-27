@@ -143,8 +143,6 @@ function scene:create( event )
 --  local _lgray = {colorHex('6C6C6C')}
   local labelFSize = 20
   local padding = labelFSize*.618
---  TODO: Show Indicator Before Moter View Really Loaded
-  --indicator:send('onAlbumListLoad')
   local function showAlbumsWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )

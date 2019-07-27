@@ -89,7 +89,7 @@ function Footer:initialize(opts, parent)
       id = "tab_xplr",
       label = {text = "Explore", font = fontMorganiteSemiBold, fontSize = 32, xOffset = 5},
       icon = {name = 'pages', fontSize = 36},
-      xOffset = -vW*0.32, yOffset = 4,
+      xOffset = -vW*0.32, yOffset = 3,
       selected = true
     },
     {
@@ -103,7 +103,7 @@ function Footer:initialize(opts, parent)
         name = { default = 'person_outline', over = 'person'},
         fontSize = 36
       },
-      xOffset = vW*0.3, yOffset = 4,
+      xOffset = vW*0.3, yOffset = 2,
     }
   }
 
@@ -116,8 +116,10 @@ function Footer:initialize(opts, parent)
     inEasing = easing.outCubic,
     outEasing = easing.inCirc
   }
-  local backgroundRect = display.newRoundedRect( 0, 0, panel.width, panel.height, panel.height*.4 )
+  local backgroundRect = display.newRoundedRect( 0, 0, panel.width - 2, panel.height - 2, panel.height*.4 )
   backgroundRect:setFillColor(colorHex('1A1A19'))
+  backgroundRect:setStrokeColor(colorHex('C7A680'))
+  backgroundRect.strokeWidth = 1
   local _patchRect = display.newRect(0, backgroundRect.y + backgroundRect.height*.25, panel.width, backgroundRect.height*.5)
   _patchRect:setFillColor(colorHex('1A1A19'))
   local background = display.newGroup()
@@ -255,7 +257,7 @@ local function animateTab(tab, isSelect)
   if tab.overIcon then
     transition.to(tab.overIcon, {time = 200, transition = easing.outBack, alpha = isSelect and 1 or 0})
   end
-  transition.to(tab, {time = 460, transition = easing.outBack, xScale = scaleFactor, yScale = scaleFactor, y = offSet})
+  transition.to(tab, {time = 460, delay = 220, transition = easing.outBack, xScale = scaleFactor, yScale = scaleFactor, y = offSet})
 end
 
 function Footer:selectTab(tab_id)
