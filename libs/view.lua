@@ -43,9 +43,9 @@ function View:initialize(parent)
   
   if parent then
     if parent.isInstanceOf and type(parent.isInstanceOf) == 'function' and parent:isInstanceOf(View) and parent.state >= 10 then
-      return parent:addView(self)
+      parent:addView(self)
     elseif parent.insert and type(parent.insert) == 'function' then
-      return parent:insert(self.layer)
+      parent:insert(self.layer)
     end
   end
 end
@@ -80,7 +80,12 @@ function View:cleanup()
   self._elements = {}
   self.elements = {}
   self:setState('INITIALIZED')
---  Runtime:removeEventListener('receive', self)
+end
+
+function View:destroy()
+  self:cleanup()
+  self:setState('DESTROYED')
+  Runtime:removeEventListener('receive', self)
 end
 
 function View:send(name, ...)
@@ -92,9 +97,10 @@ end
 
 function View:childSend(name, ...)
   assert(type(name)=='string', "the function name must be a string.")
-  for i,v in ipairs(self._elements) do
+  for i, v in ipairs(self._elements) do
     if v[name] and type(v[name]) == 'function' then
-      return self[name](v, ...)
+--      return self[name](v, ...)
+      return v[name](v, ...)
     end
   end
 end
@@ -139,7 +145,6 @@ function View:_attach(obj, name, force)
   if obj.isInstanceOf and obj:isInstanceOf(View) then
     self.layer:insert(obj.layer)
   else
-    --d('Try to insert native display object...')
     self.layer:insert(obj)
   end
 end
@@ -150,4 +155,3 @@ function View:addView(view)
 end
 
 return View
---local createdView = View:addState('CREATED')
