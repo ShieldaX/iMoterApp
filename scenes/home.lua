@@ -172,7 +172,7 @@ end
 function scene:show( event )
   local sceneGroup = self.view
   if event.phase == "did" then
-    --composer.removeHidden(true)
+    composer.removeHidden()
   end
 end
 

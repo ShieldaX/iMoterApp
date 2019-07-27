@@ -30,13 +30,6 @@ local Indicator = class('Indicator', View)
 local Toast = require 'views.toast'
 local APP = require("classes.application")
 
--- Enum of Indicator Types
-Indicator.static.TYPE = {
-  DEFAULT = 10,
-  NUMERIC = 10, -- DEFAULT
-  BAR = 20,
-  ROUNDED = 30
-}
 -- ---
 -- Resize Image Display Object to Fit Screen WIDTH
 --
@@ -46,7 +39,6 @@ function Indicator:initialize(opts, parent)
   View.initialize(self, parent)
   assert(self.layer, 'Piece View Initialized Failed!')
   d('创建指示器对象: '..self.name)
-  d(self.name..' began with '..self:getState())
   -- -------------------
   -- DATA BINDING
   self.topPadding = opts.top or 60
@@ -86,16 +78,17 @@ function Indicator:initialize(opts, parent)
   --self.layer:toFront()
   -- END VISUAL INITIALIING
   -- -------------------
+  d(self.name..' began with '..self:getState())
 end
 
 function Indicator:onProgress(event)
   local i = event.index
-  --d(self.elements)
-  d(self:getState())
+  --d(self:getState())
+  --d(self.layer)
   local progressBar = self.elements.progressBar
   if progressBar then
     self.elements.progressBar:setProgress(i/self.total)
-    self.layer:toFront()
+    --self.layer:toFront()
   end
 end
 
@@ -111,15 +104,10 @@ end
 
 function Indicator:onHeaderMove(event)
   local progressBar = self.elements.progressBar
-  local header = composer.getScene(composer.getSceneName('current')).header
-  local dist = header.elements.navBar.contentHeight
-  local barMargin = progressBar.contentHeight*.5
-  local targetY = event.targetYPos + dist
-  if event.hidden then
-    self.animation = transition.to(progressBar, {time = 450, transition = easing.outExpo, y = targetY - barMargin})
-  else
-    self.animation = transition.to(progressBar, {time = 450, transition = easing.outExpo, y = targetY - barMargin})
-  end
+  local barMargin = progressBar.height
+  d(event.targetYPos)
+  local targetY = event.targetYPos
+  self.animation = transition.to(progressBar, {time = 450, transition = easing.outExpo, y =  targetY + barMargin/2})
 end
 
 function Indicator:onAlbumLimitReached(event)

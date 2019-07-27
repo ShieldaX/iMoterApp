@@ -85,6 +85,7 @@ function Header:initialize(opts, parent)
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
 	}
   navBarHeight = 42
+  self.navBarHeight = navBarHeight
   local navBar = widget.newNavigationBar({
 		isTransluscent = true,
 		backgroundColor = theme.navBarBackgroundColor,
@@ -104,8 +105,8 @@ end
 function Header:hide()
   local navBar = self.elements.navBar
   if not navBar or self.isHidden then return false end
-  local targetY = oY-navBar.contentHeight
-  self:signal('onHeaderMove', {hidden = true, targetYPos = targetY})
+  local targetY = navBar.y-navBarHeight
+  self:signal('onHeaderMove', {hidden = true, targetYPos = targetY + self.navBarHeight + topInset})
   self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
   self.isHidden = true
 end
@@ -114,7 +115,7 @@ function Header:show()
   local navBar = self.elements.navBar
   if not navBar or not self.isHidden then return false end
   local targetY = self.navBarYPos
-  self:signal('onHeaderMove', {hidden = false, targetYPos = targetY})
+  self:signal('onHeaderMove', {hidden = false, targetYPos = targetY + self.navBarHeight + topInset})
   self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
   self.isHidden = false
 end 

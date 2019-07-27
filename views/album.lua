@@ -90,18 +90,17 @@ function Album:initialize(obj, sceneGroup)
   self.paintedPieceId = nil
   self.pieceAutoRotate = composer.getVariable('autoRotate')
   composer.setVariable( "autoRotate", self.pieceAutoRotate )
-  --APP.CurrentAlbum = self
   -- END DATA BINDING
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
-  --local _bg = display.newRoundedRect(self.layer, oX, oY, vW, vH, 8)
   local _bg = display.newRect(oX, oY, vW, vH)
   _bg:setFillColor(colorHex('1A1A19'))
   _bg:setFillColor(1)
   _bg:translate( _bg.contentWidth*0.5, _bg.contentHeight*0.5 )
   self:_attach(_bg, '_bg')
-  --util.center(_bg)
+--  local indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42}, self)
+--  self:_attach(indicator, 'indicator')
   self.elements._bg:toBack()
   -- END VISUAL INITIALIING
   -- -------------------
@@ -111,9 +110,10 @@ function Album:open(index)
   index = index or 1
   self.currentPieceId = nil
 --  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= APP.Header.elements.TopBar.height}, self)
-  local indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42}, self)
   --indicator.layer:toFront()
   --self:addView(indicator)
+  local curScene = composer.getScene(composer.getSceneName('current')) 
+  curScene.indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42}, sceneGroup)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil

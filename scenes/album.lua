@@ -16,7 +16,6 @@ local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
-local background = nil
 local widget = require( "widget" )
 local util = require 'util'
 local d = util.print_r
@@ -56,17 +55,22 @@ function scene:create( event )
 	local sceneGroup = self.view
   local params = event.params
   composer.setVariable( "autoRotate", 1 )
+  local numAlbumCreation = composer.getVariable('numAlbumCreation') or 0
+  composer.setVariable('numAlbumCreation', numAlbumCreation + 1)
+  d('This is the '..(numAlbumCreation+1)..' time of album creation')
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
   --      CREATE display objects and add them to 'group' here.
-  background = display.newRect(sceneGroup, oX, oY, vW, vH)
+  local background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor( 0 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   
   self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
   
   local album_id = params.album_id
-  local title = util.GetMaxLenString(params.title, 30)
+  local _title = params.title
+  _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
+  local title = util.GetMaxLenString(_title, 30)
   local function openAlbumWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )
@@ -88,9 +92,10 @@ function scene:show( event )
 	local sceneGroup = self.view
   local phase = event.phase
   local params = event.params
-
   if ( phase == "will" ) then
-    local title = util.GetMaxLenString(params.title, 30)
+    local _title = params.title
+    _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
+    local title = util.GetMaxLenString(_title, 30)
     self.header.elements.navBar:setLabel(title)
   elseif ( phase == "did" ) then
     
