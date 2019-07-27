@@ -512,7 +512,7 @@ function widget.newNavigationBar( options )
           label = opt.leftButton.label,
           onEvent = opt.leftButton.onEvent,
           font = opt.leftButton.font or opt.font,
-          fontSize = opt.fontSize,
+          fontSize = opt.leftButton.fontSize or opt.fontSize,
           labelColor = opt.leftButton.labelColor or { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
           labelAlign = "left",
         })

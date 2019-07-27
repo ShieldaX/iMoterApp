@@ -35,6 +35,7 @@ local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
 local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 
 -- Our modules
 local APP = require( "classes.application" )
@@ -79,8 +80,8 @@ function Header:initialize(opts, parent)
   -- Configure topbar
 	local leftButton = {
     id = 'backBtn',
-    label = '<< 返回',
-		fontSize = 35,
+    label = '< 返回',
+		fontSize = 16,
 		onEvent = leftButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
 	}
@@ -91,7 +92,7 @@ function Header:initialize(opts, parent)
 		backgroundColor = theme.navBarBackgroundColor,
 		title = "= MEOW =",
 		titleColor = theme.navBarTextColor,
-		font = fontSHSansBold, fontSize = 12,
+		font = fontZcoolHuangYou, fontSize = 14,
 		height = navBarHeight,
 		includeStatusBar = false,
 		leftButton = leftButton
