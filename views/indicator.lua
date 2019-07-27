@@ -75,7 +75,7 @@ function Indicator:initialize(opts, parent)
   }
   _spinner.alpha = 0
   self:_attach(_spinner, 'spinner')
-  --self.layer:toFront()
+  self.layer:toFront()
   -- END VISUAL INITIALIING
   -- -------------------
   d(self.name..' began with '..self:getState())
@@ -83,12 +83,10 @@ end
 
 function Indicator:onProgress(event)
   local i = event.index
-  --d(self:getState())
-  --d(self.layer)
   local progressBar = self.elements.progressBar
   if progressBar then
     self.elements.progressBar:setProgress(i/self.total)
-    --self.layer:toFront()
+    self.layer:toFront()
   end
 end
 
@@ -105,8 +103,6 @@ end
 function Indicator:onHeaderMove(event)
   local progressBar = self.elements.progressBar
   local barMargin = progressBar.height or 100
-  d('BarHeight:')
-  d(barMargin)
   local targetY = event.targetYPos
   self.animation = transition.to(progressBar, {time = 450, transition = easing.outExpo, y =  targetY + barMargin/2})
 end

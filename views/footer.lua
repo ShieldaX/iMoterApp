@@ -127,6 +127,7 @@ function Footer:initialize(opts, parent)
   panel:insert( panel.background )
   self:_attach(panel, 'TabBar')
   self:buildTabs(tabOptions)
+  self.hidden = true
   self:show()
   -- END VISUAL INITIALIING
   -- -------------------
@@ -272,11 +273,13 @@ function Footer:selectTab(tab_id)
 end
 
 function Footer:show()
+  if not self.hidden then return end
   self.hidden = false
   self.elements.TabBar:show()
 end
 
 function Footer:hide()
+  if self.hidden then return end
   self.hidden = true
   self.elements.TabBar:hide()
 end

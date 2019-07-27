@@ -58,17 +58,12 @@ function scene:create( event )
   
   _pieceImage = PieceImage:new(currentPieceId, baseDir, cX, cY, composer.getVariable( "autoRotate" ))
   _pieceImage.layer.alpha = 0
---  _pieceImage = display.newImage( sceneGroup, currentPieceId, baseDir, cX, cY )
   sceneGroup:insert(_pieceImage.layer)
   
   label = display.newText { text = params.labelText, x = cX, y = screenOffsetH + 20, fontSize = 18, align = 'center', font = Helvetica }
   label:setFillColor(1, 1, 1, 0.9)
   sceneGroup:insert(label)
   -- -----------------
-  -- -----------------
-  --_pieceImage.touch = touchListener
-	--_pieceImage:addEventListener( "touch", self)
-  --_pieceImage:addEventListener("tap", self)
 end
 
 -- show()
@@ -79,33 +74,33 @@ function scene:show( event )
   if ( phase == "will" ) then
     self.bgTransiton = transition.to( background, { alpha = 0.9 } )
     self.imageTransiton = transition.to( _pieceImage.layer, { alpha = 1 } )
+    self.hideFooter = APP.Footer.hidden
     APP.Footer:hide()
   elseif ( phase == "did" ) then
 
   end
 end
  
- 
 -- hide()
 function scene:hide( event )
  
   local sceneGroup = self.view
   local phase = event.phase
-
   if ( phase == "will" ) then
     self.imageTransiton = transition.to( _pieceImage.layer, { alpha = 0 } )
-    --APP.Footer:show()
+    if not self.hideFooter then APP.Footer:show() end
   elseif ( phase == "did" ) then
     
   end
 end
- 
- 
+
 -- destroy()
 function scene:destroy( event )
   local sceneGroup = self.view
   background:removeSelf()
   _pieceImage:cleanup()
+  background, _pieceImage = nil
+  d('Piece scene destoried success!')
 end
  
  

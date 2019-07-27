@@ -198,9 +198,9 @@ function Piece:touch(event)
             d('Flicked but Image Unloaded, switch but should Block')
           end
           -- -----------------------------------
-          album:turnOver() --TODO: confirm direction?
+          album:turnOver()
         else -- Cancelled 动作取消 Try to roll back
-          d('Action Cancelled, Rolling Back...')
+          d('Touch/Move Action Cancelled, Rolling Back...')
           self:blurGaussian(0)
           --ease = easing.inQuad
           transition.to( _t, {time = transT, y = 0, transition = ease} )
@@ -356,7 +356,6 @@ function Piece:stop()
     self.layer:removeEventListener('tap', self)
     self:setState('STOPPED')
     d(self.name..' '..self:getState())
-    --self:cleanup()
 --}}}
 end
 
@@ -372,7 +371,6 @@ function Piece:cleanup()
   d('CLEANUP ' .. self.name..' @ '..self:getState())
   View.cleanup(self)
   self:setState('DESTROYED')
-  --d(self.layer)
   d(self.name..' @ '..self:getState())
 end
 

@@ -95,10 +95,9 @@ function Update:initialize(obj, topPadding, sceneGroup)
   local function scrollListener( event )
     local _t = event.target
     local phase = event.phase
-    if ( phase == "began" ) then print( "Scroll view was touched" )
+    if ( phase == "began" ) then
       _t.xStart, _t.yStart = _t:getContentPosition()
-      d(_t.yStart)
-    elseif ( phase == "moved" ) then print( "Scroll view was moved" )
+    elseif ( phase == "moved" ) then
       _t.xLast, _t.yLast = _t:getContentPosition()
       _t.motion = _t.yLast - _t.yStart
       local isTabBarHidden = APP.Footer.hidden
@@ -107,18 +106,16 @@ function Update:initialize(obj, topPadding, sceneGroup)
       elseif _t.motion >= 30 and isTabBarHidden then
         APP.Footer:show()
       end
-    elseif ( phase == "ended" ) then print( "Scroll view was released" )
+    elseif ( phase == "ended" ) then
+      print( "Scroll view was released" )
     end
     -- In the event a scroll limit is reached...
     if ( event.limitReached ) then
       if ( event.direction == "up" ) then
         print( "Reached bottom limit" )
-        
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )
---        self.moreLabel.alpha = 1
---        self.elements.slider:insert(self.moreLabel)
       elseif ( event.direction == "right" ) then print( "Reached left limit" )
       end
     end

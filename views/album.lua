@@ -110,13 +110,9 @@ end
 function Album:open(index)
   index = index or 1
   self.currentPieceId = nil
---  local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= APP.Header.elements.TopBar.height}, self)
-  --indicator.layer:toFront()
-  --self:addView(indicator)
 --  local curScene = composer.getScene(composer.getSceneName('current')) 
   local indicator = Indicator:new({total= #self.imgURIs, name= 'indicator', top= 42})
   self:_attach(indicator)
-  d(self.elements.indicator.layer)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
@@ -192,6 +188,8 @@ function Album:turnOver()
   -- Current Piece is Fading Out
   currentPiece:stop()
   local targetIndex = table.indexOf(self.imgNames, self.paintedPieceId)
+--  local currentIndex = table.indexOf(self.imgNames, self.currentPieceId)
+--  local direction = targetIndex > currentIndex and 1 or -1  
   self:signal('onProgress', {index = targetIndex})
   transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
   -- ------------------
@@ -202,7 +200,6 @@ function Album:turnOver()
     local _layer = targetPiece.layer
     _layer.x = (1 - _layer.xScale)*vW*.5
     _layer.y = (1 - _layer.yScale)*vH*.5
-    --targetPiece.isBlocked = true
   end
   -- Blocking Piece to Avoid Unexpect Interaction while Transition (Moving)
   targetPiece.isBlocked = true
@@ -217,7 +214,7 @@ function Album:turnOver()
         targetPiece.isBlocked = false
         currentPiece:cleanup()
         self.elements[self.currentPieceId] = nil
-        -- exchange avatars in plus view
+        -- Exchange references C/P piece view
         self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
         if self.currentPieceId and self.elements[self.currentPieceId].state >= View.STATUS.PRELOADED then
           self.elements[self.currentPieceId]:start()
@@ -229,7 +226,6 @@ end
 
 -- ---
 -- 清除预加载的（目标）Piece View对象并重置预加载索引
--- Album:rebase()
 -- clean the new piece object on album view
 -- @return 'boolean' False if nothing need clean.
 function Album:turnOut()
@@ -256,12 +252,14 @@ end
 
 function Album:start()
   if self.state == 30 then return false end
-  --local e = self.elements
   self:setState('STARTED')
 end
 
 function Album:stop()
   d('Try to destroy Album: '..self.name)
+  local currentPiece = self.elements[self.currentPieceId]
+  currentPiece:stop()
+  currentPiece:cleanup()
   self:cleanup()
 end
 

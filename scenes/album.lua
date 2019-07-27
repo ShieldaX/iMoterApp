@@ -97,15 +97,10 @@ function scene:show( event )
     _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
     local title = util.GetMaxLenString(_title, 30)
     self.header.elements.navBar:setLabel(title)
+    APP.Footer:show()
   elseif ( phase == "did" ) then
     
   end
-  --timer.performWithDelay(2000, function() composer.gotoScene('scenes.moter', options) end)
-  -----------------------------------------------------------------------------
-
-  --      This event requires build 2012.782 or later.
-
-  -----------------------------------------------------------------------------
 end
 
 function scene:hide( event )
@@ -121,6 +116,7 @@ end
 function scene:destroy( event )
 	local sceneGroup = self.view
   --network.cancel(self.requestId)
+  self.header:cleanup()
   APP.albumView:stop()
   d('Album scene destoried success!')
 end

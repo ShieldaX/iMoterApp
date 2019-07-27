@@ -49,18 +49,18 @@ local function resize(obj)
 end
 
 local function fitImage( displayObject, fitWidth, fitHeight, enlarge )
-	--
-	-- first determine which edge is out of bounds
-	--
-	local scaleFactor = fitHeight / displayObject.contentHeight 
-	local newWidth = displayObject.contentWidth * scaleFactor
-	if newWidth > fitWidth then
-		scaleFactor = fitWidth / displayObject.contentWidth 
-	end
-	if not enlarge and scaleFactor > 1 then
-		return
-	end
-	displayObject:scale( scaleFactor, scaleFactor )
+  --
+  -- first determine which edge is out of bounds
+  --
+  local scaleFactor = fitHeight / displayObject.contentHeight 
+  local newWidth = displayObject.contentWidth * scaleFactor
+  if newWidth > fitWidth then
+    scaleFactor = fitWidth / displayObject.contentWidth 
+  end
+  if not enlarge and scaleFactor > 1 then
+    return
+  end
+  displayObject:scale( scaleFactor, scaleFactor )
 end
 
 function cancelMove(displayObject)
@@ -84,7 +84,7 @@ function PieceImage:initialize(imageFile, baseDir, x, y, autoRotate)
   -- -------------------
   -- DATA BINDING
   self.imageFile = imageFile
-  self.name = 'piece_image_view'
+  self.name = imageFile
   d('图片查看对象: '..self.imageFile)
   -- END DATA BINDING
   -- -------------------
@@ -98,7 +98,7 @@ function PieceImage:initialize(imageFile, baseDir, x, y, autoRotate)
   self:_attach(_pieceImage, 'displayImage')
   -- END VISUAL INITIALIING
   -- -------------------
-	_pieceImage:addEventListener( "touch", self)
+  _pieceImage:addEventListener( "touch", self)
   _pieceImage:addEventListener("tap", self)
   --self:gotoState('FullFilled')
 end
@@ -137,6 +137,23 @@ function PieceImage:touch(touch)
   return true
 end
 
+function PieceImage:stop()
+  self.isBlocked = true
+  self.elements.displayImage:removeEventListener('touch', self)
+  self.elements.displayImage:removeEventListener('tap', self)
+  self:setState('STOPPED')
+  d('图片查看对象：'..self.name..' '..self:getState())
+end
+
+function PieceImage:cleanup()
+  d('CLEANUP ' .. self.name..' @ '..self:getState())
+  self:stop()
+  Runtime:removeEventListener('receive', self)
+  View.cleanup(self)
+  self:setState('DESTROYED')
+  d('图片查看对象：'..self.name..' @ '..self:getState())
+end
+
 local ACTRPiece = PieceImage:addState('ActualSize')
 
 function PieceImage:tap(event)
@@ -144,10 +161,10 @@ function PieceImage:tap(event)
   if event.numTaps == 1  then
     d("Display Object Single-tapped: " .. tostring(event.target))
     self.timer = timer.performWithDelay(duration, function()
-      if self.timer then
-        composer.hideOverlay('crossFade', 500)
-      end
-    end)    
+        if self.timer then
+          composer.hideOverlay('crossFade', 500)
+        end
+      end)    
   elseif event.numTaps == 2 then
     if self.timer then 
       timer.cancel(self.timer)
@@ -155,16 +172,13 @@ function PieceImage:tap(event)
     end
     d("Display Object Double-tapped: " .. tostring(event.target))
     local image = event.target
-    --image.xScale, image.yScale = 1, 1
     self.FFxScale = image.xScale
     self.FFyScale = image.yScale
     transition.cancel(tween)
     tween = transition.to(image, {time = 200, xScale = 1, yScale = 1, x = cX, y = cY})
-    --util.center(image)
     self:gotoState('ActualSize')
-  else
-    return true
   end
+  return true
 end
 
 function ACTRPiece:tap(event)
@@ -173,12 +187,9 @@ function ACTRPiece:tap(event)
     local image = event.target
     d(image.x..':'..image.y)
     d(event.x..':'..event.y)
-    --fullFillScreen(image, vW, vH)
     transition.cancel(tween)
     tween = transition.to(image, {time = 200, xScale = self.FFxScale, yScale = self.FFyScale, x = cX, y = cY})
-    --util.center(image)
     self:gotoState(nil)
-  else
     return true
   end
 end
@@ -216,7 +227,6 @@ function ACTRPiece:touch(touch)
       _pieceImage.y = _pieceImage.y + deltaY
       limitInBounds(_pieceImage, {scrTop, scrLeft, scrBottom, scrRight})
     elseif ( phase == "ended" or phase == "cancelled" ) then
-      --limitInBounds(_pieceImage, {scrTop, scrLeft, scrBottom, scrRight})
       if ( phase == "cancelled" ) then	
         cancelMove(touch.target)
       end
