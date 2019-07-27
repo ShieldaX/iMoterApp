@@ -247,6 +247,7 @@ function Album:onPieceTapped(event)
     isModal = true,
     params = event
   }
+  d('打开图片专门页面...')
   composer.showOverlay( "scenes.piece", options )
 end
 
@@ -260,7 +261,7 @@ function Album:stop()
   local currentPiece = self.elements[self.currentPieceId]
   currentPiece:stop()
   currentPiece:cleanup()
-  self:cleanup()
+  self:destroy()
 end
 
 return Album
