@@ -130,6 +130,8 @@ function Card:buildTags(tags, left, top)
     tag.layer.x = left
     tag.layer.y = top
     left = left + tag.layer.contentWidth + 10
+    tag:start()
+    table.insert(self._elements, tag)
   end
   panel:insert(tagslider)
   tagslider.anchorChildren = true
@@ -185,6 +187,11 @@ function Card:toggle()
   else
     self:hide()
   end
+end
+
+function Card:stop()
+  d('Try to destroy Album Card')
+  self:destroy()
 end
 
 return Card

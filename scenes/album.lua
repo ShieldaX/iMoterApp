@@ -59,49 +59,6 @@ local iMoter = iMoterAPI:new()
 -- BEGINNING OF YOUR IMPLEMENTATION
 ---------------------------------------------------------------------------------
 
-local function createExcerpt(excerpt)
-  if not excerpt then return false end
-  local leftPadding, topPadding = 20, 24
-  local infoCard = display.newGroup()
-  infoCard.anchorChildren = true
-  infoCard.anchorX = 0
-  infoCard.anchorY = 1
-  local bg = display.newRect(infoCard, 0, 0, vW, vH*.36)
-  bg:setFillColor(colorHex('1A1A19'))
-  local paint = {
-      type = "gradient",
-      color1 = {colorHex('1A1A19'), .8},
-      color2 = {colorHex('1A1A19'), 0},
-      direction = "up"
-  }
-  --bg.fill = paint
-  local excerptText = display.newText {
-      parent = infoCard,
-      text = excerpt,
-      x = bg.width*.05, y = topPadding,
-      width = bg.width*.9, height = 0,
-      font = fontSHSans, fontSize = 16,
-      align = 'left'
-    }
-  bg.anchorX, bg.anchorY = 0, 0
-  excerptText.anchorX, excerptText.anchorY = 0, 0
-  bg.height = excerptText.height + topPadding*3
-  infoCard.x = 0
-  infoCard.y = vH
-  return infoCard
-end
-
-local function loadTags(sceneGroup, tags, top)
-  top = top or cY
-  local prevTagX = 20
-  for k, _tag in pairs(tags) do
-    local tag = Tag:new(_tag, sceneGroup)
-    tag.layer.x = prevTagX
-    tag.layer.y = top
-    prevTagX = prevTagX + tag.layer.contentWidth + 10
-  end
-end
-
 function scene:showInfo(album)
   local cardOpts = {
       name = 'infoCard',
@@ -179,6 +136,7 @@ function scene:destroy( event )
 	local sceneGroup = self.view
   --network.cancel(self.requestId)
   self.header:cleanup()
+  self.infoCard:stop()
   APP.albumView:stop()
   d('Album scene destoried success!')
 end

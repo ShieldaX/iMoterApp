@@ -80,12 +80,12 @@ function View:cleanup()
   self._elements = {}
   self.elements = {}
   self:setState('INITIALIZED')
+  Runtime:removeEventListener('receive', self)
 end
 
 function View:destroy()
   self:cleanup()
   self:setState('DESTROYED')
-  Runtime:removeEventListener('receive', self)
 end
 
 function View:send(name, ...)

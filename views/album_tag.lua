@@ -134,10 +134,7 @@ end
 function Tag:start()
 --{{{
   d('Try to start Tag '..self.name..' @ '..self:getState())
-  if (self.state < View.STATUS.PRELOADED) or self.isBlocked then
-    d(self.name .. ' is Not Ready to Start!')
-    return false
-  elseif (self.state >= View.STATUS.STARTED) then
+  if (self.state >= View.STATUS.STARTED) then
     d(self.name .. ' already Started!')
     return false
   end
@@ -152,8 +149,16 @@ function Tag:start()
 end
 
 function Tag:tap(tap)
-  d('Open album List by Tag: '..self.title)
+  transition.cancel(self.animation)
+  self.layer.alpha = 1
+  self.animation = transition.to(self.layer, {time = 200, transition = easing.continuousLoop, alpha = .5})
+  d('Open album List by Tag: '..self.id)
   self:signal('onTagTapped', {id = self.name, name = self.id})
+end
+
+function Tag:cleanup()
+  d('clean up tag: '..self.id)
+  View.cleanup(self)
 end
 
 return Tag
