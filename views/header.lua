@@ -51,8 +51,6 @@ local function leftButtonEvent( event )
 		local prevScene = composer.getSceneName( "previous" )
 		if prevScene then
 			composer.gotoScene( prevScene, {effect = 'slideRight', time = 420} )
-		else
-			--composer.showOverlay( "scenes.menu", { isModal=true, time=250, effect="fromLeft" } )
 		end
 	end
 	return true

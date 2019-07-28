@@ -164,8 +164,9 @@ function Album:switchPiece(direction)
   local targetIndex = currentIndex + direction
   local pieceId = self.imgNames[targetIndex]
 --  self:signal('onPieceSwitch', {direction = direction})
-  local titleBar = composer.getScene(composer.getSceneName('current')).header
-  local infoCard = composer.getScene(composer.getSceneName('current')).infoCard
+  local currentScene = composer.getScene(composer.getSceneName('current'))
+  local titleBar = currentScene.header
+  local infoCard = currentScene.infoCard
   if direction > 0 then
     titleBar:hide()
     infoCard:hide()
@@ -173,14 +174,20 @@ function Album:switchPiece(direction)
     titleBar:show()
     infoCard:show()
   end
-  
+
   if pieceId == nil then
     if direction == -1 then
       d('This is already the first pix!') 
+      local prevScene = composer.getSceneName( "previous" )
+      if prevScene then
+        composer.gotoScene( prevScene, {effect = 'slideRight', time = 420} )
+      end
+      display.getCurrentStage():setFocus(nil)
+      return true
     elseif direction == 1 then
       d('This is already the foot pix!')
     end
-    self:signal('onAlbumLimitReached', {direction = direction})
+    --self:signal('onAlbumLimitReached', {direction = direction})
     return false
   end
   self:createPiece(targetIndex)
