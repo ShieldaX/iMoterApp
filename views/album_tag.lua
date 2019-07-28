@@ -153,7 +153,7 @@ end
 
 function Tag:tap(tap)
   d('Open album List by Tag: '..self.title)
-  self:signal('onTagTapped', {album_id = self.id, title = self.title})
+  self:signal('onTagTapped', {id = self.name, name = self.id})
 end
 
 return Tag

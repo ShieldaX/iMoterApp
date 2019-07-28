@@ -184,13 +184,14 @@ function scene:loadHotAlbumList()
     albumListView.layer.y = albumListView.layer.y + cursor.y + padding
     albumListView:open()
   end
-  iMoter:listAlbums({skip = 10, limit = 10}, showAlbumsWithData)
+  iMoter:listAlbums({skip = 10, limit = 20}, showAlbumsWithData)
 end
 
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
   local sceneGroup = self.view
   if event.phase == "did" then
+    APP.Footer:show()
     composer.removeHidden()
   end
 end

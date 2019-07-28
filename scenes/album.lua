@@ -32,9 +32,10 @@ local iMoterAPI = require( "classes.iMoter" )
 
 --local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
-local Tag = require("views.album_tag")
+--local Tag = require("views.album_tag")
 local HeaderView = require("views.header")
-local FooterView = require("views.footer")
+local Card = require 'views.album_card'
+--local FooterView = require("views.footer")
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
@@ -101,11 +102,20 @@ local function loadTags(sceneGroup, tags, top)
   end
 end
 
+function scene:showInfo(album)
+  local cardOpts = {
+      name = 'infoCard',
+      excerpt = album.excerpt,
+      tags = album.tags
+    }
+  self.infoCard = Card:new(cardOpts, self.view)
+end
+
 -- Called when the scene's view does not exist:
 function scene:create( event )
 	local sceneGroup = self.view
   local params = event.params
-  composer.setVariable( "autoRotate", 1 )
+  composer.setVariable( "autoRotate", 0 )
   local numAlbumCreation = composer.getVariable('numAlbumCreation') or 0
   composer.setVariable('numAlbumCreation', numAlbumCreation + 1)
   d('This is the '..(numAlbumCreation+1)..' time of album creation')
@@ -131,11 +141,7 @@ function scene:create( event )
     d(_album)
     APP.albumView = AlbumView:new(_album, sceneGroup)
     APP.albumView:open()
-    local albumExcerpt = createExcerpt(_album.excerpt)
-    if albumExcerpt then
-      sceneGroup:insert(albumExcerpt)
-      loadTags(sceneGroup, _album.tags, albumExcerpt.contentBounds.yMax - albumExcerpt.contentHeight*.1)
-    end
+    self:showInfo(_album)
     self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)

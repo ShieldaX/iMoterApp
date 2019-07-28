@@ -128,39 +128,6 @@ function Album:open(index)
   self:setState('STARTED')
 end
 
-function Album:showInfo()
-  if not (self.state >= View.STATUS.INITIALIZED) then return end
-  local leftPadding, topPadding = 20, 24
-  local infoCard = display.newGroup()
-  infoCard.anchorChildren = true
-  infoCard.anchorX = 0
-  infoCard.anchorY = 1
-  local bg = display.newRect(infoCard, 0, 0, vW, vH*.36)
---  util.center(bg)
-  bg:setFillColor(colorHex('1A1A19'), .6)
-  local paint = {
-      type = "gradient",
-      color1 = { 1, 0, 0.4 },
-      color2 = { 1, 0, 0, 0 },
-      direction = "up"
-  }
-  bg.fill = paint
-  local excerptText = display.newText {
-      parent = infoCard,
-      text = self.rawData.excerpt,
-      x = bg.width*.05, y = topPadding*2,
-      width = bg.width*.9, height = 0,
-      font = fontSHSans, fontSize = 16,
-      align = 'left'
-    }
-  bg.anchorX, bg.anchorY = 0, 0
-  excerptText.anchorX, excerptText.anchorY = 0, 0
-  bg.height = excerptText.height + topPadding*3
-  self:_attach(infoCard, 'infoCard')
-  infoCard.x = 0
-  infoCard.y = vH
-end
-
 -- ---
 -- 清除其他预加载的Piece View，（重）新创建一个Piece对象，
 -- 如果预加载的Piece View 和目标一致则直接返回
@@ -196,14 +163,15 @@ function Album:switchPiece(direction)
   local currentIndex = table.indexOf(self.imgNames, self.currentPieceId)
   local targetIndex = currentIndex + direction
   local pieceId = self.imgNames[targetIndex]
-  
-  local header = composer.getScene(composer.getSceneName('current')).header
+--  self:signal('onPieceSwitch', {direction = direction})
+  local titleBar = composer.getScene(composer.getSceneName('current')).header
+  local infoCard = composer.getScene(composer.getSceneName('current')).infoCard
   if direction > 0 then
-    header:hide()
-    APP.Footer:hide()
+    titleBar:hide()
+    infoCard:hide()
   else
-    header:show()
-    APP.Footer:show()
+    titleBar:show()
+    infoCard:show()
   end
   
   if pieceId == nil then

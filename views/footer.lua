@@ -112,7 +112,7 @@ function Footer:initialize(opts, parent)
     onComplete = panelTransDone,
     width = self.barWidth,
     height = self.barHeight + bottomInset,
-    speed = 360,
+    speed = 200,
     inEasing = easing.outCubic,
     outEasing = easing.inCirc
   }
