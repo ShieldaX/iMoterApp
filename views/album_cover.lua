@@ -218,10 +218,13 @@ function Cover:onImageLoaded()
     width = cImage.contentWidth+4,
     align = 'Left'
   }
-  if label.height > labelFSize*2.8 then
+  local labelHeight = label.height
+  if labelHeight >= labelFSize*3 then
     label.text = label.text:gsub("%d+%.", '', 1)
-  elseif label.height < labelFSize*2 then
+  elseif labelHeight < labelFSize*2.5 and labelHeight > labelFSize*1.5 then
     label.text = self.title
+  elseif labelHeight < labelFSize*1.5 then
+    label.text = self.title..' '..self.title
   end
   label:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
   self:_attach(label, 'label')

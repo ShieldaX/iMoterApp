@@ -144,13 +144,17 @@ function Header:selectTab(tab_id)
 end
 
 function Header:onHomeTabChanged(event)
-  d(event)
   local targetTabID = event.tab
   local updateView = APP.albumListView
+  local hotView = APP.hotAlbumListView
   if targetTabID == 'labelUpdate' then
     transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = 0})
+    transition.to(hotView.layer, {transition = easing.outExpo, time = 600, x = vW})
   else
     transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = -vW})
+    local scene = composer.getScene(composer.getSceneName('current'))
+    scene:loadHotAlbumList()
+    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 600, x = 0}) end
   end
 end
 

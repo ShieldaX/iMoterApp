@@ -16,6 +16,7 @@ local View = require 'libs.view'
 local Piece = require 'views.piece'
 local Album = require 'views.album'
 local Cover = require 'views.album_cover'
+--local Indicator = require 'views.indicator'
 local AlbumList = class('AlbumListView', View)
 local APP = require("classes.application")
 
@@ -85,6 +86,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   self._albums = obj.albums
   self.name = 'album list'
   self.covers = {}
+  APP.CurrentAlbumList = self
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -138,10 +140,36 @@ end
 function AlbumList:open(index)
   index = index or 1
   self.cursorAlbumId = nil
+  --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   local albums = self._albums
   for i = index, #albums, 1 do
     self:loadCover(i)
   end
+  --[[
+  local moreLabel = display.newText {
+    text = '加载更多...',
+    x = cX, y = cY,
+    fontSize = 18, font = fontSHSansBold
+  }
+  local moreIcon = createIcon {
+    x = cX, y = cY,
+    text = 'collections',
+    fontSize = 24
+  }
+  moreIcon.anchorX = 0
+  moreIcon:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
+--  moreIcon.y = self.elements.nextBG.contentHeight*.48
+  self.elements.slider:insert(moreIcon)
+--  self.elements.slider:insert(moreLabel)
+  self.moreLabel = moreLabel
+  moreLabel.alpha = 0.01
+  local scaleFactor = 0.36
+  moreIcon.x = oX + self.elements.slider._view.contentWidth + vW*scaleFactor*1.2
+  moreLabel.x = moreIcon.x + moreIcon.width + moreLabel.width*.54
+--  moreLabel.anchorY = 0
+  moreLabel.y = moreIcon.y + moreLabel.height*.2
+--  d(moreLabel.y)
+  ]]
   self:setState('STARTED')
 end
 

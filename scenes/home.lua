@@ -20,6 +20,8 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+-- Gather insets (function returns these in the order of top, left, bottom, right)
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 -- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
@@ -37,7 +39,7 @@ local iMoterAPI = require( "classes.iMoter" )
 
 --local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
-local AlbumList = require("views.update")
+local AlbumList = require("views.album_list")
 local MoterView = require("views.moter_ui")
 local HeaderView = require("views.home_header")
 local FooterView = require("views.footer")
@@ -130,9 +132,6 @@ function scene:create( event )
   -----------------------------------------------------------------------------
 
   --      CREATE display objects and add them to 'group' here.
-
-  -- Gather insets (function returns these in the order of top, left, bottom, right)
-  local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
   -- Create a vector rectangle sized exactly to the "safe area"
   background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor(colorHex('1A1A19'))
@@ -164,6 +163,28 @@ function scene:create( event )
   iMoter:listAlbums({skip = 0, limit = 10}, showAlbumsWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
   -----------------------------------------------------------------------------
+end
+
+function scene:loadHotAlbumList()
+  if APP.hotAlbumListView then return end
+  local sceneGroup = self.view
+  local labelFSize = 20
+  local padding = labelFSize*.618
+  local function showAlbumsWithData(res)
+    if not res or not res.data then
+      native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
+      return false
+    end
+    local _albumList = res.data.albums
+    local _data = res.data
+    local topPadding = topInset
+    local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
+    APP.hotAlbumListView = albumListView
+    local cursor = APP.Header.elements.cursor
+    albumListView.layer.y = albumListView.layer.y + cursor.y + padding
+    albumListView:open()
+  end
+  iMoter:listAlbums({skip = 10, limit = 10}, showAlbumsWithData)
 end
 
 -- Called BEFORE scene has moved onscreen:
