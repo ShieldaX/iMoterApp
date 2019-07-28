@@ -1,9 +1,16 @@
 local composer = require( "composer" )
--- Constants List:
-local oX = display.screenOriginX
-local oY = display.screenOriginY
+
+--Display Constants List:
+local oX = display.safeScreenOriginX
+local oY = display.safeScreenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
+local visibleAspectRatio = vW/vH
+local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
+local cX, cY = display.contentCenterX, display.contentCenterY
+local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
+local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 local class = require 'libs.middleclass'
 local Stateful = require 'libs.stateful'
@@ -11,19 +18,19 @@ local inspect = require 'libs.inspect'
 local colorHex = require('libs.convertcolor').hex
 local util = require 'util'
 local d = util.print_r
---util.show_fps()
 
 -- Classes
 local View = require 'libs.view'
-local Piece = require 'views.piece'
+local Piece = require 'views.piece_horizon'
 local Indicator = require 'views.indicator'
 local Album = class('AlbumView', View)
 local APP = require("classes.application")
 
--- local forward references should go here --
-local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
-local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
+local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
+local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 
 local function tribleNum(num)
   local prefix = '00'
@@ -117,7 +124,41 @@ function Album:open(index)
   self:createPiece(index)
   -- First Initialize: Update Pieces (C/P) Reference Manually
   self.currentPieceId, self.paintedPieceId = self.paintedPieceId, nil
+  --self:showInfo()
   self:setState('STARTED')
+end
+
+function Album:showInfo()
+  if not (self.state >= View.STATUS.INITIALIZED) then return end
+  local leftPadding, topPadding = 20, 24
+  local infoCard = display.newGroup()
+  infoCard.anchorChildren = true
+  infoCard.anchorX = 0
+  infoCard.anchorY = 1
+  local bg = display.newRect(infoCard, 0, 0, vW, vH*.36)
+--  util.center(bg)
+  bg:setFillColor(colorHex('1A1A19'), .6)
+  local paint = {
+      type = "gradient",
+      color1 = { 1, 0, 0.4 },
+      color2 = { 1, 0, 0, 0 },
+      direction = "up"
+  }
+  bg.fill = paint
+  local excerptText = display.newText {
+      parent = infoCard,
+      text = self.rawData.excerpt,
+      x = bg.width*.05, y = topPadding*2,
+      width = bg.width*.9, height = 0,
+      font = fontSHSans, fontSize = 16,
+      align = 'left'
+    }
+  bg.anchorX, bg.anchorY = 0, 0
+  excerptText.anchorX, excerptText.anchorY = 0, 0
+  bg.height = excerptText.height + topPadding*3
+  self:_attach(infoCard, 'infoCard')
+  infoCard.x = 0
+  infoCard.y = vH
 end
 
 -- ---
@@ -192,7 +233,8 @@ function Album:turnOver()
 --  local currentIndex = table.indexOf(self.imgNames, self.currentPieceId)
 --  local direction = targetIndex > currentIndex and 1 or -1  
   self:signal('onProgress', {index = targetIndex})
-  transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
+--  transition.to( currentPiece.layer, {time = transTime - 50, y = - currentPiece.layer.direction*vH, transition = easeType} )
+  transition.to( currentPiece.layer, {time = transTime - 50, x = - currentPiece.layer.direction*vW, transition = easeType} )
   -- ------------------
   -- Target Piece is Fading In (Comes Up)
   local isPreloaded = (targetPiece.state >= View.STATUS.PRELOADED)

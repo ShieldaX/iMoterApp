@@ -58,7 +58,7 @@ Piece.static.DEFAULT_DIRECTORY = system.CachesDirectory
 
 function Piece:initialize(uri, name, parent)
   View.initialize(self)
-  assert(self.layer, 'Piece View Initialized Failed!')
+  assert(self.layer, 'Piece H View Initialized Failed!')
   d('创建图片对象: '..name)
   self.uri = uri .. '.jpg'
   self.fileName = name .. '.jpg'
@@ -140,7 +140,7 @@ function Piece:touch(event)
     if ('began' == phase) then
       display.getCurrentStage():setFocus( _t )
       _t.isFocus = true
-      _t.yStart = _t.y
+      _t.xStart = _t.x
       _t.tStart = event.time
       --t.tLast = event.time
       _t.motion = 0
@@ -155,9 +155,9 @@ function Piece:touch(event)
       if ('moved' == phase) then
         _t.tLast = event.time
         -- Distence passed by touch
-        _t.motion = event.y - event.yStart
+        _t.motion = event.x - event.xStart
         -- Sync Movement
-        _t.y = _t.yStart + _t.motion
+        _t.x = _t.xStart + _t.motion
         -- Detect switching direction then load Right Next Piece in Memory, Painting...
         if _t.motion > 20 and _t.direction >= 0 then
           _t.direction = -1
@@ -203,7 +203,7 @@ function Piece:touch(event)
           d('Touch/Move Action Cancelled, Rolling Back...')
           self:blurGaussian(0)
           --ease = easing.inQuad
-          transition.to( _t, {time = transT, y = 0, transition = ease} )
+          transition.to( _t, {time = transT, x = 0, transition = ease} )
           -- Try to drop Memory Prepainted Piece after???? transition
           if album.paintedPieceId and album.elements[album.paintedPieceId] then
             local _paintedPiece = album.elements[album.paintedPieceId].layer
@@ -227,7 +227,6 @@ end
 
 -- Add tap listeners
 function Piece:tap(event)
-  -- TODO: pop overlay: Enter image resource view.
   if not self.baseDir then return end
 	self:signal('onPieceTapped', {pieceId = self.fileName, baseDir = self.baseDir})
   return true

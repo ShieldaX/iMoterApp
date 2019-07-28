@@ -106,7 +106,7 @@ end
 function Header:hide()
   local topBar = self.elements.TopBar
   if not topBar or self.isHidden then return false end
-  self.animation = transition.to(topBar, {time = 450, transition = easing.outExpo, y = -topBar.contentHeight})
+  self.animation = transition.to(topBar, {time = 420, transition = easing.outExpo, y = -topBar.contentHeight})
   self:signal('onHeaderMove', {hidden = true})
   self.isHidden = true
 end
@@ -114,7 +114,7 @@ end
 function Header:show()
   local topBar = self.elements.TopBar
   if not topBar or not self.isHidden then return false end
-  self.animation = transition.to(topBar, {time = 450, transition = easing.outExpo, y = 0})
+  self.animation = transition.to(topBar, {time = 420, transition = easing.outExpo, y = 0})
   self:signal('onHeaderMove', {hidden = false})
   self.isHidden = false
 end
@@ -148,13 +148,17 @@ function Header:onHomeTabChanged(event)
   local updateView = APP.albumListView
   local hotView = APP.hotAlbumListView
   if targetTabID == 'labelUpdate' then
-    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = 0})
-    transition.to(hotView.layer, {transition = easing.outExpo, time = 600, x = vW})
+--    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = 0})
+    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 1})
+--    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, x = vW})
+    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 0})
   else
-    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = -vW})
+--    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = -vW})
+    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 0})
     local scene = composer.getScene(composer.getSceneName('current'))
     scene:loadHotAlbumList()
-    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 600, x = 0}) end
+    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 1}) end
+--    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 600, x = 0}) end
   end
 end
 

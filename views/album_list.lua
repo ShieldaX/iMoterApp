@@ -207,7 +207,7 @@ function AlbumList:onCoverTapped(event)
 --  event.coverImageURI = 
   local options = {
     effect = "slideLeft",
-    time = 600,
+    time = 420,
     params = event
   }
   composer.gotoScene( "scenes.album", options )

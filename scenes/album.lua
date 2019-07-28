@@ -16,6 +16,13 @@ local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
+local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
+local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
+local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+
+local colorHex = require('libs.convertcolor').hex
 local widget = require( "widget" )
 local util = require 'util'
 local d = util.print_r
@@ -50,6 +57,38 @@ local iMoter = iMoterAPI:new()
 -- BEGINNING OF YOUR IMPLEMENTATION
 ---------------------------------------------------------------------------------
 
+local function createExcerpt(excerpt)
+  if not excerpt then return false end
+  local leftPadding, topPadding = 20, 24
+  local infoCard = display.newGroup()
+  infoCard.anchorChildren = true
+  infoCard.anchorX = 0
+  infoCard.anchorY = 1
+  local bg = display.newRect(infoCard, 0, 0, vW, vH*.36)
+  bg:setFillColor(colorHex('1A1A19'), .9)
+  local paint = {
+      type = "gradient",
+      color1 = {colorHex('1A1A19'), .8},
+      color2 = {colorHex('1A1A19'), 0},
+      direction = "up"
+  }
+  --bg.fill = paint
+  local excerptText = display.newText {
+      parent = infoCard,
+      text = excerpt,
+      x = bg.width*.05, y = topPadding,
+      width = bg.width*.9, height = 0,
+      font = fontSHSans, fontSize = 16,
+      align = 'left'
+    }
+  bg.anchorX, bg.anchorY = 0, 0
+  excerptText.anchorX, excerptText.anchorY = 0, 0
+  bg.height = excerptText.height + topPadding*3
+  infoCard.x = 0
+  infoCard.y = vH
+  return infoCard
+end
+
 -- Called when the scene's view does not exist:
 function scene:create( event )
 	local sceneGroup = self.view
@@ -80,6 +119,8 @@ function scene:create( event )
 --    print(inspect(_album))
     APP.albumView = AlbumView:new(_album, sceneGroup)
     APP.albumView:open()
+    local albumExcerpt = createExcerpt(_album.excerpt)
+    if albumExcerpt then sceneGroup:insert(albumExcerpt) end
     self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
@@ -97,7 +138,7 @@ function scene:show( event )
     _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
     local title = util.GetMaxLenString(_title, 30)
     self.header.elements.navBar:setLabel(title)
-    APP.Footer:show()
+    APP.Footer:hide()
   elseif ( phase == "did" ) then
     
   end
