@@ -32,6 +32,7 @@ local iMoterAPI = require( "classes.iMoter" )
 
 --local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
+local Tag = require("views.album_tag")
 local HeaderView = require("views.header")
 local FooterView = require("views.footer")
 
@@ -65,7 +66,7 @@ local function createExcerpt(excerpt)
   infoCard.anchorX = 0
   infoCard.anchorY = 1
   local bg = display.newRect(infoCard, 0, 0, vW, vH*.36)
-  bg:setFillColor(colorHex('1A1A19'), .9)
+  bg:setFillColor(colorHex('1A1A19'))
   local paint = {
       type = "gradient",
       color1 = {colorHex('1A1A19'), .8},
@@ -87,6 +88,17 @@ local function createExcerpt(excerpt)
   infoCard.x = 0
   infoCard.y = vH
   return infoCard
+end
+
+local function loadTags(sceneGroup, tags, top)
+  top = top or cY
+  local prevTagX = 20
+  for k, _tag in pairs(tags) do
+    local tag = Tag:new(_tag, sceneGroup)
+    tag.layer.x = prevTagX
+    tag.layer.y = top
+    prevTagX = prevTagX + tag.layer.contentWidth + 10
+  end
 end
 
 -- Called when the scene's view does not exist:
@@ -116,11 +128,14 @@ function scene:create( event )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
     local _album = res.data.album
---    print(inspect(_album))
+    d(_album)
     APP.albumView = AlbumView:new(_album, sceneGroup)
     APP.albumView:open()
     local albumExcerpt = createExcerpt(_album.excerpt)
-    if albumExcerpt then sceneGroup:insert(albumExcerpt) end
+    if albumExcerpt then
+      sceneGroup:insert(albumExcerpt)
+      loadTags(sceneGroup, _album.tags, albumExcerpt.contentBounds.yMax - albumExcerpt.contentHeight*.1)
+    end
     self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)

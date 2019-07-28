@@ -218,9 +218,13 @@ function Cover:onImageLoaded()
     width = cImage.contentWidth+4,
     align = 'Left'
   }
+--  TODO: use label.height to limit text height
   local labelHeight = label.height
   if labelHeight >= labelFSize*3 then
     label.text = label.text:gsub("%d+%.", '', 1)
+    if label.height >= labelFSize*3 then
+      label.text = util.GetMaxLenString(self.title, 24)
+    end
   elseif labelHeight < labelFSize*2.5 and labelHeight > labelFSize*1.5 then
     label.text = self.title
   elseif labelHeight < labelFSize*1.5 then
