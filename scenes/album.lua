@@ -21,6 +21,7 @@ local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
 local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 
 local colorHex = require('libs.convertcolor').hex
 local widget = require( "widget" )
@@ -63,7 +64,9 @@ function scene:showInfo(album)
   local cardOpts = {
       name = 'infoCard',
       excerpt = album.excerpt,
-      tags = album.tags
+      tags = album.tags,
+      title = album.title,
+      created = album.created
     }
   self.infoCard = Card:new(cardOpts, self.view)
 end

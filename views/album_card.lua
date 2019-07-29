@@ -18,6 +18,7 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 local class = require 'libs.middleclass'
+local utility = require 'libs.utility'
 --local Stateful = require 'libs.stateful'
 --local inspect = require 'libs.inspect'
 local colorHex = require('libs.convertcolor').hex
@@ -31,6 +32,7 @@ local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
 local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 -- ---
 -- CLASSES Declaration
 --
@@ -45,6 +47,11 @@ local function createIcon(options)
   options.text = mui.getMaterialFontCodePointByName(options.text)
   local icon = display.newText(options)
   return icon
+end
+
+local function dateFromString(timestr)
+  local _time = utility.getTimeStamp(timestr)
+  return os.date("!%Y-%m-%d", _time)
 end
 
 -- ---
@@ -63,6 +70,8 @@ function Card:initialize(opts, parent)
   self.barHeight = opts.barHeight or 64
   self.barWidth = opts.barWidth or vW
   self.excerpt = opts.excerpt
+  self.publishDate = dateFromString(opts.created)
+  self.title = opts.title
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -101,6 +110,26 @@ function Card:initialize(opts, parent)
   local textHeight = excerptText.height
   bg.height = textHeight + topPadding*3 + bottomInset
   infoCard.x = -vW*.5
+  
+  local titleLabel = display.newText {
+      parent = infoCard,
+      text = self.title,
+      x = bg.width*.05, y = 5,
+      width = bg.width*.8, height = 0,
+      font = fontZcoolHuangYou, fontSize = 28,
+      align = 'left'
+    }
+  titleLabel.anchorX, titleLabel.anchorY = 0, 0    
+    
+  local pubDateText = display.newText {
+      parent = infoCard,
+      text = self.publishDate,
+      x = bg.width*.05, y = 5,
+      width = bg.width*.9, height = 0,
+      font = fontMorganiteSemiBold, fontSize = 20,
+      align = 'left'
+    }
+  pubDateText.anchorX, pubDateText.anchorY = 0, 0
   local panel = widget.newPanel{
     location = "bottom",
     onComplete = panelTransDone,
@@ -125,7 +154,6 @@ function Card:buildTags(tags, left, top)
   left = left or 20
   local panel = self.elements.panel
   for k, _tag in pairs(tags) do
-    d(_tag)
     local tag = Tag:new(_tag, tagslider)
     tag.layer.x = left
     tag.layer.y = top
