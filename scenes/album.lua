@@ -72,7 +72,7 @@ end
 function scene:create( event )
 	local sceneGroup = self.view
   local params = event.params
-  composer.setVariable( "autoRotate", 0 )
+  composer.setVariable( "autoRotate", false )
   local numAlbumCreation = composer.getVariable('numAlbumCreation') or 0
   composer.setVariable('numAlbumCreation', numAlbumCreation + 1)
   d('This is the '..(numAlbumCreation+1)..' time of album creation')
