@@ -121,7 +121,9 @@ function scene:show( event )
     self.header.elements.navBar:setLabel(title)
     APP.Footer:hide()
   elseif ( phase == "did" ) then
-    
+    if self.infoCard then
+      self.infoCard:show()
+    end
   end
 end
 

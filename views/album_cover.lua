@@ -219,7 +219,7 @@ function Cover:onImageLoaded()
     align = 'Left'
   }
 --  TODO: use label.height to limit text height
-  local labelHeight = label.height
+  local labelHeight = label.contentHeight
   if labelHeight >= labelFSize*3 then
     label.text = label.text:gsub("%d+%.", '', 1)
     if label.height >= labelFSize*3 then

@@ -111,25 +111,6 @@ function Card:initialize(opts, parent)
   bg.height = textHeight + topPadding*3 + bottomInset
   infoCard.x = -vW*.5
   
-  local titleLabel = display.newText {
-      parent = infoCard,
-      text = self.title,
-      x = bg.width*.05, y = 5,
-      width = bg.width*.8, height = 0,
-      font = fontZcoolHuangYou, fontSize = 28,
-      align = 'left'
-    }
-  titleLabel.anchorX, titleLabel.anchorY = 0, 0    
-    
-  local pubDateText = display.newText {
-      parent = infoCard,
-      text = self.publishDate,
-      x = bg.width*.05, y = 5,
-      width = bg.width*.9, height = 0,
-      font = fontMorganiteSemiBold, fontSize = 20,
-      align = 'left'
-    }
-  pubDateText.anchorX, pubDateText.anchorY = 0, 0
   local panel = widget.newPanel{
     location = "bottom",
     onComplete = panelTransDone,
@@ -142,10 +123,59 @@ function Card:initialize(opts, parent)
   panel:insert(infoCard)
   self:_attach(panel, 'panel')
   self:buildTags(opts.tags, 20, 12)
+  self:layoutTitle()
   self.hidden = true
-  self:show()
+  --self:show()
   -- END VISUAL INITIALIING
   -- -------------------
+end
+
+function Card:layoutTitle()
+  local leftPadding, topPadding = 16, 8
+  local infoCard = display.newGroup()
+  infoCard.anchorChildren = true
+  infoCard.anchorX = .5
+  infoCard.anchorY = .5
+
+  local titleLabel = display.newText {
+      parent = infoCard,
+      text = self.title,
+      x = leftPadding, y = topPadding,
+      width = vW*.618, height = 0,
+      font = fontZcoolHuangYou, fontSize = 26,
+      align = 'right'
+    }
+  titleLabel.anchorX, titleLabel.anchorY = 0, 0
+  
+  local bg = display.newRect(infoCard, 0, 0, titleLabel.contentWidth + leftPadding*2, titleLabel.contentHeight + topPadding*2)
+  bg.anchorX, bg.anchorY = 0, 0
+  bg:setFillColor(colorHex('1A1A19'), 0.618)
+  bg:toBack()
+    
+  --[[  
+  local pubDateText = display.newText {
+      parent = infoCard,
+      text = self.publishDate,
+      x = bg.width*.05, y = 5,
+      width = bg.width*.9, height = 0,
+      font = fontMorganiteSemiBold, fontSize = 20,
+      align = 'left'
+    }
+  pubDateText.anchorX, pubDateText.anchorY = 0, 0
+  ]]
+  
+  local panel = widget.newPanel{
+    location = "right",
+    --onComplete = panelTransDone,
+    width = titleLabel.contentWidth + leftPadding*2,
+    height = titleLabel.contentHeight + topPadding*2,
+    speed = 300,
+    inEasing = easing.outCubic,
+    outEasing = easing.inCirc
+  }
+  panel:insert(infoCard)
+  self:_attach(panel, 'titleBoard')
+  panel.y = panel.y - 0.16*vH
 end
 
 function Card:buildTags(tags, left, top)
@@ -201,12 +231,14 @@ function Card:show()
   if not self.hidden then return end
   self.hidden = false
   self.elements.panel:show()
+  self.elements.titleBoard:show()
 end
 
 function Card:hide()
   if self.hidden then return end
   self.hidden = true
   self.elements.panel:hide()
+  self.elements.titleBoard:hide()
 end
 
 function Card:toggle()
