@@ -119,12 +119,12 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
       local slider = self.elements.slider
       if ( event.direction == "up" ) then
         print( "TODO: Load more content..." )
-        slider:scrollTo('bottom', {onComplete = onScrollComplete})
+        --slider:scrollTo('bottom', {onComplete = onScrollComplete})
         local iMoter = self.bumper
         local function showAlbumsWithData(res)
           if not res or not res.data then
             native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
-            return false -- no need to try and run the rest of the function if we don't have our forecast.the
+            return false
           end
           local newlist = res.data.albums
           local albumlist = self._albums

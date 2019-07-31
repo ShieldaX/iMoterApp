@@ -130,6 +130,15 @@ function Card:initialize(opts, parent)
   -- -------------------
 end
 
+function Card:showMoters(moters)
+  for i, moter in ipairs(moters) do
+    local _id = moter._id
+    local name = moter.name
+    local avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
+    local avatarFileName = _id.."_".._id..".jpg"
+  end
+end
+
 function Card:layoutTitle()
   local leftPadding, topPadding = 16, 8
   local infoCard = display.newGroup()
@@ -146,10 +155,11 @@ function Card:layoutTitle()
       align = 'right'
     }
   titleLabel.anchorX, titleLabel.anchorY = 0, 0
+  titleLabel:setFillColor(colorHex('1A1A19'))
   
   local bg = display.newRect(infoCard, 0, 0, titleLabel.contentWidth + leftPadding*2, titleLabel.contentHeight + topPadding*2)
   bg.anchorX, bg.anchorY = 0, 0
-  bg:setFillColor(colorHex('1A1A19'), 0.618)
+  bg:setFillColor(colorHex('1A1A19'), 0)
   bg:toBack()
     
   --[[  

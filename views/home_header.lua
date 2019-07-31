@@ -84,13 +84,13 @@ function Header:initialize(opts, parent)
 
   local labelUpdate = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
   local labelHot = display.newText {text = '热门', x = vW*.5, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
-  local labelTag = display.newText {text = '标签', x = vW*.76, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
+  local labelRecom = display.newText {text = '推荐', x = vW*.76, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
   self:_attach(labelUpdate, 'labelUpdate')
   self:_attach(labelHot, 'labelHot')
-  self:_attach(labelTag, 'labelTag')
+  self:_attach(labelRecom, 'labelRecom')
   labelUpdate.id = 'labelUpdate'
   labelHot.id = 'labelHot'
-  labelTag.id = 'labelTag'
+  labelRecom.id = 'labelRecom'
   local cursorRect = display.newRect(cX, cY, vW*.2, 4)
   cursorRect:setFillColor(colorHex('C7A680'))
   cursorRect.anchorY = 1
@@ -148,17 +148,17 @@ function Header:onHomeTabChanged(event)
   local updateView = APP.albumListView
   local hotView = APP.hotAlbumListView
   if targetTabID == 'labelUpdate' then
---    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = 0})
-    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 1})
---    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, x = vW})
-    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 0})
+    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = 0})
+--    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 1})
+    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, x = vW})
+--    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 0})
   else
---    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = -vW})
-    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 0})
+    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = -vW})
+--    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 0})
     local scene = composer.getScene(composer.getSceneName('current'))
     scene:loadHotAlbumList()
-    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 1}) end
---    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 600, x = 0}) end
+--    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 1}) end
+    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 600, x = 0}) end
   end
 end
 
