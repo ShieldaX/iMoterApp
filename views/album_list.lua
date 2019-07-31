@@ -92,6 +92,11 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   -- -------------------
   -- VISUAL INITIALIING
   -- ScrollView listener
+  local function onScrollComplete()
+    print( "Scroll complete!" )
+    
+  end
+  
   local function scrollListener( event )
     local _t = event.target
     local phase = event.phase
@@ -111,8 +116,25 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
     end
     -- In the event a scroll limit is reached...
     if ( event.limitReached ) then
+      local slider = self.elements.slider
       if ( event.direction == "up" ) then
-        print( "Reached bottom limit" )
+        print( "TODO: Load more content..." )
+        slider:scrollTo('bottom', {onComplete = onScrollComplete})
+        local iMoter = self.bumper
+        local function showAlbumsWithData(res)
+          if not res or not res.data then
+            native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
+            return false -- no need to try and run the rest of the function if we don't have our forecast.the
+          end
+          local newlist = res.data.albums
+          local albumlist = self._albums
+          for _, album in ipairs(newlist) do
+            table.insert(albumlist, album)
+          end
+          d(#self._albums)
+          self:open(self.cursorIndex + 1)
+        end
+        iMoter:listAlbums({skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )
@@ -139,12 +161,13 @@ end
 
 function AlbumList:open(index)
   index = index or 1
-  self.cursorAlbumId = nil
+  --self.cursorAlbumId = index
   --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   local albums = self._albums
   for i = index, #albums, 1 do
     self:loadCover(i)
   end
+  self.cursorIndex = #albums
   --[[
   local moreLabel = display.newText {
     text = '加载更多...',
@@ -175,6 +198,7 @@ end
 
 function AlbumList:loadCover(index)
   local album = self._albums[index]
+  d(album)
   if not album then return false end
   local coverURI, coverFileName = resolveCoverImage(album)
   local cover = Cover({

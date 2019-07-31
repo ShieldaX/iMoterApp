@@ -158,6 +158,7 @@ function scene:create( event )
     local cursor = APP.Header.elements.cursor
     albumListView.layer.y = albumListView.layer.y + cursor.y + padding
     albumListView:open()
+    albumListView.bumper = iMoter
   end
 --  iMoter:listAlbums('22162', {skip = 0, limit = 100}, showAlbumsWithData) -- 19702; 22162; 27180
   iMoter:listAlbums({skip = 0, limit = 10}, showAlbumsWithData) -- 19702; 22162; 27180
