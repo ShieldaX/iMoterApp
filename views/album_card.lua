@@ -147,32 +147,31 @@ function Card:initialize(opts, parent)
 end
 
 function Card:showMoters(moters)
-  --local scaleFactor = .36
   local span = vW*.21
   local radius = span/math.sqrt(2)
-  local container = display.newContainer(span, span)
-  local dataBoard = display.newRect(0, 0, span, span)
-  dataBoard:rotate(45)
-  container:rotate(45)
-  container.x = cX
-  container.y = cY
-  dataBoard.x = cX + radius
-  dataBoard.y = cY + radius
-  dataBoard:setFillColor(colorHex('1A1A19'))
-  dataBoard:toFront()
   local function networkListener( event )
     if ( event.isError ) then
       print ( "Network error - download failed" )
       native.showAlert("网络错误!", "网络似乎开小差了，联网后重试!", { "好的" } )
       return false
     else
+      local dataBoard = display.newRect(0, 0, span + 4, span + 4)
+      dataBoard:setFillColor(1, .9)
+      local container = display.newContainer(span, span)
+      dataBoard:rotate(45)
+      container:rotate(45)
+      container.x = cX
+      container.y = cY
+      dataBoard.x = cX
+      dataBoard.y = cY
       local _image = event.target
       fitImage(_image, radius*2, span*2)
       _image.alpha = 0
-      self.imageTransiton = transition.to( _image, { alpha = 1, time = 1000 } )
-      --self:_attach(_image, 'image')
-      --self:send('onImageLoaded')
-      _image.parent.baseDir = event.response.baseDirectory
+      transition.to( _image, { alpha = 1, time = 500 } )
+      _image._parent.baseDir = event.response.baseDirectory
+      local layer = _image._parent.layer
+      layer.rotation = -45
+      container:insert(layer)
     end
     --self.fileName = event.response.filename
   end
@@ -183,8 +182,6 @@ function Card:showMoters(moters)
     local avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
     local avatarFileName = _id.."_".._id..".jpg"
     local avatar = RemoteImage:new(avatarImgURI, RemoteImage.DEFAULT.METHOD, networkListener, avatarFileName, RemoteImage.DEFAULT.DIRECTORY, 0, 0)
-    container:insert(avatar.layer)
-    avatar.layer.rotation = -45
   end
 end
 

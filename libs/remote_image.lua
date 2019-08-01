@@ -51,7 +51,6 @@ function RemoteImage:initialize(url, method, listener, ...)
   self.isBlocked = true
   
   local arg = { ... }
-  d(arg)
 
   local params, destFilename, baseDir, x, y
   local nextArg = 1
@@ -76,9 +75,6 @@ function RemoteImage:initialize(url, method, listener, ...)
   if ( "number" == type( arg[nextArg] ) and "number" == type( arg[nextArg + 1] ) ) then
     x = arg[nextArg]
     y = arg[nextArg + 1]
-  else
-    d('No x and y specified!!!')
-    d(arg[nextArg])
   end
 
   if ( destFilename ) then
@@ -106,12 +102,11 @@ function RemoteImage:networkRequest(event)
     self:_attach(target, 'image')
     self.layer.x = self.x
     self.layer.y = self.y
-    d('image loaded on: '..self.layer.x)
     event.target = target
     self.isBlocked = false
     self:setState(self.class.STATUS.PRELOADED)
+    listener( event )
   end
-  listener( event )
   --self:send('listener', event)
 end
 

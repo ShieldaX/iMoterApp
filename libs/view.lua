@@ -141,6 +141,7 @@ function View:_attach(obj, name, force)
 
   -- add parent field to self for callback
   obj.parent = self
+  obj._parent = self
 
   if obj.isInstanceOf and obj:isInstanceOf(View) then
     self.layer:insert(obj.layer)
