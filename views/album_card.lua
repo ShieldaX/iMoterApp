@@ -33,14 +33,8 @@ local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
--- ---
--- CLASSES Declaration
---
-local View = require 'libs.view'
-local RemoteImage = require 'libs.remote_image'
-local Tag = require 'views.album_tag'
-local Card = class('AlbumCardView', View)
 
+-- Functions
 local function createIcon(options)
   local fontPath = "icon-font/"
   local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
@@ -71,6 +65,54 @@ local function fitImage( displayObject, fitWidth, fitHeight, enlarge )
 end
 
 -- ---
+-- CLASSES Declaration
+--
+local View = require 'libs.view'
+local RemoteImage = require 'libs.remote_image'
+local Tag = require 'views.album_tag'
+local Card = class('AlbumCardView', View)
+
+local DateCard = class('DateCard', View)
+
+function DateCard:initialize(dateStr, radius, x, y)
+  View.initialize(self)
+  self.radius = radius or 16
+  self.x = x or cX
+  self.y = y or cY
+  local round = display.newCircle(0, 0, self.radius)
+  round:setFillColor(colorHex('C7A680'))
+  local timestamp = utility.getTimeStamp(dateStr)
+  local date = os.date("%b %d", timestamp)
+  --local month, day = date:match("(%w+)%s(%d+)")
+  local dateTable = tostring(date):split(' ')
+  --local year, month, day = date:match("(%d+)%-(%d+)%-(%d+)")
+  local labelDay = display.newText {
+      text = dateTable[2],
+      x = 0, y = 12,
+      font = fontSHSansBold,
+      fontSize = 18,
+      align = 'center'
+    }
+  local labelMonth = display.newText {
+      text = string.upper(dateTable[1]),
+      x = 0, y = -8,
+      font = fontSHSans,
+      fontSize = 15,
+      align = 'center'
+    }
+  labelDay:setFillColor(0)
+  labelMonth:setFillColor(0)
+  self:_attach(round, 'bg')
+  self:_attach(labelMonth, 'labelMonth')
+  self:_attach(labelDay, 'labelDay')
+  self.layer.anchorChildren = true
+  self.layer.anchorX = .5
+  self.layer.anchorY = .5
+  self.layer.x = self.x
+  self.layer.y = self.y
+end
+
+-- ---
 --
 function Card:initialize(opts, parent)
   d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
@@ -86,7 +128,7 @@ function Card:initialize(opts, parent)
   self.barHeight = opts.barHeight or 64
   self.barWidth = opts.barWidth or vW
   self.excerpt = opts.excerpt
-  self.publishDate = dateFromString(opts.created)
+  self.publishDate = opts.created
   self.title = opts.title
   -- END DATA BINDING
   -- -------------------
@@ -106,32 +148,74 @@ function Card:initialize(opts, parent)
   local labelColor = { default={colorHex('6C6C6C')}, over={colorHex('C7A680')} }
   local onRelease = handleTabBarEvent
 
+  local span = vW*.12
+  local radius = span/math.sqrt(2)
   local leftPadding, topPadding = 20, 24
+  
   local infoCard = display.newGroup()
   infoCard.anchorChildren = true
   infoCard.anchorX = 0
   infoCard.anchorY = 0.5
   local bg = display.newRect(infoCard, 0, 0, vW, vH*.36)
   bg:setFillColor(colorHex('1A1A19'))
+  
+  -- 标题
+  local labelTitle = display.newText {
+    parent = infoCard,
+    text = self.title:gsub("%d+%.?", '', 3),
+    x = bg.width*.05, y = topPadding + radius*.618,
+    width = bg.width*.618, height = 0,
+    font = fontZcoolHuangYou, fontSize = 26,
+    align = 'left'
+  }
+  labelTitle.anchorX, labelTitle.anchorY = 0, 0
+  local titleHeight = labelTitle.contentHeight
+  self.titleYPos = labelTitle.y
+  
+  -- 介绍
   local excerptText = display.newText {
     parent = infoCard,
     text = self.excerpt,
-    x = bg.width*.05, y = topPadding,
+    x = bg.width*.05, y = labelTitle.y + titleHeight + topPadding,
     width = bg.width*.9, height = 0,
     font = fontSHSans, fontSize = 16,
     align = 'left'
   }
+  excerptText:setFillColor(colorHex('6C6C6C'))
   bg.anchorX, bg.anchorY = 0, 0
   excerptText.anchorX, excerptText.anchorY = 0, 0
   local textHeight = excerptText.height
-  bg.height = textHeight + topPadding*3 + bottomInset
+  bg.height = textHeight + topPadding*4 + bottomInset + radius + titleHeight
   infoCard.x = -vW*.5
-
+  
+  -- 发布日期
+  local dayBoard = DateCard:new(self.publishDate, radius, cX, 0)
+  self:_attach(dayBoard)
+  infoCard:insert(dayBoard.layer)
+  
+  -- 浏览量
+  local labelViews = display.newText {
+      text = opts.views,
+      font = fontSHSans, fontSize = 16,
+      x = vW*.94, y = topPadding,  
+    }
+  labelViews.anchorX = 1
+  local iconViews = createIcon {
+      x = vW - 60, y = topPadding - 4,
+      text = 'visibility',
+      fontSize = 18,
+    }
+  labelViews:setFillColor(colorHex('6C6C6C'))
+  iconViews:setFillColor(colorHex('6C6C6C'))
+  infoCard:insert(labelViews)
+  infoCard:insert(iconViews)
+  iconViews.x = labelViews.x - labelViews.contentWidth -12
+  
   local panel = widget.newPanel{
     location = "bottom",
     onComplete = panelTransDone,
     width = self.barWidth,
-    height = bg.height,
+    height = infoCard.contentHeight,
     speed = 300,
     inEasing = easing.outCubic,
     outEasing = easing.inCirc
@@ -139,7 +223,7 @@ function Card:initialize(opts, parent)
   panel:insert(infoCard)
   self:_attach(panel, 'panel')
   self:buildTags(opts.tags, 20, 12)
-  self:layoutTitle()
+  --self:layoutTitle()
   self.hidden = true
   --self:show()
   -- END VISUAL INITIALIING
@@ -147,31 +231,46 @@ function Card:initialize(opts, parent)
 end
 
 function Card:showMoters(moters)
-  local span = vW*.21
+--  local span = vW*.1
+--  local radius = span/math.sqrt(2)
+  local span = vW*.1
   local radius = span/math.sqrt(2)
+  local leftPadding, topPadding = 20, 24
+  local panel = self.elements.panel
+  
   local function networkListener( event )
     if ( event.isError ) then
       print ( "Network error - download failed" )
       native.showAlert("网络错误!", "网络似乎开小差了，联网后重试!", { "好的" } )
       return false
     else
-      local dataBoard = display.newRect(0, 0, span + 4, span + 4)
+      local avatar = display.newGroup()
+      avatar.anchorChildren = true
+      avatar.anchorX = .5
+      avatar.anchorY = .5
+      local dataBoard = display.newRect(avatar, 0, 0, span + 4, span + 4)
       dataBoard:setFillColor(1, .9)
-      local container = display.newContainer(span, span)
+      local container = display.newContainer(avatar, span, span)
       dataBoard:rotate(45)
       container:rotate(45)
-      container.x = cX
-      container.y = cY
-      dataBoard.x = cX
-      dataBoard.y = cY
+      container.anchorChildren = true
+      container.anchorX = .5
+      container.anchorY = .5
+--      container.x = cX
+--      container.y = cY
+--      dataBoard.x = cX
+--      dataBoard.y = cY
       local _image = event.target
       fitImage(_image, radius*2, span*2)
       _image.alpha = 0
-      transition.to( _image, { alpha = 1, time = 500 } )
+      transition.to( _image, { alpha = 1, time = 300 } )
       _image._parent.baseDir = event.response.baseDirectory
       local layer = _image._parent.layer
       layer.rotation = -45
       container:insert(layer)
+      panel:insert(avatar)
+      avatar.x = vW*.36
+      avatar.y = - panel.contentHeight*.5 + radius*2.5 + self.titleYPos
     end
     --self.fileName = event.response.filename
   end
@@ -182,7 +281,9 @@ function Card:showMoters(moters)
     local avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
     local avatarFileName = _id.."_".._id..".jpg"
     local avatar = RemoteImage:new(avatarImgURI, RemoteImage.DEFAULT.METHOD, networkListener, avatarFileName, RemoteImage.DEFAULT.DIRECTORY, 0, 0)
+    self:_attach(avatar)
   end
+  
 end
 
 function Card:layoutTitle()
@@ -192,7 +293,7 @@ function Card:layoutTitle()
   infoCard.anchorX = .5
   infoCard.anchorY = .5
 
-  local titleLabel = display.newText {
+  local labelTitle = display.newText {
     parent = infoCard,
     text = self.title,
     x = leftPadding, y = topPadding,
@@ -200,10 +301,10 @@ function Card:layoutTitle()
     font = fontZcoolHuangYou, fontSize = 26,
     align = 'right'
   }
-  titleLabel.anchorX, titleLabel.anchorY = 0, 0
-  titleLabel:setFillColor(colorHex('1A1A19'))
+  labelTitle.anchorX, labelTitle.anchorY = 0, 0
+  --labelTitle:setFillColor(colorHex('1A1A19'))
 
-  local bg = display.newRect(infoCard, 0, 0, titleLabel.contentWidth + leftPadding*2, titleLabel.contentHeight + topPadding*2)
+  local bg = display.newRect(infoCard, 0, 0, labelTitle.contentWidth + leftPadding*2, labelTitle.contentHeight + topPadding*2)
   bg.anchorX, bg.anchorY = 0, 0
   bg:setFillColor(colorHex('1A1A19'), 0)
   bg:toBack()
@@ -223,8 +324,8 @@ function Card:layoutTitle()
   local panel = widget.newPanel{
     location = "right",
     --onComplete = panelTransDone,
-    width = titleLabel.contentWidth + leftPadding*2,
-    height = titleLabel.contentHeight + topPadding*2,
+    width = labelTitle.contentWidth + leftPadding*2,
+    height = labelTitle.contentHeight + topPadding*2,
     speed = 300,
     inEasing = easing.outCubic,
     outEasing = easing.inCirc
@@ -287,14 +388,14 @@ function Card:show()
   if not self.hidden then return end
   self.hidden = false
   self.elements.panel:show()
-  self.elements.titleBoard:show()
+  --self.elements.titleBoard:show()
 end
 
 function Card:hide()
   if self.hidden then return end
   self.hidden = true
   self.elements.panel:hide()
-  self.elements.titleBoard:hide()
+  --self.elements.titleBoard:hide()
 end
 
 function Card:toggle()

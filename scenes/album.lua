@@ -61,13 +61,8 @@ local iMoter = iMoterAPI:new()
 ---------------------------------------------------------------------------------
 
 function scene:showInfo(album)
-  local cardOpts = {
-      name = 'infoCard',
-      excerpt = album.excerpt,
-      tags = album.tags,
-      title = album.title,
-      created = album.created
-    }
+  local cardOpts = album
+  cardOpts.name = 'infoCard'
   self.infoCard = Card:new(cardOpts, self.view)
   self.infoCard:showMoters(album.moters)
 end

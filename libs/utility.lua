@@ -133,8 +133,6 @@ function M.triNum(num)
 	return prefix .. tostring( num )
 end
 
-
-
 function string:trim()
   return (self:gsub("^%s*(.-)%s*$", "%1"))
 end
