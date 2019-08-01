@@ -55,6 +55,21 @@ local function dateFromString(timestr)
   return os.date("!%Y-%m-%d", _time)
 end
 
+local function fitImage( displayObject, fitWidth, fitHeight, enlarge )
+  --
+  -- first determine which edge is out of bounds
+  --
+  local scaleFactor = fitHeight / displayObject.contentHeight 
+  local newWidth = displayObject.contentWidth * scaleFactor
+  if newWidth > fitWidth then
+    scaleFactor = fitWidth / displayObject.contentWidth 
+  end
+  if not enlarge and scaleFactor > 1 then
+    return
+  end
+  displayObject:scale( scaleFactor, scaleFactor )
+end
+
 -- ---
 --
 function Card:initialize(opts, parent)
@@ -132,6 +147,19 @@ function Card:initialize(opts, parent)
 end
 
 function Card:showMoters(moters)
+  --local scaleFactor = .36
+  local span = vW*.21
+  local width = span*math.sqrt(span)
+  local container = display.newContainer(span, span)
+  local dataBoard = display.newRect(0, 0, vW*.5, vW*.5)
+  dataBoard:rotate(45)
+  container:rotate(45)
+  container.x = cX
+  container.y = cY
+  dataBoard.x = cX + span
+  dataBoard.y = cY + span
+  dataBoard:setFillColor(colorHex('1A1A19'))
+  dataBoard:toFront()
   local function networkListener( event )
     if ( event.isError ) then
       print ( "Network error - download failed" )
@@ -139,7 +167,8 @@ function Card:showMoters(moters)
       return false
     else
       local _image = event.target
-      --fitImage(_image, vW*scaleFactor, vH*scaleFactor)
+--      _image:scale(scaleFactor, scaleFactor)
+      fitImage(_image, width, span*2)
       _image.alpha = 0
       self.imageTransiton = transition.to( _image, { alpha = 1, time = 1000 } )
       --self:_attach(_image, 'image')
@@ -154,7 +183,9 @@ function Card:showMoters(moters)
     local name = moter.name
     local avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
     local avatarFileName = _id.."_".._id..".jpg"
-    local avatar = RemoteImage:new(avatarImgURI, RemoteImage.DEFAULT.METHOD, networkListener, avatarFileName, RemoteImage.DEFAULT.DIRECTORY, cX, cY)
+    local avatar = RemoteImage:new(avatarImgURI, RemoteImage.DEFAULT.METHOD, networkListener, avatarFileName, RemoteImage.DEFAULT.DIRECTORY, 0, 0)
+    container:insert(avatar.layer)
+    avatar.layer.rotation = -45
   end
 end
 
