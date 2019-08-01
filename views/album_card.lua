@@ -36,8 +36,9 @@ local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 -- ---
 -- CLASSES Declaration
 --
-local View = require "libs.view"
-local Tag = require("views.album_tag")
+local View = require 'libs.view'
+local RemoteImage = require 'libs.remote_image'
+local Tag = require 'views.album_tag'
 local Card = class('AlbumCardView', View)
 
 local function createIcon(options)
@@ -89,7 +90,7 @@ function Card:initialize(opts, parent)
   local labelFontSize = 24
   local labelColor = { default={colorHex('6C6C6C')}, over={colorHex('C7A680')} }
   local onRelease = handleTabBarEvent
-  
+
   local leftPadding, topPadding = 20, 24
   local infoCard = display.newGroup()
   infoCard.anchorChildren = true
@@ -98,19 +99,19 @@ function Card:initialize(opts, parent)
   local bg = display.newRect(infoCard, 0, 0, vW, vH*.36)
   bg:setFillColor(colorHex('1A1A19'))
   local excerptText = display.newText {
-      parent = infoCard,
-      text = self.excerpt,
-      x = bg.width*.05, y = topPadding,
-      width = bg.width*.9, height = 0,
-      font = fontSHSans, fontSize = 16,
-      align = 'left'
-    }
+    parent = infoCard,
+    text = self.excerpt,
+    x = bg.width*.05, y = topPadding,
+    width = bg.width*.9, height = 0,
+    font = fontSHSans, fontSize = 16,
+    align = 'left'
+  }
   bg.anchorX, bg.anchorY = 0, 0
   excerptText.anchorX, excerptText.anchorY = 0, 0
   local textHeight = excerptText.height
   bg.height = textHeight + topPadding*3 + bottomInset
   infoCard.x = -vW*.5
-  
+
   local panel = widget.newPanel{
     location = "bottom",
     onComplete = panelTransDone,
@@ -131,11 +132,29 @@ function Card:initialize(opts, parent)
 end
 
 function Card:showMoters(moters)
+  local function networkListener( event )
+    if ( event.isError ) then
+      print ( "Network error - download failed" )
+      native.showAlert("网络错误!", "网络似乎开小差了，联网后重试!", { "好的" } )
+      return false
+    else
+      local _image = event.target
+      --fitImage(_image, vW*scaleFactor, vH*scaleFactor)
+      _image.alpha = 0
+      self.imageTransiton = transition.to( _image, { alpha = 1, time = 1000 } )
+      --self:_attach(_image, 'image')
+      --self:send('onImageLoaded')
+      _image.parent.baseDir = event.response.baseDirectory
+    end
+    --self.fileName = event.response.filename
+  end
+
   for i, moter in ipairs(moters) do
     local _id = moter._id
     local name = moter.name
     local avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
     local avatarFileName = _id.."_".._id..".jpg"
+    local avatar = RemoteImage:new(avatarImgURI, RemoteImage.DEFAULT.METHOD, networkListener, avatarFileName, RemoteImage.DEFAULT.DIRECTORY, cX, cY)
   end
 end
 
@@ -147,21 +166,21 @@ function Card:layoutTitle()
   infoCard.anchorY = .5
 
   local titleLabel = display.newText {
-      parent = infoCard,
-      text = self.title,
-      x = leftPadding, y = topPadding,
-      width = vW*.618, height = 0,
-      font = fontZcoolHuangYou, fontSize = 26,
-      align = 'right'
-    }
+    parent = infoCard,
+    text = self.title,
+    x = leftPadding, y = topPadding,
+    width = vW*.618, height = 0,
+    font = fontZcoolHuangYou, fontSize = 26,
+    align = 'right'
+  }
   titleLabel.anchorX, titleLabel.anchorY = 0, 0
   titleLabel:setFillColor(colorHex('1A1A19'))
-  
+
   local bg = display.newRect(infoCard, 0, 0, titleLabel.contentWidth + leftPadding*2, titleLabel.contentHeight + topPadding*2)
   bg.anchorX, bg.anchorY = 0, 0
   bg:setFillColor(colorHex('1A1A19'), 0)
   bg:toBack()
-    
+
   --[[  
   local pubDateText = display.newText {
       parent = infoCard,
@@ -173,7 +192,7 @@ function Card:layoutTitle()
     }
   pubDateText.anchorX, pubDateText.anchorY = 0, 0
   ]]
-  
+
   local panel = widget.newPanel{
     location = "right",
     --onComplete = panelTransDone,

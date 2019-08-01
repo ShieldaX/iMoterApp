@@ -69,6 +69,7 @@ function scene:showInfo(album)
       created = album.created
     }
   self.infoCard = Card:new(cardOpts, self.view)
+  self.infoCard:showMoters(album.moters)
 end
 
 -- Called when the scene's view does not exist:
