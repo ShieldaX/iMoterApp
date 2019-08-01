@@ -149,15 +149,15 @@ end
 function Card:showMoters(moters)
   --local scaleFactor = .36
   local span = vW*.21
-  local width = span*math.sqrt(span)
+  local radius = span/math.sqrt(2)
   local container = display.newContainer(span, span)
-  local dataBoard = display.newRect(0, 0, vW*.5, vW*.5)
+  local dataBoard = display.newRect(0, 0, span, span)
   dataBoard:rotate(45)
   container:rotate(45)
   container.x = cX
   container.y = cY
-  dataBoard.x = cX + span
-  dataBoard.y = cY + span
+  dataBoard.x = cX + radius
+  dataBoard.y = cY + radius
   dataBoard:setFillColor(colorHex('1A1A19'))
   dataBoard:toFront()
   local function networkListener( event )
@@ -167,8 +167,7 @@ function Card:showMoters(moters)
       return false
     else
       local _image = event.target
---      _image:scale(scaleFactor, scaleFactor)
-      fitImage(_image, width, span*2)
+      fitImage(_image, radius*2, span*2)
       _image.alpha = 0
       self.imageTransiton = transition.to( _image, { alpha = 1, time = 1000 } )
       --self:_attach(_image, 'image')
