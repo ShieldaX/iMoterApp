@@ -79,6 +79,7 @@ function Header:initialize(opts, parent)
 	local leftButton = {
     id = 'backBtn',
     label = '< 返回',
+    font = fontZcoolHuangYou,
 		fontSize = 16,
 		onEvent = leftButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
@@ -88,9 +89,9 @@ function Header:initialize(opts, parent)
   local navBar = widget.newNavigationBar({
 		isTransluscent = true,
 		backgroundColor = theme.navBarBackgroundColor,
-		title = "图鉴",
-		titleColor = theme.navBarTextColor,
-		font = fontZcoolHuangYou, fontSize = 14,
+		title = "图集",
+		titleColor = {colorHex('C7A680')},
+		font = fontDMFT, fontSize = 18,
 		height = navBarHeight,
 		includeStatusBar = false,
 		leftButton = leftButton,

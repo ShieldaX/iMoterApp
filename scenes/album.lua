@@ -95,6 +95,10 @@ function scene:create( event )
     end
     local _album = res.data.album
     d(_album)
+    if _album.publisher then
+      local publisher = _album.publisher.name
+      self.header.elements.navBar:setLabel(publisher)
+    end
     APP.albumView = AlbumView:new(_album, sceneGroup)
     APP.albumView:open()
     self:showInfo(_album)
@@ -114,7 +118,7 @@ function scene:show( event )
     local _title = params.title
     _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
     local title = util.GetMaxLenString(_title, 30)
-    self.header.elements.navBar:setLabel(title)
+    --self.header.elements.navBar:setLabel(title)
     APP.Footer:hide()
   elseif ( phase == "did" ) then
     if self.infoCard then
