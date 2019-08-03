@@ -220,8 +220,6 @@ local function resolveNames(names, name)
     name = names.cn
   elseif names.en then
     name = names.en
-  else
-    name = _data.name
   end
   return name
 end
@@ -240,10 +238,11 @@ function Moter:initialize(data, sceneGroup)
   local _id = obj._id
   if data.avatar then
     self.avatarImgURI = "https://t1.onvshen.com:85/gallery/".._id.."/"..data.avatar.."/0.jpg"
+    self.avatarFileName = _id.."_"..data.avatar.."_0.jpg"
   else
     self.avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
+    self.avatarFileName = _id.."_".._id..".jpg"
   end
-  self.avatarFileName = _id.."_".._id..".jpg"
   --APP.CurrentMoter = self
   -- END DATA BINDING
   -- -------------------
@@ -290,6 +289,7 @@ function Moter:preload()
       d(self.name .. ' ' .. self:getState())
     end
   end
+  d(self.avatarImgURI)
   display.loadRemoteImage( self.avatarImgURI, "GET", networkListener, {progress = false}, self.avatarFileName, Piece.DEFAULT_DIRECTORY, oX, oY)
 end
 
@@ -306,7 +306,7 @@ function Moter:layout()
   -- ==============================
   -- TITLE SECTION
   local name = resolveNames(_data.names, _data.name)
-  APP.Header.elements.TopBar:setLabel(name)
+  --APP.Header.elements.TopBar:setLabel(name)
 
   local ratingStars = _data.score and StarRating(_data.score.count, {name = 'stars', fillColor = colorsRGB.RGBA('gold'), iconSize = 20})
   util.center(ratingStars.layer)
@@ -426,7 +426,7 @@ function Moter:layout()
   --labelG.anchorChildren = true
   labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
   labelG.y = self.elements.bg.contentBounds.yMin - labelG.contentHeight*.7
-
+  --[[
   local _lgray = {colorHex('6C6C6C')}
   local titleFSize = 12
   local labelFSize = 24
@@ -456,7 +456,7 @@ function Moter:layout()
   _nextBG.anchorY = 0
   _nextBG.y = triangleShape.y
   --self:_attach(_nextBG, 'nextBG')
-
+  ]]
   local favBtnG = display.newGroup()
   local favoriteIcon = util.createIcon {
     text = "favorite",
@@ -466,6 +466,7 @@ function Moter:layout()
     isFontIcon = true,
     textColor = { 0.25, 0.75, 1, 1 }
   }
+
   favoriteIcon:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
   util.center(favoriteIcon)
   favoriteIcon.x = vW*.8

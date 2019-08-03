@@ -1,3 +1,4 @@
+local composer = require( "composer" )
 local widget = require( "widget" )
 local widgetExtras = require("libs.widget-extras")
 local mui = require( "materialui.mui" )
@@ -238,6 +239,20 @@ function Card:showMoters(moters)
   local leftPadding, topPadding = 20, 24
   local panel = self.elements.panel
   
+  local function onAavatrTapped(tap)
+    local options = {
+      effect = "fade",
+      time = 500,
+      isModal = true,
+      params = {moter_id = tap.target.id}
+    }
+    d(tap.target)
+    d(options)
+    d('打开模特专门页面...')
+    composer.showOverlay( "scenes.moter", options )
+    return true
+  end
+  
   local function networkListener( event )
     if ( event.isError ) then
       print ( "Network error - download failed" )
@@ -256,10 +271,6 @@ function Card:showMoters(moters)
       container.anchorChildren = true
       container.anchorX = .5
       container.anchorY = .5
---      container.x = cX
---      container.y = cY
---      dataBoard.x = cX
---      dataBoard.y = cY
       local _image = event.target
       fitImage(_image, radius*2, span*2)
       _image.alpha = 0
@@ -281,6 +292,8 @@ function Card:showMoters(moters)
     local avatarImgURI = "https://img.onvshen.com:85/girl/".._id.."/".._id..".jpg"
     local avatarFileName = _id.."_".._id..".jpg"
     local avatar = RemoteImage:new(avatarImgURI, RemoteImage.DEFAULT.METHOD, networkListener, avatarFileName, RemoteImage.DEFAULT.DIRECTORY, 0, 0)
+    avatar.layer.id = _id
+    avatar.layer:addEventListener('tap', onAavatrTapped)
     self:_attach(avatar)
   end
   

@@ -30,7 +30,7 @@ local iMoterAPI = require( "classes.iMoter" )
 --local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
 local MoterView = require("views.moter_ui")
-local HeaderView = require("views.header")
+--local HeaderView = require("views.header")
 local FooterView = require("views.footer")
 local Indicator = require 'views.indicator'
 
@@ -129,6 +129,7 @@ end
 -- Called when the scene's view does not exist:
 function scene:create( event )
   local sceneGroup = self.view
+  local params = event.params
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
 
@@ -160,41 +161,9 @@ function scene:create( event )
   }
   local iconFace = util.createIcon( options2 )
   iconFace:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
-  --[[
-  local buttonG = display.newGroup()
-  local _text = display.newText { text = '女神图集', x = cX, y = cY, fontSize = 18, align = 'center', font = 'Helvetica' }
-  local moreIcon = util.createIcon {
-      name = "plus",
-      text = "expand_more",
-      width = 40,
-      height = 40,
-      x = cX, y = vH*.9,
-      isFontIcon = true,
-      font = mui.materialFont,
-      textColor = { 0.25, 0.75, 1, 1 }
-    }
-  _text:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
-  moreIcon:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
-  util.center(moreIcon)
-  moreIcon.y = _text.y + _text.height*1.5
-  buttonG:insert(_text)
-  buttonG:insert(moreIcon)
-  buttonG.anchorChildren = true
-  util.center(buttonG)
-  buttonG.y = vH*.94
-
-  --transition.blink(buttonG, {transition = easing.outExpo, time = 6000})
-  local contentH = _text.contentHeight
-  transition.from(buttonG, {delay = 1200, time = 1000, y = buttonG.y+(contentH*-1), alpha = 0, transition = easing.outBack})
-  transition.to(buttonG, {iterations = -1, delay = 2200, time = 2400, y = buttonG.y+(contentH*0.2), alpha = 0.5, transition = easing.continuousLoop})
-  
-  sceneGroup:insert(buttonG)
-    ]]
-  APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
-  --APP.Footer = FooterView:new({name = 'AppTabs'}, sceneGroup)
-
---  TODO: Show Indicator Before Moter View Really Loaded
+  --APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
   indicator:send('onMoterLoad')
+  local moter_id = params.moter_id
   local function showMoterWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This moter currently not avaialble!", { "Okay" } )
@@ -202,16 +171,15 @@ function scene:create( event )
     end
     local _moter = res.data.moter
     local _data = res.data
-    APP.Header.elements.TopBar:setLabel(_moter.name)
-    APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
-    print(inspect(_data))
+    --APP.Header.elements.TopBar:setLabel(_moter.name)
+    --APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
+    d(_data)
     local moterView = MoterView:new(_data, sceneGroup)
     APP.moterView = moterView
-    APP.Header.layer:toFront()
-    --APP.Footer.layer:toFront()
+    --APP.Header.layer:toFront()
     APP.moterView:layout()
   end
-  iMoter:getMoterById('19702', {fetchcover = true}, showMoterWithData) -- 19702; 22162; 27180
+  iMoter:getMoterById(moter_id, {fetchcover = true}, showMoterWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
   -----------------------------------------------------------------------------
 end
