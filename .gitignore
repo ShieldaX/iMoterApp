@@ -50,3 +50,5 @@ Images.xcassets/
 LaunchScreen.storyboardc/
 *sublime-*
 #mobdebug.lua
+# Backupfile
+_*.lua
