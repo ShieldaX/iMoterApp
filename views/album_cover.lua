@@ -179,7 +179,7 @@ function Cover:preload(row, col)
       local _image = event.target
       fitImage(_image, vW*scaleFactor, vH*scaleFactor)
       _image.alpha = 0
-      self.imageTransiton = transition.to( _image, { alpha = 1, time = 1000 } )
+      self.imageTransiton = transition.to( _image, { alpha = 1, time = 600 } )
       self:_attach(_image, 'image')
       self:send('onImageLoaded')
     end
@@ -204,6 +204,7 @@ function Cover:onImageLoaded()
   local bounds = cImage.contentBounds
   local boundRect = display.newRect(bounds.xMin, bounds.yMin, cImage.contentWidth, cImage.contentHeight)
   boundRect.strokeWidth = 5
+  boundRect:setFillColor(0, 0, 0, 0)
   boundRect:setStrokeColor(colorHex('C7A680')) --golden
   self:_attach(boundRect)
   boundRect.x = cImage.x
@@ -213,12 +214,12 @@ function Cover:onImageLoaded()
   local labelFSize = 12
   local label = display.newText {
     text = util.GetMaxLenString(self.title, 34),
-    x = cX, y = cY, 
+    x = cX, y = cY,
     fontSize = labelFSize, font = fontSHSansBold,
     width = cImage.contentWidth+4,
+    height = labelFSize*3,
     align = 'Left'
   }
---  TODO: use label.height to limit text height
   local labelHeight = label.contentHeight
   if labelHeight >= labelFSize*3 then
     label.text = label.text:gsub("%d+%.", '', 1)
@@ -236,7 +237,6 @@ function Cover:onImageLoaded()
   label.y = cImage.y + cImage.contentHeight*.5 + label.contentHeight*.5 + 10
   self.layer.y = self.row*(self.layer.contentHeight + 10)
   self.parent.elements.slider:insert(self.layer)
-  --self.layer.anchorChildren = true
 end
 
 -- ---

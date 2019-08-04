@@ -23,6 +23,7 @@ local vH = display.viewableContentHeight
 
 local background = nil
 local widget = require( "widget" )
+local colorHex = require('libs.convertcolor').hex
 
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
@@ -30,9 +31,9 @@ local iMoterAPI = require( "classes.iMoter" )
 --local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
 local MoterView = require("views.moter_ui")
+local IconButton = require("views.icon_button")
 --local HeaderView = require("views.header")
 local FooterView = require("views.footer")
-local Indicator = require 'views.indicator'
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
@@ -57,73 +58,13 @@ local iMoter = iMoterAPI:new()
 ---------------------------------------------------------------------------------
 
 -- @usage: https://material.io/tools/icons
-function util.createIcon(options)
+local function createIcon(options)
   local fontPath = "icon-font/"
   local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
   options.font = materialFont
-  local x,y = 160, 240
-  if options.x ~= nil then
-    x = options.x
-  end
-  if options.y ~= nil then
-    y = options.y
-  end  
-  local fontSize = options.height
-  if options.fontSize ~= nil then
-    fontSize = options.fontSize
-  end
-  fontSize = math.floor(tonumber(fontSize))
-
-  local font = native.systemFont
-  if options.font ~= nil then
-    font = options.font
-  end
-  local textColor = { 0, 0.82, 1 }
-  if options.textColor ~= nil then
-    textColor = options.textColor
-  end
-  local fillColor = { 0, 0, 0 }
-  if options.fillColor ~= nil then
-    fillColor = options.fillColor
-  end
-  options.isFontIcon = true
-  -- scale font
-  -- Calculate a font size that will best fit the given text field's height
-  local checkbox = {contentHeight=options.height, contentWidth=options.width}
-  local textToMeasure = display.newText( options.text, 0, 0, font, fontSize )
-  fontSize = math.floor(fontSize * ( ( checkbox.contentHeight ) / textToMeasure.contentHeight ))
-  local tw = textToMeasure.contentWidth
-  local th = textToMeasure.contentHeight
-  tw = fontSize
   options.text = mui.getMaterialFontCodePointByName(options.text)
-  textToMeasure:removeSelf()
-  textToMeasure = nil
-  local options2 =
-  {
-    --parent = textGroup,
-    text = options.text,
-    x = x,
-    y = y,
-    font = font,
-    width = tw * 1.5,
-    fontSize = fontSize,
-    align = "center"
-  }
-  local _icon = display.newText( options2 )
-  _icon:setFillColor(unpack(textColor))
-  return _icon
-end
-
-local indicator = Indicator:new({name= 'loadingIn', top= 0}, scene.view)
-indicator.elements.spinner.y = vH*.36
---indicator:send('onPieceLoad')
-
-function indicator:onMoterLoad(event)
-  self:onPieceLoad(event)
-end
-
-function indicator:onMoterLoaded(event)
-  self:onPieceLoaded(event)
+  local icon = display.newText(options)
+  return icon
 end
 
 -- Called when the scene's view does not exist:
@@ -147,22 +88,14 @@ function scene:create( event )
   background:setFillColor( 1, 1, 1, 0.8 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
-
-  local options2 = {
-    name = "plus",
-    text = "menu",
-    width = 25,
-    height = 25,
-    x = 30,
-    y = 25,
-    isFontIcon = true,
-    font = mui.materialFont,
-    textColor = { 0.25, 0.75, 1, 1 }
+  
+  local iconDownArrow = IconButton {
+    name = 'btn_arrow_down',
+    x = 0, y = 0,
+    text = 'expand_more',
+    fontSize = 20,
   }
-  local iconFace = util.createIcon( options2 )
-  iconFace:setFillColor(unpack(colorsRGB.RGBA('white', 0.9)))
   --APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
-  indicator:send('onMoterLoad')
   local moter_id = params.moter_id
   local function showMoterWithData(res)
     if not res or not res.data then
@@ -175,9 +108,11 @@ function scene:create( event )
     --APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
     d(_data)
     local moterView = MoterView:new(_data, sceneGroup)
-    APP.moterView = moterView
+    self.moterView = moterView
     --APP.Header.layer:toFront()
-    APP.moterView:layout()
+    self.moterView:layout()
+    sceneGroup:insert(iconDownArrow.layer)
+    self.backBtnG = iconDownArrow
   end
   iMoter:getMoterById(moter_id, {fetchcover = true}, showMoterWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
@@ -200,7 +135,9 @@ function scene:hide( event )
   local sceneGroup = self.view
   -- nothing to do here
   if event.phase == "will" then
-
+    --
+  elseif event.phase == "did" then
+    self.moterView:stop()
   end
 
 end
@@ -208,6 +145,7 @@ end
 function scene:destroy( event )
   local sceneGroup = self.view
   -- nothing to do here
+  
 end
 
 ---------------------------------------------------------------------------------

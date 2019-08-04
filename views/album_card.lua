@@ -242,7 +242,7 @@ function Card:showMoters(moters)
   local function onAavatrTapped(tap)
     local options = {
       effect = "fade",
-      time = 500,
+      --time = 200,
       isModal = true,
       params = {moter_id = tap.target.id}
     }

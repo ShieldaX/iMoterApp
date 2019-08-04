@@ -19,6 +19,10 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
+local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 
 -- 将图片自适应屏幕宽度
 local function fitScreenW(p, top, bottom)
@@ -236,6 +240,7 @@ function Moter:initialize(data, sceneGroup)
   local obj = self.rawData
   self.name = obj._id
   local _id = obj._id
+  data.avatar = nil
   if data.avatar then
     self.avatarImgURI = "https://t1.onvshen.com:85/gallery/".._id.."/"..data.avatar.."/0.jpg"
     self.avatarFileName = _id.."_"..data.avatar.."_0.jpg"
@@ -247,7 +252,7 @@ function Moter:initialize(data, sceneGroup)
   -- END DATA BINDING
   -- -------------------
   -- VISUAL INITIALIING
-  local _bg = display.newRect(oX, oY, vW, vH*0.46)
+  local _bg = display.newRect(oX, oY, vW, vH*0.36)
   _bg:setFillColor(colorHex('1A1A19'))
   _bg.anchorY = 1
   _bg.x = cX; _bg.y = vH
@@ -297,10 +302,6 @@ end
 -- 使用数据以及资源填充页面 with 排版布局
 function Moter:layout()
   self.layer.alpha = 0
-  local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
-  local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
-  local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
-  local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
   --d(inspect(native.getFontNames()))
   local _data = self.rawData
   -- ==============================
@@ -537,9 +538,7 @@ function Moter:start()
   effectG.x, effectG.y = favIcon.x, favIcon.y
 
   local function tapListener(tap)
-    self:signal('onLikeTapped', tap)
-    --self.pulse(0, 0, gold, scale1, scale2, 250, 500, effectG)
-    --favBtnG[4]:setFillColor(unpack(colorsRGB.RGBA('red')))
+    self:send('onLikeTapped', tap)
   end
   favIcon:addEventListener('tap', tapListener)
 

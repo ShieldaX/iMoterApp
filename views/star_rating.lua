@@ -115,9 +115,4 @@ function StarRating:animate(direction)
   end
 end
 
-function StarRating:onProgress(event)
-  local i = event.index
-  self.elements.bar:setProgress(i/self.total)
-end
-
 return StarRating
