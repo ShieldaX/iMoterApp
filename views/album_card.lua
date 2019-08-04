@@ -179,7 +179,7 @@ function Card:initialize(opts, parent)
     text = self.excerpt,
     x = bg.width*.05, y = labelTitle.y + titleHeight + topPadding,
     width = bg.width*.9, height = 0,
-    font = fontSHSans, fontSize = 16,
+    font = fontSHSans, fontSize = 14,
     align = 'left'
   }
   excerptText:setFillColor(colorHex('6C6C6C'))
@@ -241,8 +241,8 @@ function Card:showMoters(moters)
   
   local function onAavatrTapped(tap)
     local options = {
-      effect = "fade",
-      --time = 200,
+      effect = "slideLeft",
+      time = 300,
       isModal = true,
       params = {moter_id = tap.target.id}
     }

@@ -7,32 +7,39 @@ local muiData = require( "materialui.mui-data" )
 
 local composer = require( "composer" )
 
-local util = require 'util'
-local d = util.print_r
--- forward declarations and other locals
-local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
-local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
-local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
-
--- Constants List:
-local oX = display.screenOriginX
-local oY = display.screenOriginY
+--Display Constants List:
+local oX = display.safeScreenOriginX
+local oY = display.safeScreenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
+local visibleAspectRatio = vW/vH
+local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
+local cX, cY = display.contentCenterX, display.contentCenterY
+local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
+local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
+
+local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
+local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
+local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
+local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
+
+local colorHex = require('libs.convertcolor').hex
+local widget = require( "widget" )
+local util = require 'util'
+local d = util.print_r
 
 local background = nil
-local widget = require( "widget" )
-local colorHex = require('libs.convertcolor').hex
 
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
---local mui = require( "materialui.mui" )
 local AlbumView = require("views.album")
 local MoterView = require("views.moter_ui")
 local IconButton = require("views.icon_button")
---local HeaderView = require("views.header")
+local HeaderView = require("views.header")
 local FooterView = require("views.footer")
 
 -- mui
@@ -67,36 +74,28 @@ local function createIcon(options)
   return icon
 end
 
+local function leftButtonEvent( event )
+	if event.phase == "ended" then
+    composer.hideOverlay('slideRight', 420)
+	end
+	return true
+end
+
 -- Called when the scene's view does not exist:
 function scene:create( event )
   local sceneGroup = self.view
   local params = event.params
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
-
-  --      CREATE display objects and add them to 'group' here.
-
-  -- Gather insets (function returns these in the order of top, left, bottom, right)
-  local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
   -- Create a vector rectangle sized exactly to the "safe area"
-  background = display.newRect(
-    oX + leftInset,
-    oY + topInset,
-    vW - ( leftInset + rightInset ),
-    vH - ( topInset + bottomInset )
-  )
-  background:setFillColor( 1, 1, 1, 0.8 )
+  local background = display.newRect(sceneGroup, oX, oY, vW, vH)
+  background:setFillColor( 0 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
-  sceneGroup:insert( background )
   
-  local iconDownArrow = IconButton {
-    name = 'btn_arrow_down',
-    x = 0, y = 0,
-    text = 'expand_more',
-    fontSize = 20,
-  }
-  --APP.Header = HeaderView:new({name = 'TopBar' }, sceneGroup)
+  self.header = HeaderView:new({name = 'NavBar', onEvent = leftButtonEvent}, sceneGroup)
+  
   local moter_id = params.moter_id
+  
   local function showMoterWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This moter currently not avaialble!", { "Okay" } )
@@ -104,15 +103,12 @@ function scene:create( event )
     end
     local _moter = res.data.moter
     local _data = res.data
-    --APP.Header.elements.TopBar:setLabel(_moter.name)
-    --APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
-    d(_data)
+--    d(_data)
+    self.header.elements.navBar:setLabel(_moter.name)
     local moterView = MoterView:new(_data, sceneGroup)
     self.moterView = moterView
-    --APP.Header.layer:toFront()
     self.moterView:layout()
-    sceneGroup:insert(iconDownArrow.layer)
-    self.backBtnG = iconDownArrow
+    self.header.layer:toFront()
   end
   iMoter:getMoterById(moter_id, {fetchcover = true}, showMoterWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
@@ -137,7 +133,7 @@ function scene:hide( event )
   if event.phase == "will" then
     --
   elseif event.phase == "did" then
-    self.moterView:stop()
+    --self.moterView:stop()
   end
 
 end
@@ -145,7 +141,9 @@ end
 function scene:destroy( event )
   local sceneGroup = self.view
   -- nothing to do here
-  
+  self.header:cleanup()
+  self.moterView:stop()
+  d('Moter scene destoried success!')
 end
 
 ---------------------------------------------------------------------------------

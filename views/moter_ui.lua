@@ -19,6 +19,8 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
+
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
 local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
@@ -67,7 +69,6 @@ local Regions
 -- Content grid size; change these to change the size of the generated grid
 local ContentGridSize = 4
 local GridPixelPadding = 8
-
 
 local function makeTimeStamp(dateStringArg)
   local inYear, inMonth, inDay, inHour, inMinute, inSecond, inZone =      
@@ -252,10 +253,11 @@ function Moter:initialize(data, sceneGroup)
   -- END DATA BINDING
   -- -------------------
   -- VISUAL INITIALIING
-  local _bg = display.newRect(oX, oY, vW, vH*0.36)
+  local _bg = display.newRect(oX, oY, vW, vH*.36)
   _bg:setFillColor(colorHex('1A1A19'))
   _bg.anchorY = 1
-  _bg.x = cX; _bg.y = vH
+  _bg.x = cX
+  _bg.y = vH
   self:_attach(_bg, 'bg')
   self.parentBG = sceneGroup[1]
   -- END VISUAL INITIALIING
@@ -279,7 +281,7 @@ function Moter:preload()
       util.fitWidth(_image, vW) --横占屏幕
       --_image.alpha = 0
       util.center(_image)
-      _image.y = _image.contentHeight*.5 -- 置于顶部
+      _image.y = _image.contentHeight*.5 + topInset + 20 -- 置于顶部
       --self.animation = transition.to( _image, { time = 500, alpha = 1, y = _image.contentHeight*.5 + vH*.1, transition = easing.outExpo} )
       self:_attach(_image, 'avatar')
       _image:toBack()
@@ -294,8 +296,7 @@ function Moter:preload()
       d(self.name .. ' ' .. self:getState())
     end
   end
-  d(self.avatarImgURI)
-  display.loadRemoteImage( self.avatarImgURI, "GET", networkListener, {progress = false}, self.avatarFileName, Piece.DEFAULT_DIRECTORY, oX, oY)
+  display.loadRemoteImage( self.avatarImgURI, "GET", networkListener, {progress = false}, self.avatarFileName, Piece.DEFAULT_DIRECTORY, oX, oY + topInset)
 end
 
 -- -----------------
@@ -304,79 +305,98 @@ function Moter:layout()
   self.layer.alpha = 0
   --d(inspect(native.getFontNames()))
   local _data = self.rawData
+  d(_data)
   -- ==============================
   -- TITLE SECTION
   local name = resolveNames(_data.names, _data.name)
   --APP.Header.elements.TopBar:setLabel(name)
 
-  local ratingStars = _data.score and StarRating(_data.score.count, {name = 'stars', fillColor = colorsRGB.RGBA('gold'), iconSize = 20})
-  util.center(ratingStars.layer)
+  --local ratingStars = _data.score and StarRating(_data.score.count, {name = 'stars', fillColor = colorsRGB.RGBA('gold'), iconSize = 20})
+  --util.center(ratingStars.layer)
 
   local labelG = display.newGroup()
 --  local labelScore = _data.score and display.newText{text = _data.score.count, x = vW-50, y = self.elements.bg.y-80, fontSize = 50}
 --  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('gold', .9))) end
 
-  local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
+  local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.45, vH*.3, 2)
   labelBG:setFillColor(colorHex('222222', .99))
   labelBG.strokeWidth = 1; labelBG:setStrokeColor(colorHex('333333', 0.5))
   labelBG.anchorY = 0
   --labelBG.y = labelBG.y - labelBG.height*.5
 
   local padding = 28
+  local rowY = padding
+  
   local age, zodiac, astroSign
   if _data.birthday then
     age, zodiac, astroSign = DOB2AgeZodiacAstro(_data.birthday)
   end
-  local labelNameAge = display.newText {text = _data.name..(age and ', '..age or ''), x = 0, y = 0, fontSize = 22, font = fontDMFT}
+  local labelNameAge = display.newText {
+--      text = _data.name..(age and ', '..age or ''),
+      text = age and age or _data.name,
+      x = 0, y = 0,
+      --width = labelBG.width*.9,
+      fontSize = 24, font = fontDMFT
+    }
   local bounds = labelBG.contentBounds
   labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5
-  labelNameAge.y = bounds.yMin+padding
+  labelNameAge.y = bounds.yMin+rowY
+  rowY = labelNameAge.y
   labelG:insert(labelNameAge)
 
   -- ==============================
-  local sperateLine = display.newLine(labelG, bounds.xMin+padding*.5, labelNameAge.y+padding, bounds.xMax-padding*.5, labelNameAge.y+padding)
+  local sperateLine = display.newLine(labelG, bounds.xMin+padding*.5, labelNameAge.y+padding, bounds.xMax-padding*.5, rowY+padding)
+  rowY = sperateLine.y
   sperateLine:setStrokeColor(colorHex('333333')); sperateLine.strokeWidth = 2
   -- ==============================
   -- DATA INFO SECTION
-  local labelHW, labelBirthPlace
+  --local labelHW
   local leftPadding = bounds.xMin+padding*.5
-  if _data.height or _data.weight then
-    local HW = (_data.height and _data.height .. 'CM  ' or '') .. (_data.weight and _data.weight .. 'KG' or '')
-    labelHW = display.newText {text = HW, x = leftPadding, y = sperateLine.y + padding*.5, fontSize = 14, font = fontSHSans}
-    labelHW:setFillColor(colorHex('C7A680'))
-    labelHW.anchorX, labelHW.anchorY = 0, 0
-    labelG:insert(labelHW)
-  end
-
+--  if _data.height or _data.weight then
+--    local HW = (_data.height and _data.height .. 'CM  ' or '') .. (_data.weight and _data.weight .. 'KG' or '')
+--    labelHW = display.newText {text = HW, x = leftPadding, y = rowY + padding*.5, fontSize = 14, font = fontSHSans}
+--    labelHW:setFillColor(colorHex('C7A680'))
+--    labelHW.anchorX, labelHW.anchorY = 0, 0
+--    labelG:insert(labelHW)
+--    rowY = labelHW.y
+--  end
+  local HW = (_data.height and _data.height .. 'CM  ' or '') .. (_data.weight and _data.weight .. 'KG' or '')
+  local infoText = HW:len() > 0 and HW..'\n' or ''
   local measure = _data.measure and next(_data.measure) and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips or ''
-  local infoText = measure
-  infoText = infoText..(_data.country and '\n'.._data.country..' ' or '') .. (_data.birthplace and _data.birthplace or '')
+  measure = measure:len() > 0 and measure..'\n' or ''
+  infoText = infoText..measure
+  
+  infoText = infoText..(_data.country and _data.country..' ' or '') .. (_data.birthplace and _data.birthplace or '')
 
   infoText = infoText..(_data.career and '\n'..table.concat(_data.career, ' ') or '')
 
   infoText = infoText..(_data.hobbies and '\n'..table.concat(_data.hobbies, ' ') or '')
 
-  local labelInfo = display.newText {text = infoText,  x = leftPadding, y = labelHW.y + padding*.6, fontSize = 14, font = fontSHSans}
+  local labelInfo = display.newText {
+      text = infoText,
+      x = leftPadding, y = rowY + padding*.5,
+      width = labelBG.width*.8,
+      fontSize = 14, font = fontSHSans
+    }
   labelInfo:setFillColor(colorHex('C7A680'))
   labelInfo.anchorX, labelInfo.anchorY = 0, 0
   labelG:insert(labelInfo)
-  labelG:insert(ratingStars.layer)
+  --labelG:insert(ratingStars.layer)
   d('======================')
-  ratingStars.layer.x = sperateLine.x + ratingStars.layer.contentWidth*.5
-  ratingStars.layer.y = sperateLine.y
-  self.stars = ratingStars
-  labelInfo.y = labelHW.y + labelInfo.baselineOffset*.5 + labelHW.contentHeight*.3
-
+  --ratingStars.layer.x = sperateLine.x + ratingStars.layer.contentWidth*.5
+  --ratingStars.layer.y = sperateLine.y
+  --self.stars = ratingStars
+  rowY = labelInfo.y
   -- ==============================
   -- BIO DESC SECTION
   local labelBioCap = display.newText {text = '详情资料', x = 0, y = 0, fontSize = 20, font = fontDMFT}
-  local labelBio = display.newText {text = _data.bio,  width = vW*.9, x = leftPadding, y = labelHW.y + padding*.6, fontSize = 12, font = fontSHSans}
+  local labelBio = display.newText {text = _data.bio,  width = vW*.92, x = leftPadding, y = rowY + padding*.6, fontSize = 14, font = fontSHSans}
   labelBioCap:setFillColor(colorHex('C7A680'))
   labelBio:setFillColor(colorHex('6C6C6C'))
   labelBioCap.anchorX, labelBioCap.anchorY = 0, 0
   labelBio.anchorX, labelBio.anchorY = 0, 0
   local bg = self.elements.bg
-  labelBioCap.x, labelBioCap.y = 15, bg.y - bg.height + padding*2.4
+  labelBioCap.x, labelBioCap.y = 15, bg.y - bg.height + padding*3
   labelBio.x, labelBio.y = 15, labelBioCap.y + padding*1.1
   self:_attach(labelG, 'capCard')
   self:_attach(labelBioCap)
@@ -385,7 +405,7 @@ function Moter:layout()
   if _data.birthday then
     local goldenColor = {colorHex('6C6C6C')}
     local birthG = display.newGroup()
-    local labelBirthday = display.newText{text = parseBirthday(_data.birthday), x = leftPadding, y = labelHW.y + padding*.5, fontSize = 25, font = fontMorganiteSemiBold}
+    local labelBirthday = display.newText{text = parseBirthday(_data.birthday), x = cX, y = cY, fontSize = 25, font = fontMorganiteSemiBold}
     labelBirthday:setFillColor(unpack(goldenColor))
     --labelBirthday.anchorY = 1
     labelBirthday.x, labelBirthday.y = vW-50, self.elements.bg.y-48
@@ -410,54 +430,21 @@ function Moter:layout()
     --if zodiacIcon and astroIcon then astroIcon.x = zodiacIcon.x + astroIcon.width end
     birthG.anchorChildren = true
     birthG.anchorX = 1
-    birthG.x = labelBio.contentBounds.xMax
+
     birthG.y = labelBioCap.y + birthG.contentHeight*.5
+    d(birthG.x..':'..birthG.y)
+    birthG.x = vW - padding*.36
     self:_attach(birthG)
   end
   -- ---------------------------------
   -- Reheight and reposition capCard to fit full-screened phones
-  local crossCut = labelBG.contentBounds.yMax - labelInfo.contentBounds.yMax
-  if crossCut > 0 and crossCut < 5 then -- Keep at least 5px space
-    labelBG.height = labelBG.height + 5
-  elseif crossCut > padding then
-    d('cross cutting: '..crossCut)
-    labelBG.height = labelBG.height - crossCut + padding*.5
-  end
+  local crossCut = labelBG.contentBounds.yMax - (labelInfo.contentBounds.yMax+2)
+  labelBG.height = labelBG.height - crossCut + padding*.5
   -- ------------------------------
   --labelG.anchorChildren = true
   labelG.x = oX+labelBG.width*.6 --actual 0.1 labelBG width offset oX
-  labelG.y = self.elements.bg.contentBounds.yMin - labelG.contentHeight*.7
-  --[[
-  local _lgray = {colorHex('6C6C6C')}
-  local titleFSize = 12
-  local labelFSize = 24
-  local gY = screenH - bg.height*.3
-  local titleScore = display.newEmbossedText {text = '评分', x = vW*.24, y = gY, fontSize = titleFSize, font = fontSHSans}
-  titleScore:setFillColor(unpack(_lgray))
-  local labelScoreCount = display.newText {text = _data.score.count, x = vW*.24, y = titleScore.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
-  readableNumber(_data.score.votes)
-  local titleAlbum = display.newEmbossedText {text = '图集', x = vW*.5, y = gY, fontSize = titleFSize, font = fontSHSans}
-  titleAlbum:setFillColor(unpack(_lgray))
-  local labelNumAlbum = display.newText {text = '162', x = vW*.5, y = titleAlbum.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
-
-  local titleHot = display.newEmbossedText {text = '热度', x = vW*.76, y = gY, fontSize = titleFSize, font = fontSHSans}
-  titleHot:setFillColor(unpack(_lgray))
-  local labelNumHot = display.newText {text = readableNumber(_data.score.votes), x = vW*.76, y = titleHot.contentBounds.yMax + 10, fontSize = labelFSize, font = fontDMFT}
-
-  local triangleShape = display.newPolygon(cX, cY, {-10, 5, 0, -8, 10, 5})
-  triangleShape:setFillColor(unpack(_lgray))
-  triangleShape.anchorY = 1
-  triangleShape.y = labelScoreCount.y + 32
-  --self:_attach(triangleShape, '_tabCursor')
-  triangleShape.x = vW*.24
-
-  local _nextBG = display.newRect(self.layer, cX, cY, vW, vH*.6)
-  _nextBG:setFillColor(unpack(_lgray)) -- golden gray 
-  --util.center(_nextBG)
-  _nextBG.anchorY = 0
-  _nextBG.y = triangleShape.y
-  --self:_attach(_nextBG, 'nextBG')
-  ]]
+  labelG.y = self.elements.bg.contentBounds.yMin - labelG.contentHeight*.618
+  
   local favBtnG = display.newGroup()
   local favoriteIcon = util.createIcon {
     text = "favorite",
@@ -501,7 +488,7 @@ function Moter:start()
       transition.from(element, {time = 1000, transition = easing.outBack, height = element.height*.6})
     end
   end
-  timer.performWithDelay(1000, function() self.stars:animate() end)
+  --timer.performWithDelay(1000, function() self.stars:animate() end)
   self:signal('onMoterLoaded')
 
   local green = {colorHex('33ffbb')}

@@ -73,8 +73,8 @@ function scene:create( event )
   local params = event.params
   composer.setVariable( "autoRotate", false )
   local numAlbumCreation = composer.getVariable('numAlbumCreation') or 0
-  composer.setVariable('numAlbumCreation', numAlbumCreation + 1)
-  d('This is the '..(numAlbumCreation+1)..' time of album creation')
+--  composer.setVariable('numAlbumCreation', numAlbumCreation + 1)
+--  d('This is the '..(numAlbumCreation+1)..' time of album creation')
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
   --      CREATE display objects and add them to 'group' here.
@@ -94,7 +94,7 @@ function scene:create( event )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
     local _album = res.data.album
-    d(_album)
+--    d(_album)
     if _album.publisher then
       local publisher = _album.publisher.name
       self.header.elements.navBar:setLabel(publisher)
@@ -105,7 +105,6 @@ function scene:create( event )
     self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
---  iMoter:getAlbumById('29711', openAlbumWithData)
   -----------------------------------------------------------------------------
 end
 

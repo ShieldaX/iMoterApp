@@ -64,7 +64,6 @@ local navBarHeight = nil
 function Header:initialize(opts, parent)
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create the header")
   View.initialize(self, parent)
-  assert(self.layer, 'Piece View Initialized Failed!')
   self.name = opts.name or '_indicator' -- timestamp
   d('创建头部对象: '..self.name)
   d(self.name..' began with '..self:getState())
@@ -81,7 +80,7 @@ function Header:initialize(opts, parent)
     label = '< 返回',
     font = fontZcoolHuangYou,
 		fontSize = 16,
-		onEvent = leftButtonEvent,
+		onEvent = opts.onEvent or leftButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
 	}
   navBarHeight = 42
