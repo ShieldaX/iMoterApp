@@ -118,8 +118,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
     if ( event.limitReached ) then
       local slider = self.elements.slider
       if ( event.direction == "up" ) then
-        print( "TODO: Load more content..." )
-        --slider:scrollTo('bottom', {onComplete = onScrollComplete})
+        print( "Load more content..." )
         local iMoter = self.bumper
         local function showAlbumsWithData(res)
           if not res or not res.data then
@@ -168,31 +167,6 @@ function AlbumList:open(index)
     self:loadCover(i)
   end
   self.cursorIndex = #albums
-  --[[
-  local moreLabel = display.newText {
-    text = '加载更多...',
-    x = cX, y = cY,
-    fontSize = 18, font = fontSHSansBold
-  }
-  local moreIcon = createIcon {
-    x = cX, y = cY,
-    text = 'collections',
-    fontSize = 24
-  }
-  moreIcon.anchorX = 0
-  moreIcon:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
---  moreIcon.y = self.elements.nextBG.contentHeight*.48
-  self.elements.slider:insert(moreIcon)
---  self.elements.slider:insert(moreLabel)
-  self.moreLabel = moreLabel
-  moreLabel.alpha = 0.01
-  local scaleFactor = 0.36
-  moreIcon.x = oX + self.elements.slider._view.contentWidth + vW*scaleFactor*1.2
-  moreLabel.x = moreIcon.x + moreIcon.width + moreLabel.width*.54
---  moreLabel.anchorY = 0
-  moreLabel.y = moreIcon.y + moreLabel.height*.2
---  d(moreLabel.y)
-  ]]
   self:setState('STARTED')
 end
 
