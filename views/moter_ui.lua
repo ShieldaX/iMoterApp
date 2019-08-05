@@ -309,8 +309,7 @@ function Moter:layout()
   -- ==============================
   -- TITLE SECTION
   local name = resolveNames(_data.names, _data.name)
-  --APP.Header.elements.TopBar:setLabel(name)
-
+  
   --local ratingStars = _data.score and StarRating(_data.score.count, {name = 'stars', fillColor = colorsRGB.RGBA('gold'), iconSize = 20})
   --util.center(ratingStars.layer)
 
@@ -333,10 +332,10 @@ function Moter:layout()
   end
   local labelNameAge = display.newText {
 --      text = _data.name..(age and ', '..age or ''),
-      text = age and age or _data.name,
+      text = age and age..'(属'..zodiac..')' or _data.name,
       x = 0, y = 0,
       --width = labelBG.width*.9,
-      fontSize = 24, font = fontDMFT
+      fontSize = 20, font = fontDMFT
     }
   local bounds = labelBG.contentBounds
   labelNameAge.x = bounds.xMin + labelNameAge.width*.5 + padding*.5
@@ -350,16 +349,7 @@ function Moter:layout()
   sperateLine:setStrokeColor(colorHex('333333')); sperateLine.strokeWidth = 2
   -- ==============================
   -- DATA INFO SECTION
-  --local labelHW
   local leftPadding = bounds.xMin+padding*.5
---  if _data.height or _data.weight then
---    local HW = (_data.height and _data.height .. 'CM  ' or '') .. (_data.weight and _data.weight .. 'KG' or '')
---    labelHW = display.newText {text = HW, x = leftPadding, y = rowY + padding*.5, fontSize = 14, font = fontSHSans}
---    labelHW:setFillColor(colorHex('C7A680'))
---    labelHW.anchorX, labelHW.anchorY = 0, 0
---    labelG:insert(labelHW)
---    rowY = labelHW.y
---  end
   local HW = (_data.height and _data.height .. 'CM  ' or '') .. (_data.weight and _data.weight .. 'KG' or '')
   local infoText = HW:len() > 0 and HW..'\n' or ''
   local measure = _data.measure and next(_data.measure) and 'B'.._data.measure.bust..' '..'W'.._data.measure.waist..' '..'H'.._data.measure.hips or ''
