@@ -555,29 +555,37 @@ function Moter:touch(event)
       end
       --self:distort(_t.direction)
       -- Sync View's Layer
-      if math.abs(_t.motion) >= vH*.006 then
+      local limitFactor = .2
+      local avatar = self.elements.avatar
+      if math.abs(_t.motion) >= vH*.0006 then
         local _multi = math.abs(_t.motion)/vH
-        self:blurGaussian(_multi*12)
+        _multi = _multi >= limitFactor and limitFactor or _multi
+--        self:gotoState('reachBottomLimit')
+        if _t.direction > 0 then self:blurGaussian(_multi*6) end
+        local _scale = 1+_multi*.6
+        d(_multi..':'.._scale)
+        avatar.xScale, avatar.yScale = _scale, _scale
       else
         self:blurGaussian(0)
+        avatar:scale(1, 1)
       end
       -- Sync Movement
-      if _t.motion < 30 then _t.y = _t.yStart + _t.motion end
+      if _t.motion < 30 and _t.motion > -vH*limitFactor then
+        _t.y = _t.yStart + _t.motion
+      end
       --ended or cancelled
     elseif ('ended' == phase or 'cancelled' == phase) then
       local transT = 200
       local ease = easing.outExpo
       -- Handle Flicking
       _t.flick = _t.tLast and (event.time - _t.tLast) < 100 and true or false
-      local snap = vH*.0618
-      if (_t.flick and (math.abs(_t.motion) >= snap and math.abs(_t.direction) ~= 0)) then
-
-      else -- Cancelled 动作取消 Try to roll back
-        d('Touch/Move Action Cancelled, Rolling Back...')
-        self:blurGaussian(0)
-        --ease = easing.inQuad
-        transition.to( _t, {time = transT, y = 0, transition = ease} )
-      end
+      -- Cancelled 动作取消 Try to roll back
+      d('Touch/Move Action Cancelled, Rolling Back...')
+      self:blurGaussian(0)
+      --ease = easing.inQuad
+      transition.to( _t, {time = transT, y = 0, transition = ease} )
+      transition.to( self.elements.avatar, {time = transT, yScale = 1, xScale = 1, transition = ease} )
+      -- --------------------
       display.getCurrentStage():setFocus( nil )
       _t.isFocus = false
     end
