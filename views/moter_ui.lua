@@ -422,7 +422,6 @@ function Moter:layout()
     birthG.anchorX = 1
 
     birthG.y = labelBioCap.y + birthG.contentHeight*.5
-    d(birthG.x..':'..birthG.y)
     birthG.x = vW - padding*.36
     self:_attach(birthG)
   end
@@ -519,7 +518,89 @@ function Moter:start()
   end
   favIcon:addEventListener('tap', tapListener)
 
+  self.layer:addEventListener('touch', self)
   self:setState('STARTED')
+end
+
+function Moter:touch(event)
+--{{{
+  local _t = event.target
+  local phase = event.phase
+  --began
+  if ('began' == phase) then
+    display.getCurrentStage():setFocus( _t )
+    _t.isFocus = true
+    _t.yStart = _t.y
+    _t.tStart = event.time
+    --t.tLast = event.time
+    _t.motion = 0
+    --_t.speed = 0
+    _t.direction = 0
+    _t.flick = false
+    --focus
+    --self:blurGaussian()
+  elseif _t.isFocus then
+    --moved
+    if ('moved' == phase) then
+      _t.tLast = event.time
+      -- Distence passed by touch
+      _t.motion = event.y - event.yStart
+
+      -- Detect switching direction then load Right Next Piece in Memory, Painting...
+      local limitMin, limitMax = 5, 100
+      if _t.motion > limitMin and _t.direction >= 0 then
+        _t.direction = -1
+      elseif _t.motion < -limitMin and _t.direction <=0 then
+        _t.direction = 1
+      end
+      --self:distort(_t.direction)
+      -- Sync View's Layer
+      if math.abs(_t.motion) >= vH*.006 then
+        local _multi = math.abs(_t.motion)/vH
+        self:blurGaussian(_multi*12)
+      else
+        self:blurGaussian(0)
+      end
+      -- Sync Movement
+      if _t.motion < 30 then _t.y = _t.yStart + _t.motion end
+      --ended or cancelled
+    elseif ('ended' == phase or 'cancelled' == phase) then
+      local transT = 200
+      local ease = easing.outExpo
+      -- Handle Flicking
+      _t.flick = _t.tLast and (event.time - _t.tLast) < 100 and true or false
+      local snap = vH*.0618
+      if (_t.flick and (math.abs(_t.motion) >= snap and math.abs(_t.direction) ~= 0)) then
+
+      else -- Cancelled 动作取消 Try to roll back
+        d('Touch/Move Action Cancelled, Rolling Back...')
+        self:blurGaussian(0)
+        --ease = easing.inQuad
+        transition.to( _t, {time = transT, y = 0, transition = ease} )
+      end
+      display.getCurrentStage():setFocus( nil )
+      _t.isFocus = false
+    end
+  end
+  return true
+--}}}
+end
+
+function Moter:blurGaussian(multi)
+  local object = self.elements.avatar
+  if not object then return end
+  multi = multi or 2
+  if multi > 5 then
+    return
+  elseif multi == 0 then
+    object.fill.effect = nil
+    return
+  end
+  object.fill.effect = "filter.blurGaussian"
+  object.fill.effect.horizontal.blurSize = 10*multi
+  object.fill.effect.horizontal.sigma = 100*multi
+  object.fill.effect.vertical.blurSize = 10*multi
+  object.fill.effect.vertical.sigma = 100*multi
 end
 
 function Moter:onLikeTapped(tap)

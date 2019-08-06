@@ -70,7 +70,7 @@ local function resolvePublisher(album)
   if not publisher then
     local title = album.title
     if title then
-      publisher = title:match('%[(.)%]') or publisher
+      publisher = string.match(title, '%[(.)%]') or publisher
     end
   end
   return publisher

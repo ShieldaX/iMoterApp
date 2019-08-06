@@ -89,7 +89,7 @@ function scene:create( event )
   -----------------------------------------------------------------------------
   -- Create a vector rectangle sized exactly to the "safe area"
   local background = display.newRect(sceneGroup, oX, oY, vW, vH)
-  background:setFillColor( 0 )
+  background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   
   self.header = HeaderView:new({name = 'NavBar', onEvent = leftButtonEvent}, sceneGroup)
