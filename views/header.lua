@@ -117,6 +117,14 @@ function Header:show()
   self:signal('onHeaderMove', {hidden = false, targetYPos = targetY + self.navBarHeight + topInset})
   self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
   self.isHidden = false
-end 
+end
+
+function Header:toggle()
+  if self.isHidden then
+    self:show()
+  else
+    self:hide()
+  end
+end
 
 return Header

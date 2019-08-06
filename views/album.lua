@@ -65,6 +65,17 @@ local function resolveImages(album, includeCover)
   return uris, names
 end
 
+local function resolvePublisher(album)
+  local publisher = album.publisher
+  if not publisher then
+    local title = album.title
+    if title then
+      publisher = title:match('%[(.)%]') or publisher
+    end
+  end
+  return publisher
+end
+
 -- 将图片自适应屏幕宽度
 local function fitScreenW(p, top, bottom)
   top = top or 0
@@ -164,6 +175,8 @@ function Album:switchPiece(direction)
   local targetIndex = currentIndex + direction
   local pieceId = self.imgNames[targetIndex]
 --  self:signal('onPieceSwitch', {direction = direction})
+  -- 切换显示头部和信息卡片
+  --[[
   local currentScene = composer.getScene(composer.getSceneName('current'))
   local titleBar = currentScene.header
   local infoCard = currentScene.infoCard
@@ -174,7 +187,7 @@ function Album:switchPiece(direction)
     titleBar:show()
     infoCard:show()
   end
-
+  ]]
   if pieceId == nil then
     if direction == -1 then
       d('This is already the first pix!') 
@@ -267,6 +280,12 @@ function Album:onPieceTapped(event)
   }
   d('打开图片专门页面...')
   composer.showOverlay( "scenes.piece", options )
+end
+
+function Album:onPieceTapped(event)
+  local scene = composer.getScene(composer.getSceneName('current'))
+  scene.header:toggle()
+  scene.infoCard:toggle()
 end
 
 function Album:start()
