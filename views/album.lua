@@ -176,18 +176,18 @@ function Album:switchPiece(direction)
   local pieceId = self.imgNames[targetIndex]
 --  self:signal('onPieceSwitch', {direction = direction})
   -- 切换显示头部和信息卡片
-  --[[
+
   local currentScene = composer.getScene(composer.getSceneName('current'))
   local titleBar = currentScene.header
   local infoCard = currentScene.infoCard
   if direction > 0 then
     titleBar:hide()
     infoCard:hide()
-  else
-    titleBar:show()
-    infoCard:show()
+--  else
+--    titleBar:show()
+--    infoCard:show()
   end
-  ]]
+
   if pieceId == nil then
     if direction == -1 then
       d('This is already the first pix!') 
