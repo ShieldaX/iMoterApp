@@ -86,6 +86,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   self._albums = obj.albums
   self.name = 'album list'
   self.covers = {}
+  self.action = obj.action
   APP.CurrentAlbumList = self
   -- END DATA BINDING
   -- -------------------
@@ -119,7 +120,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
       local slider = self.elements.slider
       if ( event.direction == "up" ) then
         print( "Load more content..." )
-        local iMoter = self.bumper
+        local iMoter = self.bumper or APP.iMoterAPI
         local function showAlbumsWithData(res)
           if not res or not res.data then
             native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
@@ -133,7 +134,9 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
           d(#self._albums)
           self:open(self.cursorIndex + 1)
         end
-        iMoter:listAlbums({skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
+--        iMoter:listAlbums({skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
+        self.action = self.action or 'listAlbums'
+        iMoter[self.action](iMoter, self.param, {skip = self.cursorIndex, limit = self.limit or 10}, showAlbumsWithData)
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )

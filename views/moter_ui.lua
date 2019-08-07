@@ -607,13 +607,13 @@ function Moter:touch(event)
         hint.alpha = _multi*6
         if hint.alpha == 1 then
           hint.animation = transition.to(hint[3], {time = 200, transition = easing.outExpo, rotation = 0})
-          hint[1].text = '\\ 释 放 /'
+          hint[1].text = '{ 释 放 }'
           self.shouldFlip = true
           d('释放!以查看女神图集列表...')
         else
           transition.cancel(hint.animation)
           hint[3].rotation = 180
-          hint[1].text = '\\ 上 拉 /'
+          hint[1].text = '{ 上 拉 }'
           self.shouldFlip = false
         end
       else
@@ -638,7 +638,7 @@ function Moter:touch(event)
       --ease = easing.inQuad
       transition.to( _t, {time = transT, y = 0, transition = ease} )
       transition.to( self.elements.avatar, {time = transT, yScale = 1, xScale = 1, transition = ease} )
-      transition.to( self.elements.hint, {time = transT, alpha = 0, transition = ease} )
+      transition.to( self.elements.hint, {time = transT*2, alpha = 0, transition = ease} )
       -- --------------------
       display.getCurrentStage():setFocus( nil )
       _t.isFocus = false
@@ -673,7 +673,7 @@ function Moter:hintMore()
   local labelBio = self.elements.labelBio
   local hint = display.newGroup()
   local labelMore = display.newText {
-    text = '\\ DRAG /',
+    text = '{ DRAG }',
     x = cX, y = cY,
     fontSize = 18, font = fontSHSans
   }
@@ -744,6 +744,21 @@ local MoterAlubmList = Moter:addState('MoterAlbumList')
 function MoterAlubmList:enteredState(event)
   d('!!!...........')
   d(event) -- nil
+  local hint = self.elements.hint
+  local pinH = hint.contentHeight
+  --hint.alpha = 1
+  transition.to(
+    self.layer,
+    {
+      time = 800,
+      y = -vH+topInset+pinH, transition = easing.outExpo,
+      onComplete = function()
+        local scene = composer.getScene(composer.getSceneName('overlay'))
+        scene:loadMoterAlbumList()
+--        d(scene.moter_id)
+      end
+    }
+  )
 end
 
 function MoterAlubmList:touch(event)

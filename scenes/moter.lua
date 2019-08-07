@@ -36,11 +36,12 @@ local background = nil
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
-local AlbumView = require("views.album")
+--local AlbumView = require("views.album")
+local AlbumList = require("views.album_list")
 local MoterView = require("views.moter_ui")
-local IconButton = require("views.icon_button")
+--local IconButton = require("views.icon_button")
 local HeaderView = require("views.header")
-local FooterView = require("views.footer")
+--local FooterView = require("views.footer")
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
@@ -56,9 +57,8 @@ local FooterView = require("views.footer")
 local scene = composer.newScene()
 -- Our modules
 local APP = require( "classes.application" )
---local utility = require( "libs.utility" )
-
 local iMoter = iMoterAPI:new()
+APP.iMoterAPI = iMoter
 
 ---------------------------------------------------------------------------------
 -- BEGINNING OF YOUR IMPLEMENTATION
@@ -95,7 +95,7 @@ function scene:create( event )
   self.header = HeaderView:new({name = 'NavBar', onEvent = leftButtonEvent}, sceneGroup)
   
   local moter_id = params.moter_id
-  
+  self.moter_id = moter_id
   local function showMoterWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This moter currently not avaialble!", { "Okay" } )
@@ -125,6 +125,33 @@ function scene:show( event )
 
   -----------------------------------------------------------------------------
 
+end
+
+function scene:loadMoterAlbumList()
+  if self.moterAlbumListView then return end
+  self.header.elements.navBar:setLabel('[女神图集]')
+  local sceneGroup = self.view
+  local labelFSize = 20
+  local padding = labelFSize*.618
+  local function showAlbumsWithData(res)
+    if not res or not res.data then
+      native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
+      return false
+    end
+    local _albumList = res.data.albums
+    local _data = res.data
+    local topPadding = topInset
+    
+    local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
+    albumListView.action = 'listAlbumsOfMoter'
+    albumListView.required_param = self.moter_id
+    albumListView.limit = 4
+    self.moterAlbumListView = albumListView
+    albumListView.layer.y = self.header.layer.contentHeight + padding
+    albumListView:open()
+  end
+  d(self.moter_id)
+  iMoter:listAlbumsOfMoter(self.moter_id, {skip = 0, limit = 10}, showAlbumsWithData)
 end
 
 function scene:hide( event )
