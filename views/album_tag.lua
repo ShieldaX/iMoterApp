@@ -102,12 +102,12 @@ function Tag:initialize(opts, parent)
   -- -------------------
   -- DATA BINDING
   self.cornerRadius = opts.radius or 12
-  local padding = 6
-  local fontSize = 12
   -- END DATA BINDING
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
+  local padding = 6
+  local fontSize = 12
   local _text = display.newText { text = self.id, x = 0, y = 0, fontSize = fontSize, align = 'center', font = fontSHSansBold }
   --_text.anchorY = 1
   _text:setFillColor(colorHex('1A1A19'))
@@ -115,10 +115,6 @@ function Tag:initialize(opts, parent)
   local _bg_width, _bg_height = _text.width + padding*3, _text.height + padding
   local _bg = display.newRoundedRect(0, 0, _bg_width, _bg_height, self.cornerRadius)
   _bg:setFillColor(colorHex('C7A680')) -- Golden
-  --util.center(_bg)
-  d(_bg.x..':'.._bg.y)
-  --_bg.x = _text.x
-  --_bg.y = _text.y
   self:_attach(_bg, '_bg')
   self:_attach(_text, '_text')
   self.layer.anchorChildren = true

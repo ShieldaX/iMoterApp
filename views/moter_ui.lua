@@ -40,6 +40,28 @@ local function createIcon(options)
   return icon
 end
 
+local function createLabel(opts)
+  local text = opts.text
+  if not text then return end
+  local label = display.newGroup()
+  local padding = opts.padding or 6
+  local fontSize = opts.fontSize or 12
+  local cornerRadius = opts.cornerRadius or 12
+  local x, y = opts.x or cX, opts.y or cY 
+  local _text = display.newText { text = text, x = 0, y = 0, fontSize = fontSize, align = 'center', font = fontSHSansBold }
+  _text:setFillColor(colorHex('1A1A19'))
+  _text.y = _text.y + padding*.4
+  local _bg_width, _bg_height = _text.width + padding*3, _text.height + padding
+  local _bg = display.newRoundedRect(0, 0, _bg_width, _bg_height, cornerRadius)
+  _bg:setFillColor(colorHex('C7A680')) -- Golden
+  label:insert(_bg)
+  label:insert(_text)
+  label.anchorChildren = true
+  label.anchorX = .5
+  label.anchorY = 1
+  return label
+end
+
 -- 将图片自适应屏幕宽度
 local function fitScreenW(p, top, bottom)
   top = top or 0
@@ -71,6 +93,7 @@ local View = require 'libs.view'
 local Piece = require 'views.piece'
 local StarRating = require 'views.star_rating'
 local Moter = class('MoterView', View)
+Moter:include(Stateful)
 local APP = require("classes.application")
 
 local LayoutManager = require( "libs.layout" )
@@ -573,17 +596,31 @@ function Moter:touch(event)
       -- Sync View's Layer
       local limitFactor = .2
       local avatar = self.elements.avatar
+      local hint = self.elements.hint
       if math.abs(_t.motion) >= vH*.0006 then
         local _multi = math.abs(_t.motion)/vH
         _multi = _multi >= limitFactor and limitFactor or _multi
 --        self:gotoState('reachBottomLimit')
         if _t.direction > 0 then self:blurGaussian(_multi*6) end
         local _scale = 1+_multi*.6
-        d(_multi..':'.._scale)
         avatar.xScale, avatar.yScale = _scale, _scale
+        hint.alpha = _multi*6
+        if hint.alpha == 1 then
+          hint.animation = transition.to(hint[3], {time = 200, transition = easing.outExpo, rotation = 0})
+          hint[1].text = '\\ 释 放 /'
+          self.shouldFlip = true
+          d('释放!以查看女神图集列表...')
+        else
+          transition.cancel(hint.animation)
+          hint[3].rotation = 180
+          hint[1].text = '\\ 上 拉 /'
+          self.shouldFlip = false
+        end
       else
         self:blurGaussian(0)
         avatar:scale(1, 1)
+        hint.alpha = 0
+        hint[3].rotation = 0
       end
       -- Sync Movement
       if _t.motion < 30 and _t.motion > -vH*limitFactor then
@@ -601,12 +638,17 @@ function Moter:touch(event)
       --ease = easing.inQuad
       transition.to( _t, {time = transT, y = 0, transition = ease} )
       transition.to( self.elements.avatar, {time = transT, yScale = 1, xScale = 1, transition = ease} )
+      transition.to( self.elements.hint, {time = transT, alpha = 0, transition = ease} )
       -- --------------------
       display.getCurrentStage():setFocus( nil )
       _t.isFocus = false
+      if self.shouldFlip then
+        self:gotoState('MoterAlbumList')
+        self:send('flipToAlbumList') 
+      end
     end
   end
-  return true
+  return true  
 --}}}
 end
 
@@ -629,26 +671,40 @@ end
 
 function Moter:hintMore()
   local labelBio = self.elements.labelBio
+  local hint = display.newGroup()
   local labelMore = display.newText {
-    text = '上拉看女神图集...',
+    text = '\\ DRAG /',
     x = cX, y = cY,
-    fontSize = 18, font = fontSHSansBold
+    fontSize = 18, font = fontSHSans
   }
+  
   local iconMore = createIcon {
     x = cX, y = cY,
-    text = 'expand_less',
+    text = 'expand_more',
     fontSize = 40
   }
-  iconMore.anchorX = 0
+  
+  local labelMoterAlbum = createLabel {
+      text = '女神图集',
+      icon = 'expand_less',
+      fontSize = 16,
+      padding = 10,
+      cornerRadius = 20,
+    }
+  labelMoterAlbum.x = cX
+  labelMoterAlbum.y = cY
+  
+  iconMore.anchorX = .5
   iconMore:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
-  iconMore.y = labelBio.y + labelBio.contentHeight + 20
---  self.elements.slider:insert(iconMore)
---  self.elements.slider:insert(labelMore)
-  self.labelMore = labelMore
+  labelMore.y = labelBio.y + labelBio.contentHeight + 40
+  labelMoterAlbum.y = labelMore.y + labelMoterAlbum.contentHeight*1.5
+  iconMore.y = labelMoterAlbum.y + iconMore.contentHeight*.5
   labelMore.alpha = 1
---  labelMore.anchorY = 0
-  labelMore.y = iconMore.y + labelMore.contentHeight
-  d(labelMore.y)
+  hint:insert(labelMore)
+  hint:insert(labelMoterAlbum)
+  hint:insert(iconMore)
+  hint.alpha = 0
+  self:_attach(hint, 'hint')
 end
 
 function Moter:onLikeTapped(tap)
@@ -681,6 +737,17 @@ end
 
 function Moter:stop()
   self:cleanup()
+end
+
+local MoterAlubmList = Moter:addState('MoterAlbumList')
+
+function MoterAlubmList:enteredState(event)
+  d('!!!...........')
+  d(event) -- nil
+end
+
+function MoterAlubmList:touch(event)
+  return true
 end
 
 return Moter
