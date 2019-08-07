@@ -4,8 +4,9 @@ local oX = display.screenOriginX
 local oY = display.screenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
-require("mobdebug").start()
+--require("mobdebug").start()
 local class = require 'libs.middleclass'
+local mui = require( "materialui.mui" )
 local Stateful = require 'libs.stateful'
 local inspect = require 'libs.inspect'
 local colorHex = require('libs.convertcolor').hex
@@ -21,10 +22,23 @@ local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableCon
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
 local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
+-- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
 local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
+local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
+
+-- Functions
+local function createIcon(options)
+  local fontPath = "icon-font/"
+  local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
+  options.font = materialFont
+  options.text = mui.getMaterialFontCodePointByName(options.text)
+  local icon = display.newText(options)
+  return icon
+end
 
 -- 将图片自适应屏幕宽度
 local function fitScreenW(p, top, bottom)
@@ -390,7 +404,7 @@ function Moter:layout()
   labelBio.x, labelBio.y = 15, labelBioCap.y + padding*1.1
   self:_attach(labelG, 'capCard')
   self:_attach(labelBioCap)
-  self:_attach(labelBio)
+  self:_attach(labelBio, 'labelBio')
   -- ---------------------------------
   if _data.birthday then
     local goldenColor = {colorHex('6C6C6C')}
@@ -463,6 +477,8 @@ function Moter:layout()
   favBtnG:insert(favoriteIcon)
 
   self:_attach(favBtnG, 'favBtnG')
+  
+  self:hintMore()
 end
 
 function Moter:start()
@@ -609,6 +625,30 @@ function Moter:blurGaussian(multi)
   object.fill.effect.horizontal.sigma = 100*multi
   object.fill.effect.vertical.blurSize = 10*multi
   object.fill.effect.vertical.sigma = 100*multi
+end
+
+function Moter:hintMore()
+  local labelBio = self.elements.labelBio
+  local labelMore = display.newText {
+    text = '上拉看女神图集...',
+    x = cX, y = cY,
+    fontSize = 18, font = fontSHSansBold
+  }
+  local iconMore = createIcon {
+    x = cX, y = cY,
+    text = 'expand_less',
+    fontSize = 40
+  }
+  iconMore.anchorX = 0
+  iconMore:setFillColor(unpack(colorsRGB.RGBA('white', 1)))
+  iconMore.y = labelBio.y + labelBio.contentHeight + 20
+--  self.elements.slider:insert(iconMore)
+--  self.elements.slider:insert(labelMore)
+  self.labelMore = labelMore
+  labelMore.alpha = 1
+--  labelMore.anchorY = 0
+  labelMore.y = iconMore.y + labelMore.contentHeight
+  d(labelMore.y)
 end
 
 function Moter:onLikeTapped(tap)
