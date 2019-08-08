@@ -37,7 +37,7 @@ local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
 --local AlbumView = require("views.album")
-local AlbumList = require("views.album_list")
+local AlbumList = require("views.moter_album_list")
 local MoterView = require("views.moter_ui")
 --local IconButton = require("views.icon_button")
 local HeaderView = require("views.header")
@@ -129,7 +129,7 @@ end
 
 function scene:loadMoterAlbumList()
   if self.moterAlbumListView then return end
-  self.header.elements.navBar:setLabel('[女神图集]')
+  --self.header.elements.navBar:setLabel('[女神图集]')
   local sceneGroup = self.view
   local labelFSize = 20
   local padding = labelFSize*.618
@@ -140,8 +140,8 @@ function scene:loadMoterAlbumList()
     end
     local _albumList = res.data.albums
     local _data = res.data
+    _data.moter_id = self.moter_id
     local topPadding = topInset
-    
     local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
     albumListView.action = 'listAlbumsOfMoter'
     albumListView.required_param = self.moter_id
@@ -151,7 +151,7 @@ function scene:loadMoterAlbumList()
     albumListView:open()
   end
   d(self.moter_id)
-  iMoter:listAlbumsOfMoter(self.moter_id, {skip = 0, limit = 10}, showAlbumsWithData)
+  iMoter:listAlbumsOfMoter(self.moter_id, {skip = 0, limit = 6}, showAlbumsWithData)
 end
 
 function scene:hide( event )

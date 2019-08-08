@@ -78,16 +78,18 @@ end
 -- 利用获取的图集信息实例化一个图集对象
 function AlbumList:initialize(obj, topPadding, sceneGroup)
   d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-  d('- Prototype of AlbumList View -')
+  d('- Prototype of Moter AlbumList View -')
   d('- ======================== -')
+  assert(obj.moter_id, 'No moter id specified!')
   View.initialize(self, sceneGroup)
   -- -------------------
   -- DATA BINDING
   self.rawData = obj
+  self.moter_id = obj.moter_id
   self._albums = obj.albums
-  self.name = 'album list'
+  self.name = 'album_list'
   self.covers = {}
-  APP.CurrentAlbumList = self
+  sceneGroup.currentAlbumList = self
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -95,7 +97,6 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   -- ScrollView listener
   local function onScrollComplete()
     print( "Scroll complete!" )
-    
   end
   
   local function scrollListener( event )
@@ -119,8 +120,8 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
     if ( event.limitReached ) then
       local slider = self.elements.slider
       if ( event.direction == "up" ) then
-        print( "Load more content..." )
-        local iMoter = self.bumper
+        print( "Load more content..., TODO: block continuesly load if there'r no more albums" )
+        local iMoter = self.bumper or APP.iMoterAPI --or require('classes.iMoter'):new()
         local function showAlbumsWithData(res)
           if not res or not res.data then
             native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
@@ -134,7 +135,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
           d(#self._albums)
           self:open(self.cursorIndex + 1)
         end
-        iMoter:listAlbums({skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
+        iMoter:listAlbumsOfMoter( self.moter_id, {skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )
@@ -209,7 +210,7 @@ function AlbumList:onCoverTapped(event)
     time = 420,
     params = event
   }
-  composer.gotoScene( "scenes.album", options )
+  --composer.gotoScene( "scenes.album", options )
 end
 
 function AlbumList:start()
