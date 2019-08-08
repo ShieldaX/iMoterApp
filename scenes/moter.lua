@@ -129,7 +129,8 @@ end
 
 function scene:loadMoterAlbumList()
   if self.moterAlbumListView then return end
-  --self.header.elements.navBar:setLabel('[女神图集]')
+  local oldLabel = self.header.elements.navBar:getLabel()
+  self.header.elements.navBar:setLabel(oldLabel..'·图集')
   local sceneGroup = self.view
   local labelFSize = 20
   local padding = labelFSize*.618
@@ -154,6 +155,8 @@ end
 function scene:unloadMoterAlbumList()
   if not self.moterAlbumListView then return end
   local sceneGroup = self.view
+  local oldLabel = self.header.elements.navBar:getLabel()
+  self.header.elements.navBar:setLabel(string.gsub(oldLabel, '·图集', ''))
   local albumListView = self.moterAlbumListView
   albumListView:stop()
   if albumListView.layer then sceneGroup:remove(albumListView.layer) end
