@@ -151,6 +151,16 @@ function scene:loadMoterAlbumList()
   iMoter:listAlbumsOfMoter(self.moter_id, {skip = 0, limit = 6}, showAlbumsWithData)
 end
 
+function scene:unloadMoterAlbumList()
+  if not self.moterAlbumListView then return end
+  local sceneGroup = self.view
+  local albumListView = self.moterAlbumListView
+  albumListView:stop()
+  if albumListView.layer then sceneGroup:remove(albumListView.layer) end
+  albumListView = nil
+  self.moterAlbumListView = nil
+end
+
 function scene:hide( event )
   local sceneGroup = self.view
   -- nothing to do here

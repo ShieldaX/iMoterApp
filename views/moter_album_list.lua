@@ -91,6 +91,9 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   self.name = 'album_list'
   self.covers = {}
   sceneGroup.currentAlbumList = self
+  local scene = composer.getScene(composer.getSceneName('overlay'))
+  local moterView = scene.moterView
+  local hint = moterView.elements.hint
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -109,15 +112,18 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
       _t.xLast, _t.yLast = _t:getContentPosition()
       _t.motion = _t.yLast - _t.yStart
       local isTabBarHidden = APP.Footer.hidden
-      if _t.motion >= 2 and _t.yLast > 8 then -- show hint
-        local scene = composer.getScene(composer.getSceneName('overlay'))
-        local hint = scene.moterView.elements.hint
-        hint.alpha = 1
-        self.layer:toBack()
-        scene.bg:toBack()
+      if _t.motion >= 2 and _t.yLast > 10 then
+        self.shouldFlip = true
+--        local limitFactor = .2
+--        local _multi = math.abs(_t.motion)/vH
+--        _multi = _multi >= limitFactor and limitFactor or _multi
+--        hint.alpha = _multi*6
+--        self.layer:toBack()
+--        moterView.layer.y = -vH - topInset + hint.contentHeight + _t.yLast
       end
     elseif ( phase == "ended" ) then
       print( "Scroll view was released" )
+      if self.shouldFlip then self:unfold() end
     end
     -- In the event a scroll limit is reached...
     if ( event.limitReached ) then
@@ -164,6 +170,19 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   -- -------------------
 end
 
+function AlbumList:unfold()
+  transition.to(
+    self.layer,
+    {
+      time = 600, transition = easing.outExpo,
+      y = vH+bottomInset,
+      onComplete = function() self:stop() end
+    }
+  )
+  local scene = composer.getScene(composer.getSceneName('overlay'))
+  scene.moterView:popState('MoterAlbumList')
+end
+
 function AlbumList:open(index)
   index = index or 1
   --self.cursorAlbumId = index
@@ -178,7 +197,7 @@ end
 
 function AlbumList:loadCover(index)
   local album = self._albums[index]
-  d(album)
+--  d(album)
   if not album then return false end
   local coverURI, coverFileName = resolveCoverImage(album)
   local cover = Cover({

@@ -644,11 +644,11 @@ function Moter:touch(event)
       _t.isFocus = false
       if self.shouldFlip then
         self:gotoState('MoterAlbumList')
-        self:send('flipToAlbumList') 
+--        self:send('flipToAlbumList') 
       end
     end
   end
-  return true  
+  return true
 --}}}
 end
 
@@ -744,12 +744,12 @@ local MoterAlubmList = Moter:addState('MoterAlbumList')
 function MoterAlubmList:enteredState()
   local hint = self.elements.hint
   local pinH = hint.contentHeight
-  transition.to(hint, {delay = 500, time = 200, transition = easing.inExpo, alpha = 0})
+  --transition.to(hint, {delay = 500, time = 200, transition = easing.inExpo, alpha = 0})
   transition.to(
     self.layer,
     {
       time = 600,
-      y = -vH+topInset+pinH, transition = easing.outExpo,
+      y = -vH-topInset-pinH, transition = easing.outExpo,
       onComplete = function()
         local scene = composer.getScene(composer.getSceneName('overlay'))
         scene:loadMoterAlbumList()
@@ -765,15 +765,11 @@ function MoterAlubmList:exitedState()
       time = 600,
       y = 0, transition = easing.outExpo,
       onComplete = function()
-        --local scene = composer.getScene(composer.getSceneName('overlay'))
-        --scene:unloadMoterAlbumList()
+        local scene = composer.getScene(composer.getSceneName('overlay'))
+        scene:unloadMoterAlbumList()
       end
     }
   )
-end
-
-function MoterAlubmList:touch(event)
-  return true
 end
 
 return Moter
