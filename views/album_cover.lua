@@ -176,6 +176,9 @@ function Cover:preload(row, col)
       native.showAlert("网络错误!", "网络似乎开小差了，联网后重试!", { "好的" } )
       return false
     else
+      if event.status == 404 then-- Not Found
+        event.target = display.newImage('assets/images/not_found_cover_0.jpg')
+      end
       local _image = event.target
       fitImage(_image, vW*scaleFactor, vH*scaleFactor)
       _image.alpha = 0
@@ -193,9 +196,12 @@ function Cover:preload(row, col)
       d('Start Cover '..self.name..' '..self:getState())
       self.isBlocked = false
       self:start()
+      if event.status == 404 then-- Not Found
+        self:send('onAlbumCoverNotFound', {event = event})
+      end
     end
   end
-  display.loadRemoteImage( self.uri, "GET", networkListener, self.fileName, Cover.DEFAULT_DIRECTORY, oX, oY)
+  display.loadRemoteImage( self.uri, "GET", networkListener, {progress = false}, self.fileName, Cover.DEFAULT_DIRECTORY, oX, oY)
 end
 
 function Cover:onImageLoaded()
@@ -239,12 +245,17 @@ function Cover:onImageLoaded()
   self.parent.elements.slider:insert(self.layer)
 end
 
+function Cover:onAlbumCoverNotFound(event)
+  d('not found...')
+  self:stop()
+end
+
 -- ---
 -- Begin to receive touch or tap events, then give reflection back properly
 --
 function Cover:start()
 --{{{
-  d('Try to start Cover '..self.name..' @ '..self:getState())
+  --d('Try to start Cover '..self.name..' @ '..self:getState())
   if (self.state < View.STATUS.PRELOADED) or self.isBlocked then
     d(self.name .. ' is Not Ready to Start!')
     return false
@@ -259,6 +270,20 @@ function Cover:start()
   self.layer:addEventListener('touch', self)
   self.layer:addEventListener('tap', self)
   self:setState('STARTED')
+--}}}
+end
+
+function Cover:stop()
+--{{{
+  --d('Try to start Cover '..self.name..' @ '..self:getState())
+  if (self.state < View.STATUS.PRELOADED) or self.isBlocked then
+    d(self.name .. ' is Not Ready to Start!')
+    return false
+  end
+  -- Remove touch event handler
+  self.layer:removeEventListener('touch', self)
+  self.layer:removeEventListener('tap', self)
+  self:setState('STOPPED')
 --}}}
 end
 
