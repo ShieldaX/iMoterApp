@@ -30,6 +30,7 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 -- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
@@ -108,10 +109,12 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
       _t.xLast, _t.yLast = _t:getContentPosition()
       _t.motion = _t.yLast - _t.yStart
       local isTabBarHidden = APP.Footer.hidden
-      if _t.motion <= -30 and not isTabBarHidden then
-        APP.Footer:hide()
-      elseif _t.motion >= 30 and isTabBarHidden then
-        APP.Footer:show()
+      if _t.motion >= 2 and _t.yLast > 8 then -- show hint
+        local scene = composer.getScene(composer.getSceneName('overlay'))
+        local hint = scene.moterView.elements.hint
+        hint.alpha = 1
+        self.layer:toBack()
+        scene.bg:toBack()
       end
     elseif ( phase == "ended" ) then
       print( "Scroll view was released" )
@@ -137,6 +140,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
         end
         iMoter:listAlbumsOfMoter( self.moter_id, {skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
+        
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )
       elseif ( event.direction == "right" ) then print( "Reached left limit" )

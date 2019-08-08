@@ -91,7 +91,7 @@ function scene:create( event )
   local background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
-  
+  self.bg = background
   self.header = HeaderView:new({name = 'NavBar', onEvent = leftButtonEvent}, sceneGroup)
   
   local moter_id = params.moter_id
@@ -143,14 +143,11 @@ function scene:loadMoterAlbumList()
     _data.moter_id = self.moter_id
     local topPadding = topInset
     local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
-    albumListView.action = 'listAlbumsOfMoter'
-    albumListView.required_param = self.moter_id
-    albumListView.limit = 4
     self.moterAlbumListView = albumListView
+--    albumListView.layer.y = self.moterView.elements.hint.y
     albumListView.layer.y = self.header.layer.contentHeight + padding
     albumListView:open()
   end
-  d(self.moter_id)
   iMoter:listAlbumsOfMoter(self.moter_id, {skip = 0, limit = 6}, showAlbumsWithData)
 end
 

@@ -741,21 +741,32 @@ end
 
 local MoterAlubmList = Moter:addState('MoterAlbumList')
 
-function MoterAlubmList:enteredState(event)
-  d('!!!...........')
-  d(event) -- nil
+function MoterAlubmList:enteredState()
   local hint = self.elements.hint
   local pinH = hint.contentHeight
-  --hint.alpha = 1
+  transition.to(hint, {delay = 500, time = 200, transition = easing.inExpo, alpha = 0})
   transition.to(
     self.layer,
     {
-      time = 800,
+      time = 600,
       y = -vH+topInset+pinH, transition = easing.outExpo,
       onComplete = function()
         local scene = composer.getScene(composer.getSceneName('overlay'))
         scene:loadMoterAlbumList()
---        d(scene.moter_id)
+      end
+    }
+  )
+end
+
+function MoterAlubmList:exitedState()
+  transition.to(
+    self.layer,
+    {
+      time = 600,
+      y = 0, transition = easing.outExpo,
+      onComplete = function()
+        --local scene = composer.getScene(composer.getSceneName('overlay'))
+        --scene:unloadMoterAlbumList()
       end
     }
   )
