@@ -369,7 +369,7 @@ function Moter:layout()
   end
   local labelNameAge = display.newText {
 --      text = _data.name..(age and ', '..age or ''),
-      text = age and age..'(属'..zodiac..')' or _data.name,
+      text = age and age..'('..astroSign..')' or _data.name,
       x = 0, y = 0,
       --width = labelBG.width*.9,
       fontSize = 20, font = fontDMFT
@@ -604,7 +604,7 @@ function Moter:touch(event)
         if _t.direction > 0 then self:blurGaussian(_multi*6) end
         local _scale = 1+_multi*.6
         avatar.xScale, avatar.yScale = _scale, _scale
-        hint.alpha = _multi*6
+        if _t.motion < 0 then hint.alpha = _multi*6 end
         if hint.alpha == 1 then
           hint.animation = transition.to(hint[3], {time = 200, transition = easing.outExpo, rotation = 0})
           hint[1].text = '{ 释 放 }'
