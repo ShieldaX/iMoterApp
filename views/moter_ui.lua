@@ -354,7 +354,7 @@ function Moter:layout()
 --  local labelScore = _data.score and display.newText{text = _data.score.count, x = vW-50, y = self.elements.bg.y-80, fontSize = 50}
 --  if labelScore then labelScore:setFillColor(unpack(colorsRGB.RGBA('gold', .9))) end
 
-  local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.45, vH*.3, 2)
+  local labelBG = display.newRoundedRect(labelG, oX, oY, vW*.42, vH*.3, 2)
   labelBG:setFillColor(colorHex('222222', .99))
   labelBG.strokeWidth = 1; labelBG:setStrokeColor(colorHex('333333', 0.5))
   labelBG.anchorY = 0
@@ -607,13 +607,13 @@ function Moter:touch(event)
         if _t.motion < 0 then hint.alpha = _multi*6 end
         if hint.alpha == 1 then
           hint.animation = transition.to(hint[3], {time = 200, transition = easing.outExpo, rotation = 0})
-          hint[1].text = '{ 释 放 }'
+          hint[1].text = ' 释 放 '
           self.shouldFlip = true
           d('释放!以查看女神图集列表...')
         else
           transition.cancel(hint.animation)
           hint[3].rotation = 180
-          hint[1].text = '{ 上 拉 }'
+          hint[1].text = ' 上 拉 '
           self.shouldFlip = false
         end
       else
