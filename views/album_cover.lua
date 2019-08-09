@@ -289,7 +289,7 @@ end
 
 function Cover:tap(tap)
   d('Open album: '..self.title)
-  self:signal('onCoverTapped', {album_id = self.id, title = self.title})
+  self.parent:send('onCoverTapped', {album_id = self.id, title = self.title})
 end
 
 return Cover

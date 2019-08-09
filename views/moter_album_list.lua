@@ -220,24 +220,15 @@ function AlbumList:loadCover(index)
 end
 
 function AlbumList:onAlbumTapped(event)
-  event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
-  local options = {
-    effect = "fade",
-    time = 500,
-    isModal = true,
-    params = event
-  }
-  composer.showOverlay( "scenes.album", options )
+	if event.phase == "ended" then
+    composer.hideOverlay('slideRight', 420)
+	end
+	return true
 end
 
 function AlbumList:onCoverTapped(event)
---  event.coverImageURI = 
-  local options = {
-    effect = "slideLeft",
-    time = 420,
-    params = event
-  }
-  --composer.gotoScene( "scenes.album", options )
+  composer.hideOverlay('slideRight', 420)
+	return true
 end
 
 function AlbumList:start()

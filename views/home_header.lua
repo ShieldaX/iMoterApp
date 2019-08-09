@@ -78,10 +78,12 @@ function Header:initialize(opts, parent)
   -- VISUAL INITIALIING
   --local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
   local titleFSize = 12
-  local labelFSize = 20
+  local labelFSize = 18
   local padding = labelFSize*.618
   local gY = topInset + padding*2
-
+  
+--  local labelTitle = display.newText {text = '女神图集', x = vW*.24, y = gY, fontSize = 26, font = fontZcoolHuangYou}
+--  gY = gY + padding*4
   local labelUpdate = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
   local labelHot = display.newText {text = '热门', x = vW*.5, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
   local labelRecom = display.newText {text = '推荐', x = vW*.76, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
