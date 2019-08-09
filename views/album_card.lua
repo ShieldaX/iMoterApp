@@ -163,7 +163,7 @@ function Card:initialize(opts, parent)
   -- 标题
   local labelTitle = display.newText {
     parent = infoCard,
-    text = self.title:gsub("%d+%.?", '', 3),
+    text = self.title, --:gsub("%d+%.?", '', 3),
     x = bg.width*.05, y = topPadding + radius*.618,
     width = bg.width*.618, height = 0,
     font = fontZcoolHuangYou, fontSize = 26,
