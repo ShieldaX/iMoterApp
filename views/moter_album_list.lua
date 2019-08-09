@@ -103,7 +103,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   local function onScrollComplete()
     print( "Scroll complete!" )
   end
-  
+
   local function scrollListener( event )
     local _t = event.target
     local phase = event.phase
@@ -150,7 +150,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
         end
         iMoter:listAlbumsOfMoter( self.moter_id, {skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
-        
+
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )
       elseif ( event.direction == "right" ) then print( "Reached left limit" )
@@ -220,15 +220,21 @@ function AlbumList:loadCover(index)
 end
 
 function AlbumList:onAlbumTapped(event)
-	if event.phase == "ended" then
+  if event.phase == "ended" then
     composer.hideOverlay('slideRight', 420)
-	end
-	return true
+  end
+  return true
 end
 
 function AlbumList:onCoverTapped(event)
-  composer.hideOverlay('slideRight', 420)
-	return true
+  composer.removeScene(composer.getSceneName( "current" ))
+  composer.hideOverlay('slideRight', 500)
+  local options = {
+    time = 500,
+    effect = "slideRight",
+    params = event
+  }
+  composer.gotoScene("scenes.album", options)
 end
 
 function AlbumList:start()
