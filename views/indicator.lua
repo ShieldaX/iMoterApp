@@ -110,9 +110,9 @@ end
 function Indicator:onAlbumLimitReached(event)
   local direction = event.direction or 0
   if direction == -1 then
-    d('This is already the first piece!')
+    --d('This is already the first piece!')
     --APP.repeated = APP.repeated + 1
-    Toast('上滑翻页发现更多精彩'):show()
+    --Toast('上滑翻页发现更多精彩'):show()
   elseif direction == 1 then
     d('This is already the foot piece!')
     Toast('你已经看到我的底线了'):show()

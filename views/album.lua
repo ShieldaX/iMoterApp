@@ -200,7 +200,7 @@ function Album:switchPiece(direction)
     elseif direction == 1 then
       d('This is already the foot pix!')
     end
-    --self:signal('onAlbumLimitReached', {direction = direction})
+    self:signal('onAlbumLimitReached', {direction = direction})
     return false
   end
   self:createPiece(targetIndex)
