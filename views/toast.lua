@@ -86,7 +86,7 @@ function Toast:initialize(text, duration, delay)
   d('Toast called times:: '..self.calledTimes)
 end
 
-function Toast:getInstance(text)
+function Toast:getInstance()
   return Toast.instance
 end
 
@@ -96,12 +96,17 @@ function Toast:makeText(text)
   self.elements._bg.width = self.elements._bg.width + (self.elements._text.width - olderTextWidth)
 end
 
-function Toast:show()
+function Toast:show(x, y)
+  x = x or 0
+  y = y or 0
+  self.layer.x = self.layer.x + x
+  self.layer.y = self.layer.y + y
   self.transitionId = transition.to(self.layer, { alpha = 1, time = 100, tag = 'Toast'} )
   timer.performWithDelay(self.duration + 100, function() self:hide() end)
 end
 
 function Toast:hide()
+  self = self:getInstance()
   if self.transitionId then
     transition.cancel(self.transitionId)
   end

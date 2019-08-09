@@ -19,6 +19,7 @@ local AlbumListView = require 'views.album_list'
 local Cover = require 'views.album_cover'
 --local Indicator = require 'views.indicator'
 local AlbumList = class('MoterAlbumListView', AlbumListView)
+local Toast = require 'views.toast'
 local APP = require("classes.application")
 
 -- Constants List:
@@ -112,18 +113,21 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
       _t.xLast, _t.yLast = _t:getContentPosition()
       _t.motion = _t.yLast - _t.yStart
       local isTabBarHidden = APP.Footer.hidden
-      if _t.motion >= 2 and _t.yLast > 10 then
-        self.shouldFlip = true
---        local limitFactor = .2
---        local _multi = math.abs(_t.motion)/vH
---        _multi = _multi >= limitFactor and limitFactor or _multi
---        hint.alpha = _multi*6
---        self.layer:toBack()
---        moterView.layer.y = -vH - topInset + hint.contentHeight + _t.yLast
+      if _t.motion >= 2 and _t.yLast > 20 then
+        if not self.shouldFlip then
+          Toast('继续下滑返回'):show(0, -vH*.5 + topInset + 64)
+          self.shouldFlip = (_t.yLast >= 24)
+        end
+      else
+        Toast:hide()
+        self.shouldFlip = false
       end
     elseif ( phase == "ended" ) then
-      print( "Scroll view was released" )
-      if self.shouldFlip then self:unfold() end
+--      print( "Scroll view was released" )
+      if self.shouldFlip then
+        Toast:hide()
+        self:unfold()
+      end
     end
     -- In the event a scroll limit is reached...
     if ( event.limitReached ) then
