@@ -180,6 +180,7 @@ function scene:destroy( event )
   -- nothing to do here
   self.header:cleanup()
   self.moterView:stop()
+  if self.moterAlbumListView then self.moterAlbumListView:stop() end
   d('Moter scene destoried success!')
 end
 

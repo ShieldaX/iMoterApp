@@ -270,17 +270,17 @@ function Album:turnOut()
   end
 end
 
-function Album:onPieceTapped(event)
-  event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
-  local options = {
-    effect = "fade",
-    time = 500,
-    isModal = true,
-    params = event
-  }
-  d('打开图片专门页面...')
-  composer.showOverlay( "scenes.piece", options )
-end
+--function Album:onPieceTapped(event)
+--  event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
+--  local options = {
+--    effect = "fade",
+--    time = 500,
+--    isModal = true,
+--    params = event
+--  }
+--  d('打开图片专门页面...')
+--  composer.showOverlay( "scenes.piece", options )
+--end
 
 function Album:onPieceTapped(event)
   local scene = composer.getScene(composer.getSceneName('current'))

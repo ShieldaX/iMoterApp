@@ -50,6 +50,7 @@ local function leftButtonEvent( event )
 	if event.phase == "ended" then
 		local prevScene = composer.getSceneName( "previous" )
 		if prevScene then
+      --composer.removeScene(composer.getSceneName('current'))
 			composer.gotoScene( prevScene, {effect = 'slideRight', time = 420} )
 		end
 	end
