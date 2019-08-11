@@ -164,11 +164,11 @@ local function DOB2AgeZodiacAstro(birthday)
   elseif _month == 0 then
     if _day < 0 then age = age -1 end
   end
-  d('Age: '..age)
+--  d('Age: '..age)
   -- -----------------Zodiac---------------- --
   local _animalRange = math.fmod((xyear - 4), 12)
   local zodiac = zodiacList[_animalRange+1]
-  d('Zodiac: '..zodiac)
+--  d('Zodiac: '..zodiac)
   -- -----------Astrological Sign----------- --
   local astroSign
   local dmonth, dday = tonumber(xmonth), tonumber(xday)
@@ -197,7 +197,7 @@ local function DOB2AgeZodiacAstro(birthday)
   elseif dmonth == 11 then
     astroSign = dday < 22 and '天蝎' or '射手'
   end
-  d('Astrological Sign: '..astroSign)
+--  d('Astrological Sign: '..astroSign)
   return age, zodiac, astroSign
   --return os.time({year = xyear, month = xmonth, day = xday, hour = 0, min = 0, sec = 0})
 end
@@ -239,7 +239,7 @@ end
 
 local function ratingStars(score)
   local score2Local = score*.5
-  d('Local score: '..score2Local)
+--  d('Local score: '..score2Local)
   --local halfAt = score2Local - math.floor(score2Local) > 0 and math.floor(score2Local)
   for i=1, 5, 1 do
     print(i)
@@ -327,7 +327,7 @@ function Moter:preload()
     self:setState('PRELOADED')
     self:signal('onAavatrLoaded')
     if not self.isBlocked then
-      d('Start Moter View '..self.name..' '..self:getState()..' and Not Blocked')
+--      d('Start Moter View '..self.name..' '..self:getState()..' and Not Blocked')
       self:start() --self:layout()
     else
       d(self.name .. ' ' .. self:getState())
@@ -342,7 +342,6 @@ function Moter:layout()
   self.layer.alpha = 0
   --d(inspect(native.getFontNames()))
   local _data = self.rawData
-  d(_data)
   -- ==============================
   -- TITLE SECTION
   local name = resolveNames(_data.names, _data.name)
@@ -409,7 +408,6 @@ function Moter:layout()
   labelInfo.anchorX, labelInfo.anchorY = 0, 0
   labelG:insert(labelInfo)
   --labelG:insert(ratingStars.layer)
-  d('======================')
   --ratingStars.layer.x = sperateLine.x + ratingStars.layer.contentWidth*.5
   --ratingStars.layer.y = sperateLine.y
   --self.stars = ratingStars
@@ -609,7 +607,7 @@ function Moter:touch(event)
           hint.animation = transition.to(hint[3], {time = 200, transition = easing.outExpo, rotation = 0})
           hint[1].text = ' 释 放 '
           self.shouldFlip = true
-          d('释放!以查看女神图集列表...')
+          --d('释放!以查看女神图集列表...')
         else
           transition.cancel(hint.animation)
           hint[3].rotation = 180
@@ -751,7 +749,7 @@ function MoterAlubmList:enteredState()
       time = 600,
       y = -vH-topInset-pinH, transition = easing.outExpo,
       onComplete = function()
-        local scene = composer.getScene(composer.getSceneName('overlay'))
+        local scene = composer.getScene(composer.getSceneName('current'))
         scene:loadMoterAlbumList()
       end
     }
@@ -765,7 +763,7 @@ function MoterAlubmList:exitedState()
       time = 600,
       y = 0, transition = easing.outExpo,
       onComplete = function()
-        local scene = composer.getScene(composer.getSceneName('overlay'))
+        local scene = composer.getScene(composer.getSceneName('current'))
         scene:unloadMoterAlbumList()
       end
     }

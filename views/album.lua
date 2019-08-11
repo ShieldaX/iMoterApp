@@ -156,7 +156,7 @@ function Album:createPiece(index)
   self:_attach(_piece)
   _piece:preload()
   self.paintedPieceId = _piece.name
-  self:signal('onProgress', {index = index})
+--  self:signal('onProgress', {index = index})
 end
 
 -- ---
@@ -183,9 +183,6 @@ function Album:switchPiece(direction)
   if direction > 0 then
     titleBar:hide()
     infoCard:hide()
---  else
---    titleBar:show()
---    infoCard:show()
   end
 
   if pieceId == nil then

@@ -102,7 +102,8 @@ function scene:create( event )
     self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
-  table.insert( APP.scenes, params)
+  
+  APP.pushScene({name = composer.getSceneName('current'), params = params})
   -----------------------------------------------------------------------------
 end
 
@@ -112,9 +113,9 @@ function scene:show( event )
   local phase = event.phase
   local params = event.params
   if ( phase == "will" ) then
-    local _title = params.title
-    _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
-    local title = util.GetMaxLenString(_title, 30)
+--    local _title = params.title
+--    _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
+--    local title = util.GetMaxLenString(_title, 30)
     --self.header.elements.navBar:setLabel(title)
     APP.Footer:hide()
   elseif ( phase == "did" ) then
@@ -141,6 +142,7 @@ function scene:destroy( event )
   self.infoCard:stop()
   APP.albumView:stop()
   d('Album scene destoried success!')
+  --APP.popScene()
 end
 
 ---------------------------------------------------------------------------------

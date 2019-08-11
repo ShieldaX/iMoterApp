@@ -49,9 +49,6 @@ end
 -- Resize Image Display Object to Fit Screen WIDTH
 --
 function Footer:initialize(opts, parent)
-  d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-  d('- Prototype of Footer View -')
-  d('- ======================== -')
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create a footer")
   View.initialize(self, parent)
   assert(self.layer, 'Piece View Initialized Failed!')
@@ -69,7 +66,7 @@ function Footer:initialize(opts, parent)
   local function panelTransDone( target )
     --native.showAlert( "Panel", "Complete", { "Okay" } )
     if ( target.completeState ) then
-      print( "PANEL STATE IS: "..target.completeState )
+--      print( "PANEL STATE IS: "..target.completeState )
     end
   end
 

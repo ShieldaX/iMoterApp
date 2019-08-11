@@ -137,7 +137,7 @@ Cover.STATUS.RELEASED = 100
 Cover.static.DEFAULT_DIRECTORY = system.CachesDirectory
 
 function Cover:initialize(opts, parent)
-  d('创建封面对象: '..opts.name)
+--  d('创建封面对象: '..opts.name)
   self.uri = opts.uri .. '.jpg'
   self.fileName = opts.name .. '.jpg'
   self.name = opts.name
@@ -156,7 +156,7 @@ end
 --
 function Cover:preload(row, col)
   if self.state > View.STATUS.INITIALIZED then
-    d("Try to preload Cover already @ "..self.getState())
+--    d("Try to preload Cover already @ "..self.getState())
     return false
   end
   -- ------------------
@@ -193,7 +193,7 @@ function Cover:preload(row, col)
       self:cleanup()
     else
       self:setState('PRELOADED')
-      d('Start Cover '..self.name..' '..self:getState())
+--      d('Start Cover '..self.name..' '..self:getState())
       self.isBlocked = false
       self:start()
       if event.status == 404 then-- Not Found
@@ -288,7 +288,7 @@ function Cover:stop()
 end
 
 function Cover:tap(tap)
-  d('Open album: '..self.title)
+--  d('Open album: '..self.title)
   self.parent:send('onCoverTapped', {album_id = self.id, title = self.title})
 end
 

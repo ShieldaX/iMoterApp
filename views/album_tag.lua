@@ -94,8 +94,7 @@ local View = require "libs.view"
 local Tag = class('AlbumTagView', View)
 
 function Tag:initialize(opts, parent)
-  d(opts)
-  d('创建标签对象: '..opts.name)
+--  d('创建标签对象: '..opts.name)
   self.name = opts._id
   self.id = opts.name
   View.initialize(self, parent)
@@ -129,7 +128,7 @@ end
 --
 function Tag:start()
 --{{{
-  d('Try to start Tag '..self.name..' @ '..self:getState())
+--  d('Try to start Tag '..self.name..' @ '..self:getState())
   if (self.state >= View.STATUS.STARTED) then
     d(self.name .. ' already Started!')
     return false
@@ -153,7 +152,6 @@ function Tag:tap(tap)
 end
 
 function Tag:cleanup()
-  d('clean up tag: '..self.id)
   View.cleanup(self)
 end
 

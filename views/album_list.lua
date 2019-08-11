@@ -76,9 +76,6 @@ end
 
 -- 利用获取的图集信息实例化一个图集对象
 function AlbumList:initialize(obj, topPadding, sceneGroup)
-  d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-  d('- Prototype of AlbumList View -')
-  d('- ======================== -')
   View.initialize(self, sceneGroup)
   -- -------------------
   -- DATA BINDING
@@ -130,7 +127,6 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
           for _, album in ipairs(newlist) do
             table.insert(albumlist, album)
           end
-          d(#self._albums)
           self:open(self.cursorIndex + 1)
         end
         iMoter:listAlbums({skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
@@ -172,7 +168,6 @@ end
 
 function AlbumList:loadCover(index)
   local album = self._albums[index]
-  d(album)
   if not album then return false end
   local coverURI, coverFileName = resolveCoverImage(album)
   local cover = Cover({
@@ -191,7 +186,6 @@ function AlbumList:loadCover(index)
 end
 
 function AlbumList:onAlbumTapped(event)
-  event.labelText = table.indexOf(self.imgNames, self.currentPieceId) .. '/' .. self.rawData.pieces
   local options = {
     effect = "fade",
     time = 500,
@@ -202,7 +196,6 @@ function AlbumList:onAlbumTapped(event)
 end
 
 function AlbumList:onCoverTapped(event)
---  event.coverImageURI = 
   local options = {
     effect = "slideLeft",
     time = 420,

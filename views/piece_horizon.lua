@@ -43,7 +43,7 @@ end
 
 function util.autoRotate(obj, clockwise)
   if obj.width/obj.height > 1 then
-    d(clockwise)
+--    d(clockwise)
     clockwise = type(clockwise) == 'number' and clockwise or 1
     obj.rotation = 90*clockwise
     local targetRatio = vW/(obj.height*obj.yScale)
@@ -63,7 +63,7 @@ function Piece:initialize(uri, name, parent)
   self.uri = uri .. '.jpg'
   self.fileName = name .. '.jpg'
   self.name = name
-  d(self.name..' '..self:getState())
+--  d(self.name..' '..self:getState())
 end
 
 -- ---
@@ -83,16 +83,6 @@ function Piece:preload()
   self:signal('onPieceLoad')
   -- Load image
 	local function networkListener( event )
-    if event.phase == 'began' or event.phase == 'progress' then
-      self._requestId = event.requestId
-      print('Image is Loading')
-      return
-    elseif event.phase == 'ended' then
-      print('Image Loading Ended')
-      self._requestId = nil
-    else
-      d(event)
-    end
     if ( event.isError ) then
       print ( "Network error - piece image download failed" )
       native.showAlert("网络错误!", "网络似乎开小差了，联网后重试!", { "好的" } )
@@ -115,7 +105,7 @@ function Piece:preload()
     else
       self:setState('PRELOADED')
       if not self.isBlocked then
-        d('Start Piece '..self.name..' '..self:getState()..' and Not Blocked')
+--        d('Start Piece '..self.name..' '..self:getState()..' and Not Blocked')
         self:start()
       else
         d(self.name .. ' ' .. self:getState())
@@ -126,7 +116,7 @@ function Piece:preload()
 end
 
 function Piece:onImageLoaded()
-  d('self.name' .. 'image resource loaded')
+--  d('self.name' .. 'image resource loaded')
 end
 
 -- ---
@@ -192,15 +182,15 @@ function Piece:touch(event)
         if (_t.flick and (math.abs(_t.motion) >= snap and math.abs(_t.direction) ~= 0)) and album.paintedPieceId then
           -- -----------------------------------
           -- DEBUG: ---------------------------- 
-          if album.elements[album.paintedPieceId].state >= View.STATUS.PRELOADED then
-            d('Flicked and Image Preloaded, now Switching')
-          else
-            d('Flicked but Image Unloaded, switch but should Block')
-          end
+--          if album.elements[album.paintedPieceId].state >= View.STATUS.PRELOADED then
+--            d('Flicked and Image Preloaded, now Switching')
+--          else
+--            d('Flicked but Image Unloaded, switch but should Block')
+--          end
           -- -----------------------------------
           album:turnOver()
         else -- Cancelled 动作取消 Try to roll back
-          d('Touch/Move Action Cancelled, Rolling Back...')
+--          d('Touch/Move Action Cancelled, Rolling Back...')
           self:blurGaussian(0)
           --ease = easing.inQuad
           transition.to( _t, {time = transT, x = 0, transition = ease} )
@@ -212,7 +202,10 @@ function Piece:touch(event)
                 x = (.2*vW)*.5, y = (.2*vH)*.5,
                 xScale = 0.8, yScale = 0.8,
                 transition = ease,
-                onComplete = function() d('Time to turn out') album:turnOut() end
+                onComplete = function()
+                  --d('Time to turn out')
+                  album:turnOut()
+                end
               })
           end
         end
@@ -281,7 +274,6 @@ function Piece:unblock()
 end
 
 function Piece:reload(image)
-  d(self.fileName)
   if not self.baseDir then
     self.baseDir = Piece.directory
   end
@@ -294,12 +286,12 @@ end
 --
 function Piece:start()
 --{{{
-  d('Try to start Piece '..self.name..' @ '..self:getState())
+--  d('Try to start Piece '..self.name..' @ '..self:getState())
   if (self.state < View.STATUS.PRELOADED) or self.isBlocked then
-    d(self.name .. ' is Not Ready to Start!')
+--    d(self.name .. ' is Not Ready to Start!')
     return false
   elseif (self.state >= View.STATUS.STARTED) then
-    d(self.name .. ' already Started!')
+--    d(self.name .. ' already Started!')
     return false
   end
   
@@ -310,7 +302,7 @@ function Piece:start()
   self.layer:addEventListener('touch', self)
   self.layer:addEventListener('tap', self)
   self:setState('STARTED')
-  d(self.name..' '..self:getState())
+--  d(self.name..' '..self:getState())
 --}}}
 end
 
@@ -354,7 +346,7 @@ function Piece:stop()
     self.layer:removeEventListener('touch', self)
     self.layer:removeEventListener('tap', self)
     self:setState('STOPPED')
-    d(self.name..' '..self:getState())
+--    d(self.name..' '..self:getState())
 --}}}
 end
 
@@ -363,11 +355,11 @@ end
 --           在PRELOADED状态后实际执行视图清空
 function Piece:cleanup()
   if self.state < View.STATUS.PRELOADED then
-    d('Try to cleanup ' .. self.name .. ' @ ' .. self:getState())
+--    d('Try to cleanup ' .. self.name .. ' @ ' .. self:getState())
     self:setState('RELEASED')
     return false
   end
-  d('CLEANUP ' .. self.name..' @ '..self:getState())
+--  d('CLEANUP ' .. self.name..' @ '..self:getState())
   View.cleanup(self)
   self:setState('DESTROYED')
   d(self.name..' @ '..self:getState())

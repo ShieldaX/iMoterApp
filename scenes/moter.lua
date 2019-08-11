@@ -76,7 +76,10 @@ end
 
 local function leftButtonEvent( event )
 	if event.phase == "ended" then
-    composer.hideOverlay('slideRight', 420)
+		local prevScene = composer.getSceneName( "previous" )
+		if prevScene then
+			composer.gotoScene( prevScene, {effect = 'slideRight', time = 420} )
+		end
 	end
 	return true
 end
@@ -92,7 +95,7 @@ function scene:create( event )
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   self.bg = background
-  self.header = HeaderView:new({name = 'NavBar', onEvent = leftButtonEvent}, sceneGroup)
+  self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
   
   local moter_id = params.moter_id
   self.moter_id = moter_id
@@ -111,7 +114,7 @@ function scene:create( event )
     self.header.layer:toFront()
   end
   iMoter:getMoterById(moter_id, {fetchcover = true}, showMoterWithData) -- 19702; 22162; 27180
---  iMoter:getMoterById('18229', {}, showMoterWithData)
+  APP.pushScene({name = composer.getSceneName('current'), params = params})
   -----------------------------------------------------------------------------
 end
 

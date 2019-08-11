@@ -48,10 +48,10 @@ local Header = class('HeaderView', View)
 
 local function leftButtonEvent( event )
 	if event.phase == "ended" then
-		local prevScene = composer.getSceneName( "previous" )
+--		local prevSceneName = composer.getSceneName( "previous" )
+    local prevScene = APP.previousScene()
 		if prevScene then
-      --composer.removeScene(composer.getSceneName('current'))
-			composer.gotoScene( prevScene, {effect = 'slideRight', time = 420} )
+			composer.gotoScene( prevScene.name, {effect = 'slideRight', time = 420, params = prevScene.params} )
 		end
 	end
 	return true
@@ -66,8 +66,6 @@ function Header:initialize(opts, parent)
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create the header")
   View.initialize(self, parent)
   self.name = opts.name or '_indicator' -- timestamp
-  d('创建头部对象: '..self.name)
-  d(self.name..' began with '..self:getState())
   -- -------------------
   -- DATA BINDING
   --

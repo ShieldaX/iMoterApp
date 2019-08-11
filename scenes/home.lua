@@ -163,6 +163,7 @@ function scene:create( event )
 --  iMoter:listAlbums('22162', {skip = 0, limit = 100}, showAlbumsWithData) -- 19702; 22162; 27180
   iMoter:listAlbums({skip = 0, limit = 10}, showAlbumsWithData) -- 19702; 22162; 27180
 --  iMoter:getMoterById('18229', {}, showMoterWithData)
+  APP.pushScene({name = composer.getSceneName('current'), params = params})
   -----------------------------------------------------------------------------
 end
 

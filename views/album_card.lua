@@ -116,14 +116,11 @@ end
 -- ---
 --
 function Card:initialize(opts, parent)
-  d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-  d('- Prototype of Card View -')
-  d('- ======================== -')
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create a footer")
   self.name = opts.name or 'infoCard'-- timestamp
   View.initialize(self, parent)
   assert(self.layer, 'Card View Initialized Failed!')
-  d('创建卡片对象: '..self.name)
+--  d('创建卡片对象: '..self.name)
   -- -------------------
   -- DATA BINDING
   self.barHeight = opts.barHeight or 64
@@ -243,13 +240,12 @@ function Card:showMoters(moters)
     local options = {
       effect = "slideLeft",
       time = 300,
-      isModal = true,
+--      isModal = true,
       params = {moter_id = tap.target.id}
     }
-    d(tap.target)
     d(options)
     d('打开模特专门页面...')
-    composer.showOverlay( "scenes.moter", options )
+    composer.gotoScene( "scenes.moter", options )
     return true
   end
   

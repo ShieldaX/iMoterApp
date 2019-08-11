@@ -92,7 +92,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   self.name = 'album_list'
   self.covers = {}
   sceneGroup.currentAlbumList = self
-  local scene = composer.getScene(composer.getSceneName('overlay'))
+  local scene = composer.getScene(composer.getSceneName('current'))
   local moterView = scene.moterView
   local hint = moterView.elements.hint
   -- END DATA BINDING
@@ -183,7 +183,7 @@ function AlbumList:unfold()
       onComplete = function() self:stop() end
     }
   )
-  local scene = composer.getScene(composer.getSceneName('overlay'))
+  local scene = composer.getScene(composer.getSceneName('current'))
   scene.moterView:popState('MoterAlbumList')
 end
 

@@ -41,9 +41,6 @@ RemoteImage.static.networkListener = networkListener
 
 -- 利用获取的信息实例化一个动态资源对象
 function RemoteImage:initialize(url, method, listener, ...)
-  d('-*-*-*-*-*-*-*-*-*-*-*-*-*-*')
-  d('- Prototype of RemoteImage Image View -')
-  d('- ======================== -')
   View.initialize(self)
   self.layer.anchorChildren = true
   self.layer.anchorX = .5
