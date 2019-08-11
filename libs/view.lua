@@ -73,6 +73,7 @@ end
 
 function View:cleanup()
   self:childSend('cleanup')
+  if self.requestId then network.cancel(self.requestId) end
   if self.layer and self.layer.removeSelf and type(self.layer.removeSelf) == 'function' then
     self.layer:removeSelf()
     self.layer = nil

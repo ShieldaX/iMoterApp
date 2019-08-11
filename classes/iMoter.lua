@@ -40,7 +40,7 @@ function iMoter:callMethod(name, t, ...)
       else
         local ticket = res.data.session_ticket
         print("login success, new session_ticket: " .. ticket)
-        self.headers.Authorization = 'ficus_user_session:' .. ticket
+        self.headers.Authorization = 'imoter_user_session:' .. ticket
       end
     end
   end

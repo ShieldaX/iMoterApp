@@ -36,7 +36,6 @@ local AlbumView = require("views.album")
 --local Tag = require("views.album_tag")
 local HeaderView = require("views.header")
 local Card = require 'views.album_card'
---local FooterView = require("views.footer")
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
@@ -72,9 +71,6 @@ function scene:create( event )
 	local sceneGroup = self.view
   local params = event.params
   composer.setVariable( "autoRotate", false )
-  local numAlbumCreation = composer.getVariable('numAlbumCreation') or 0
---  composer.setVariable('numAlbumCreation', numAlbumCreation + 1)
---  d('This is the '..(numAlbumCreation+1)..' time of album creation')
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
   --      CREATE display objects and add them to 'group' here.
@@ -86,6 +82,7 @@ function scene:create( event )
   
   local album_id = params.album_id
   local _title = params.title
+  local index = params.index or 1
   _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
   local title = util.GetMaxLenString(_title, 30)
   local function openAlbumWithData(res)
@@ -100,11 +97,12 @@ function scene:create( event )
       self.header.elements.navBar:setLabel(publisher)
     end
     APP.albumView = AlbumView:new(_album, sceneGroup)
-    APP.albumView:open()
+    APP.albumView:open(index)
     self:showInfo(_album)
     self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
+  table.insert( APP.scenes, params)
   -----------------------------------------------------------------------------
 end
 

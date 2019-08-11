@@ -293,6 +293,7 @@ function Card:showMoters(moters)
     local avatarFileName = _id.."_".._id..".jpg"
     local avatar = RemoteImage:new(avatarImgURI, RemoteImage.DEFAULT.METHOD, networkListener, avatarFileName, RemoteImage.DEFAULT.DIRECTORY, 0, 0)
     avatar.layer.id = _id
+    avatar.layer.x = avatar.layer.x + (i-1)*span
     avatar.layer:addEventListener('tap', onAavatrTapped)
     self:_attach(avatar)
   end

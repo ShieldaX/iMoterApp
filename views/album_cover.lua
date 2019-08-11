@@ -201,7 +201,7 @@ function Cover:preload(row, col)
       end
     end
   end
-  display.loadRemoteImage( self.uri, "GET", networkListener, {progress = false}, self.fileName, Cover.DEFAULT_DIRECTORY, oX, oY)
+  self.requestId = display.loadRemoteImage( self.uri, "GET", networkListener, {progress = false}, self.fileName, Cover.DEFAULT_DIRECTORY, oX, oY)
 end
 
 function Cover:onImageLoaded()

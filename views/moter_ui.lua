@@ -333,7 +333,7 @@ function Moter:preload()
       d(self.name .. ' ' .. self:getState())
     end
   end
-  display.loadRemoteImage( self.avatarImgURI, "GET", networkListener, {progress = false}, self.avatarFileName, Piece.DEFAULT_DIRECTORY, oX, oY + topInset)
+  self.requestId = display.loadRemoteImage( self.avatarImgURI, "GET", networkListener, {progress = false}, self.avatarFileName, Piece.DEFAULT_DIRECTORY, oX, oY + topInset)
 end
 
 -- -----------------

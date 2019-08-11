@@ -122,7 +122,7 @@ function Piece:preload()
       end
     end
 	end
-  display.loadRemoteImage( self.uri, "GET", networkListener, {progress = false}, self.fileName, Piece.DEFAULT_DIRECTORY, oX, oY)
+  self.requestId = display.loadRemoteImage( self.uri, "GET", networkListener, {progress = false}, self.fileName, Piece.DEFAULT_DIRECTORY, oX, oY)
 end
 
 function Piece:onImageLoaded()
