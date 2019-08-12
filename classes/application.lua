@@ -21,7 +21,8 @@ function M.currentScene(key, value)
 end
 
 function M.previousScene()
-  table.remove(scenes)
+  local scene = table.remove(scenes)
+  print(scene.name .. ' poped from scene history')
   return scenes[#scenes]
 end
 

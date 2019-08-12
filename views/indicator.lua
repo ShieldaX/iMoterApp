@@ -78,7 +78,7 @@ function Indicator:initialize(opts, parent)
   self.layer:toFront()
   -- END VISUAL INITIALIING
   -- -------------------
-  d(self.name..' began with '..self:getState())
+--  d(self.name..' began with '..self:getState())
 end
 
 function Indicator:onProgress(event)

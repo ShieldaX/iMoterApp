@@ -476,7 +476,6 @@ function widget.newNavigationBar( options )
   end
 
   local barContainer = display.newGroup()
-  print(topInset)
   local background = display.newRect(barContainer, opt.x, opt.y + topInset*.5, opt.width, opt.height + statusBarPad + topInset)
   if opt.background then
     background.fill = { type = "image", filename=opt.background}
