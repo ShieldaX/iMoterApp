@@ -227,16 +227,12 @@ function AlbumList:onAlbumTapped(event)
 end
 
 function AlbumList:onCoverTapped(event)
-  composer.removeScene(composer.getSceneName( "current" ))
-  timer.performWithDelay( 200, function()
-    composer.hideOverlay('slideLeft', 420)
-    local options = {
-      time = 420,
-      effect = "slideLeft",
-      params = event
-    }
-    composer.gotoScene("scenes.album", options)
-  end)
+  local options = {
+    time = 420,
+    effect = "slideLeft",
+    params = event
+  }
+  composer.gotoScene("scenes.album", options)
 end
 
 function AlbumList:start()

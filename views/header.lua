@@ -51,6 +51,8 @@ local function leftButtonEvent( event )
 --		local prevSceneName = composer.getSceneName( "previous" )
     local prevScene = APP.previousScene()
 		if prevScene then
+      d('CBack to :')
+      d(prevScene.name)
 			composer.gotoScene( prevScene.name, {effect = 'slideRight', time = 420, params = prevScene.params} )
 		end
 	end

@@ -123,6 +123,8 @@ function scene:show( event )
       self.infoCard:show()
     end
   end
+  -- Enable auto-recycle on scene change
+  composer.recycleOnSceneChange = true
 end
 
 function scene:hide( event )
@@ -131,7 +133,10 @@ function scene:hide( event )
   if ( phase == "will" ) then
 
   elseif ( phase == "did" ) then
-
+    local sceneName = APP.popScene().name
+    d('POP:')
+    d(sceneName)
+    composer.removeScene(sceneName)
   end
 end
 

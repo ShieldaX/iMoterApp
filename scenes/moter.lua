@@ -73,7 +73,7 @@ local function createIcon(options)
   local icon = display.newText(options)
   return icon
 end
-
+--[[
 local function leftButtonEvent( event )
 	if event.phase == "ended" then
 		local prevScene = composer.getSceneName( "previous" )
@@ -83,7 +83,7 @@ local function leftButtonEvent( event )
 	end
 	return true
 end
-
+]]
 -- Called when the scene's view does not exist:
 function scene:create( event )
   local sceneGroup = self.view
@@ -173,9 +173,11 @@ function scene:hide( event )
   if event.phase == "will" then
     --
   elseif event.phase == "did" then
-    --self.moterView:stop()
+    local sceneName = APP.popScene().name
+    d('POP:')
+    d(sceneName)
+    composer.removeScene(sceneName)
   end
-
 end
 
 function scene:destroy( event )
