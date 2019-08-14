@@ -127,7 +127,11 @@ function scene:show( event )
   --      This event requires build 2012.782 or later.
 
   -----------------------------------------------------------------------------
-
+  local sceneName = APP.currentScene().name
+  local currentScene = composer.getSceneName('current')
+  if not sceneName == currentScene then
+    composer.removeScene(sceneName)
+  end
 end
 
 function scene:loadMoterAlbumList()
@@ -173,10 +177,7 @@ function scene:hide( event )
   if event.phase == "will" then
     --
   elseif event.phase == "did" then
-    local sceneName = APP.popScene().name
-    d('POP:')
-    d(sceneName)
-    composer.removeScene(sceneName)
+
   end
 end
 

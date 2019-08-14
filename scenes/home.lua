@@ -194,9 +194,14 @@ function scene:show( event )
   local sceneGroup = self.view
   if event.phase == "did" then
     APP.Footer:show()
-    --local prevScene = composer.getSceneName( "previous" )
-    --if prevScene then composer.removeScene(prevScene) end
-    --composer.removeHidden()
+    d('home showing...')
+    local sceneName = APP.currentScene().name
+    local currentScene = composer.getSceneName('current')
+    if not (sceneName == currentScene) then
+      d('remove '..sceneName)
+      APP.popScene()
+      composer.removeScene(sceneName)
+    end
   end
 end
 

@@ -122,9 +122,15 @@ function scene:show( event )
     if self.infoCard then
       self.infoCard:show()
     end
+    d('album showing...')
+    local sceneName = APP.currentScene().name
+    local currentScene = composer.getSceneName('current')
+    if not (sceneName == currentScene) then
+      d('remove '..sceneName)
+      APP.popScene()
+      composer.removeScene(sceneName)
+    end
   end
-  -- Enable auto-recycle on scene change
-  composer.recycleOnSceneChange = true
 end
 
 function scene:hide( event )
