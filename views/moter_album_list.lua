@@ -197,6 +197,7 @@ function AlbumList:open(index)
   end
   self.cursorIndex = #albums
   self:setState('STARTED')
+  composer.removeScene('scenes.album')
 end
 
 function AlbumList:loadCover(index)
@@ -219,14 +220,8 @@ function AlbumList:loadCover(index)
   cover:preload(row, col)
 end
 
-function AlbumList:onAlbumTapped(event)
-  if event.phase == "ended" then
-    composer.hideOverlay('slideRight', 420)
-  end
-  return true
-end
-
 function AlbumList:onCoverTapped(event)
+  composer.removeScene('scens.album')
   local options = {
     time = 420,
     effect = "slideLeft",

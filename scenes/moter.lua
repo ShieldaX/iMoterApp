@@ -122,15 +122,15 @@ end
 function scene:show( event )
   local sceneGroup = self.view
   --APP.Footer.layer:toFront()
-  -----------------------------------------------------------------------------
-
-  --      This event requires build 2012.782 or later.
-
-  -----------------------------------------------------------------------------
-  local sceneName = APP.currentScene().name
-  local currentScene = composer.getSceneName('current')
-  if not sceneName == currentScene then
-    composer.removeScene(sceneName)
+  if event.phase == "did" then
+    d('moter showing...')
+    local sceneName = APP.currentScene().name
+    local currentScene = composer.getSceneName('current')
+    if not (sceneName == currentScene) then
+      d('remove '..sceneName)
+      APP.popScene()
+      composer.removeScene(sceneName)
+    end
   end
 end
 
