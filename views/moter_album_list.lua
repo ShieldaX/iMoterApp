@@ -228,6 +228,7 @@ function AlbumList:onCoverTapped(event)
     params = event
   }
   composer.gotoScene("scenes.album", options)
+  -- recycle moter scene while switching to album scene
   composer.setVariable('sceneToRemove', 'scenes.moter')
 end
 
