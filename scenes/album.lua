@@ -102,13 +102,14 @@ function scene:create( event )
     self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
-  local prevScene = APP.previousScene()
-  local _currentScene = APP.currentScene()
-  local currentSceneName = composer.getSceneName('current')
-  local sceneToRemove = composer.getVariable('sceneToRemove')
-  if not sceneToRemove then
-    APP.pushScene({name = currentSceneName, params = params})
-  end
+  APP:sceneForwards(params)
+--  local prevScene = APP.previousScene()
+--  local _currentScene = APP.currentScene()
+--  local currentSceneName = composer.getSceneName('current')
+--  local sceneToRemove = composer.getVariable('sceneToRemove')
+--  if not sceneToRemove then
+--    APP.pushScene({name = currentSceneName, params = params})
+--  end
   -----------------------------------------------------------------------------
 end
 

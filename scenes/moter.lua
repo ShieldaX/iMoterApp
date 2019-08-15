@@ -114,7 +114,8 @@ function scene:create( event )
     self.header.layer:toFront()
   end
   iMoter:getMoterById(moter_id, {fetchcover = true}, showMoterWithData) -- 19702; 22162; 27180
-  APP.pushScene({name = composer.getSceneName('current'), params = params})
+--  APP.pushScene({name = composer.getSceneName('current'), params = params})
+  APP:sceneForwards(params)
   -----------------------------------------------------------------------------
 end
 

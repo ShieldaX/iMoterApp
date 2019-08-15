@@ -221,13 +221,14 @@ function AlbumList:loadCover(index)
 end
 
 function AlbumList:onCoverTapped(event)
-  composer.removeScene('scens.album')
+--  composer.removeScene('scens.album')
   local options = {
     time = 420,
     effect = "slideLeft",
     params = event
   }
   composer.gotoScene("scenes.album", options)
+  composer.setVariable('sceneToRemove', 'scenes.moter')
 end
 
 function AlbumList:start()

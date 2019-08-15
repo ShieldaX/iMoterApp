@@ -191,7 +191,7 @@ function Album:switchPiece(direction)
 --      if prevScene then
 --        composer.gotoScene( prevScene, {effect = 'slideRight', time = 420} )
 --      end
-      APP:rollBackScene()
+      APP:sceneBackwards()
       display.getCurrentStage():setFocus(nil)
       return true
     elseif direction == 1 then

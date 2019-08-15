@@ -34,7 +34,15 @@ function M.previousScene()
   return scenes[#scenes-1]
 end
 
-function M:rollBackScene()
+function M:sceneForwards(params)
+  local currentSceneName = composer.getSceneName('current')
+  local sceneToRemove = composer.getVariable('sceneToRemove')
+  if not sceneToRemove then
+    self.pushScene({name = currentSceneName, params = params})
+  end
+end
+
+function M:sceneBackwards()
   local prevScene = self.previousScene()
   if prevScene then
     d('CBack to :')
@@ -49,6 +57,10 @@ function M:rollBackScene()
     self.popScene()
     composer.gotoScene( prevScene.name, {effect = 'slideRight', time = 420, params = prevScene.params} )
   end
+end
+
+function M:sceneRecycle(sceneName)
+  composer.removeScene(sceneName)
 end
 
 return M

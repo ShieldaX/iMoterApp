@@ -48,7 +48,7 @@ local Header = class('HeaderView', View)
 
 local function leftButtonEvent( event )
 	if event.phase == "ended" then
-    APP:rollBackScene()
+    APP:sceneBackwards()
 --    local prevScene = APP.previousScene()
 --		if prevScene then
 --      d('CBack to :')
