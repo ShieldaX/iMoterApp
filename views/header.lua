@@ -48,21 +48,21 @@ local Header = class('HeaderView', View)
 
 local function leftButtonEvent( event )
 	if event.phase == "ended" then
---		local prevSceneName = composer.getSceneName( "previous" )
-    local prevScene = APP.previousScene()
-		if prevScene then
-      d('CBack to :')
-      d(prevScene.name)
-      local currentSceneName = APP.currentScene().name
-      if not (currentSceneName == prevScene.name) then
-        d('remove '..currentSceneName)
-        composer.removeScene(currentSceneName)
-      else
-        d('not remove '..currentSceneName)
-      end
-      APP.popScene()
-			composer.gotoScene( prevScene.name, {effect = 'slideRight', time = 420, params = prevScene.params} )
-		end
+    APP:rollBackScene()
+--    local prevScene = APP.previousScene()
+--		if prevScene then
+--      d('CBack to :')
+--      d(prevScene.name)
+--      local currentSceneName = APP.currentScene().name
+--      if not (currentSceneName == prevScene.name) then
+--        d('remove '..currentSceneName)
+--        composer.setVariable('sceneToRemove', currentSceneName)
+--      else
+--        d('not remove '..currentSceneName)
+--      end
+--      APP.popScene()
+--			composer.gotoScene( prevScene.name, {effect = 'slideRight', time = 420, params = prevScene.params} )
+--		end
 	end
 	return true
 end

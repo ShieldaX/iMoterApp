@@ -124,13 +124,10 @@ function scene:show( event )
   --APP.Footer.layer:toFront()
   if event.phase == "did" then
     d('moter showing...')
-    local sceneName = APP.currentScene().name
-    local currentScene = composer.getSceneName('current')
-    if not (sceneName == currentScene) then
-      d('remove '..sceneName)
-      composer.removeScene(sceneName)
-    else
-      d('not remove '..sceneName)
+    local sceneToRemove = composer.getVariable('sceneToRemove')
+    if sceneToRemove then
+      composer.removeScene(sceneToRemove)
+      composer.setVariable('sceneToRemove', false)
     end
     APP._scenes()
   end

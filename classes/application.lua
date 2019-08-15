@@ -1,5 +1,6 @@
 local util = require 'util'
 local d = util.print_r
+local composer = require( "composer" )
 
 local M = {}
 
@@ -31,6 +32,23 @@ function M.previousScene()
   --local scene = table.remove(scenes)
   --print(scene.name .. ' poped from scene history')
   return scenes[#scenes-1]
+end
+
+function M:rollBackScene()
+  local prevScene = self.previousScene()
+  if prevScene then
+    d('CBack to :')
+    d(prevScene.name)
+    local currentSceneName = self.currentScene().name
+    if not (currentSceneName == prevScene.name) then
+      d('remove '..currentSceneName)
+      composer.setVariable('sceneToRemove', currentSceneName)
+    else
+      d('not remove '..currentSceneName)
+    end
+    self.popScene()
+    composer.gotoScene( prevScene.name, {effect = 'slideRight', time = 420, params = prevScene.params} )
+  end
 end
 
 return M

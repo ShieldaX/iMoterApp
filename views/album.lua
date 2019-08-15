@@ -176,7 +176,6 @@ function Album:switchPiece(direction)
   local pieceId = self.imgNames[targetIndex]
 --  self:signal('onPieceSwitch', {direction = direction})
   -- 切换显示头部和信息卡片
-
   local currentScene = composer.getScene(composer.getSceneName('current'))
   local titleBar = currentScene.header
   local infoCard = currentScene.infoCard
@@ -188,10 +187,11 @@ function Album:switchPiece(direction)
   if pieceId == nil then
     if direction == -1 then
       d('This is already the first pix!') 
-      local prevScene = composer.getSceneName( "previous" )
-      if prevScene then
-        composer.gotoScene( prevScene, {effect = 'slideRight', time = 420} )
-      end
+--      local prevScene = composer.getSceneName( "previous" )
+--      if prevScene then
+--        composer.gotoScene( prevScene, {effect = 'slideRight', time = 420} )
+--      end
+      APP:rollBackScene()
       display.getCurrentStage():setFocus(nil)
       return true
     elseif direction == 1 then

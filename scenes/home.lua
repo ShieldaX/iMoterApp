@@ -195,12 +195,10 @@ function scene:show( event )
   if event.phase == "did" then
     APP.Footer:show()
     d('home showing...')
-    local sceneName = APP.currentScene().name
-    local currentScene = composer.getSceneName('current')
-    if not (sceneName == currentScene) then
-      d('remove '..sceneName)
-      APP.popScene()
-      composer.removeScene(sceneName)
+    local sceneToRemove = composer.getVariable('sceneToRemove')
+    if sceneToRemove then
+      composer.removeScene(sceneToRemove)
+      composer.setVariable('sceneToRemove', false)
     end
     APP._scenes()
   end

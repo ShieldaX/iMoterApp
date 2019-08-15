@@ -105,8 +105,10 @@ function scene:create( event )
   local prevScene = APP.previousScene()
   local _currentScene = APP.currentScene()
   local currentSceneName = composer.getSceneName('current')
-
-  APP.pushScene({name = currentSceneName, params = params})
+  local sceneToRemove = composer.getVariable('sceneToRemove')
+  if not sceneToRemove then
+    APP.pushScene({name = currentSceneName, params = params})
+  end
   -----------------------------------------------------------------------------
 end
 
@@ -126,12 +128,10 @@ function scene:show( event )
       self.infoCard:show()
     end
     d('album showing...')
-    local sceneName = APP.currentScene().name
-    local currentScene = composer.getSceneName('current')
-    if not (sceneName == currentScene) then
-      d('remove '..sceneName)
---      APP.popScene()
---      composer.removeScene(sceneName)
+    local sceneToRemove = composer.getVariable('sceneToRemove')
+    if sceneToRemove then
+      composer.removeScene(sceneToRemove)
+      composer.setVariable('sceneToRemove', false)
     end
     APP._scenes()
   end
