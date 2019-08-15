@@ -27,6 +27,13 @@ return {
       optional_params = { "skip", "limit" },
     },
     
+    listAlbumsByTag = {
+      method = "GET",
+      path = "api/galleries/:tag_id",
+      optional_params = { "skip", "limit" },
+      required_params = {"tag_id"},
+    },
+    
     -- Moter
     getMoterById = {
       method = "GET",
