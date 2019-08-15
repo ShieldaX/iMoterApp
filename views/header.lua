@@ -53,6 +53,14 @@ local function leftButtonEvent( event )
 		if prevScene then
       d('CBack to :')
       d(prevScene.name)
+      local currentSceneName = APP.currentScene().name
+      if not (currentSceneName == prevScene.name) then
+        d('remove '..currentSceneName)
+        composer.removeScene(currentSceneName)
+      else
+        d('not remove '..currentSceneName)
+      end
+      APP.popScene()
 			composer.gotoScene( prevScene.name, {effect = 'slideRight', time = 420, params = prevScene.params} )
 		end
 	end

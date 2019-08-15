@@ -105,9 +105,8 @@ function scene:create( event )
   local prevScene = APP.previousScene()
   local _currentScene = APP.currentScene()
   local currentSceneName = composer.getSceneName('current')
-  if not (_currentScene.name == currentSceneName) then
-    APP.pushScene({name = currentSceneName, params = params})
-  end
+
+  APP.pushScene({name = currentSceneName, params = params})
   -----------------------------------------------------------------------------
 end
 
@@ -131,8 +130,8 @@ function scene:show( event )
     local currentScene = composer.getSceneName('current')
     if not (sceneName == currentScene) then
       d('remove '..sceneName)
-      APP.popScene()
-      composer.removeScene(sceneName)
+--      APP.popScene()
+--      composer.removeScene(sceneName)
     end
     APP._scenes()
   end

@@ -128,8 +128,9 @@ function scene:show( event )
     local currentScene = composer.getSceneName('current')
     if not (sceneName == currentScene) then
       d('remove '..sceneName)
-      APP.popScene()
       composer.removeScene(sceneName)
+    else
+      d('not remove '..sceneName)
     end
     APP._scenes()
   end
