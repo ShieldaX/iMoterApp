@@ -1,3 +1,6 @@
+local util = require 'util'
+local d = util.print_r
+
 local M = {}
 
 -- Gather insets (function returns these in the order of top, left, bottom, right)
@@ -12,6 +15,10 @@ end
 
 function M.popScene()
   return table.remove(scenes)
+end
+
+function M._scenes()
+  d(scenes)
 end
 
 function M.currentScene(key, value)

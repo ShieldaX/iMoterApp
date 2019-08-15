@@ -202,6 +202,7 @@ function scene:show( event )
       APP.popScene()
       composer.removeScene(sceneName)
     end
+    APP._scenes()
   end
 end
 

@@ -102,8 +102,12 @@ function scene:create( event )
     self.header.layer:toFront()
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
-  
-  APP.pushScene({name = composer.getSceneName('current'), params = params})
+  local prevScene = APP.previousScene()
+  local _currentScene = APP.currentScene()
+  local currentSceneName = composer.getSceneName('current')
+  if not (_currentScene.name == currentSceneName) then
+    APP.pushScene({name = currentSceneName, params = params})
+  end
   -----------------------------------------------------------------------------
 end
 
@@ -130,6 +134,7 @@ function scene:show( event )
       APP.popScene()
       composer.removeScene(sceneName)
     end
+    APP._scenes()
   end
 end
 
