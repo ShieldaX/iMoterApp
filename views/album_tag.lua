@@ -148,7 +148,7 @@ function Tag:tap(tap)
   self.layer.alpha = 1
   self.animation = transition.to(self.layer, {time = 200, transition = easing.continuousLoop, alpha = .5})
   d('Open album List by Tag: '..self.id)
-  self:signal('onTagTapped', {id = self.name, name = self.id})
+  self:signal('onTagTapped', {tagID = self.name, tagName = self.id})
 end
 
 function Tag:cleanup()

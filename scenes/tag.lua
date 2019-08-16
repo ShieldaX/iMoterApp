@@ -37,8 +37,8 @@ local widget = require( "widget" )
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
-local AlbumList = require("views.album_list")
-local HeaderView = require("views.tag_header")
+local AlbumList = require("views.tag_album_list")
+local HeaderView = require("views.header")
 --local Indicator = require 'views.indicator'
 ----------------------------------------------------------------------------------
 --
@@ -60,61 +60,13 @@ local iMoter = iMoterAPI:new()
 ---------------------------------------------------------------------------------
 
 -- @usage: https://material.io/tools/icons
-function util.createIcon(options)
+local function createIcon(options)
   local fontPath = "icon-font/"
   local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
   options.font = materialFont
-  local x,y = 160, 240
-  if options.x ~= nil then
-    x = options.x
-  end
-  if options.y ~= nil then
-    y = options.y
-  end  
-  local fontSize = options.height
-  if options.fontSize ~= nil then
-    fontSize = options.fontSize
-  end
-  fontSize = math.floor(tonumber(fontSize))
-
-  local font = native.systemFont
-  if options.font ~= nil then
-    font = options.font
-  end
-  local textColor = { 0, 0.82, 1 }
-  if options.textColor ~= nil then
-    textColor = options.textColor
-  end
-  local fillColor = { 0, 0, 0 }
-  if options.fillColor ~= nil then
-    fillColor = options.fillColor
-  end
-  options.isFontIcon = true
-  -- scale font
-  -- Calculate a font size that will best fit the given text field's height
-  local checkbox = {contentHeight=options.height, contentWidth=options.width}
-  local textToMeasure = display.newText( options.text, 0, 0, font, fontSize )
-  fontSize = math.floor(fontSize * ( ( checkbox.contentHeight ) / textToMeasure.contentHeight ))
-  local tw = textToMeasure.contentWidth
-  local th = textToMeasure.contentHeight
-  tw = fontSize
   options.text = mui.getMaterialFontCodePointByName(options.text)
-  textToMeasure:removeSelf()
-  textToMeasure = nil
-  local options2 =
-  {
-    --parent = textGroup,
-    text = options.text,
-    x = x,
-    y = y,
-    font = font,
-    width = tw * 1.5,
-    fontSize = fontSize,
-    align = "center"
-  }
-  local _icon = display.newText( options2 )
-  _icon:setFillColor(unpack(textColor))
-  return _icon
+  local icon = display.newText(options)
+  return icon
 end
 
 -- Called when the scene's view does not exist:
@@ -122,6 +74,7 @@ function scene:create( event )
   local sceneGroup = self.view
   local params = event.params
   local tag_id = params.tag_id or 'meitui'
+  local tag_name = params.tag_name or '美腿'
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
   -- Create a vector rectangle sized exactly to the "safe area"
@@ -140,19 +93,17 @@ function scene:create( event )
     end
     local _albumList = res.data.albums
     local _data = res.data
---    d(_albumList)
---    APP.Header.elements.TopBar:setLabel('模云')
---    APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
+    d(_albumList)
+    self.header.elements.navBar:setLabel(tag_name)
     local topPadding = topInset
     local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
     self.albumListView = albumListView
-    local cursor = APP.Header.elements.cursor
-    albumListView.layer.y = albumListView.layer.y + cursor.y + padding
+    albumListView.layer.y = albumListView.layer.y + self.header.layer.contentHeight
     albumListView:open()
     albumListView.bumper = iMoter
   end
   iMoter:listAlbumsByTag(tag_id, {skip = 0, limit = 10}, showAlbumsWithData)
-  APP.pushScene({name = composer.getSceneName('current'), params = params})
+  APP:sceneForwards(params)
   -----------------------------------------------------------------------------
 end
 
@@ -160,14 +111,13 @@ end
 function scene:show( event )
   local sceneGroup = self.view
   if event.phase == "did" then
-    APP.Footer:show()
-    d('home showing...')
+    d('tag showing...')
     local sceneToRemove = composer.getVariable('sceneToRemove')
     if sceneToRemove then
       composer.removeScene(sceneToRemove)
       composer.setVariable('sceneToRemove', false)
     end
-    APP._scenes()
+--    APP._scenes()
   end
 end
 

@@ -15,11 +15,9 @@ local d = util.print_r
 local View = require 'libs.view'
 local Piece = require 'views.piece'
 local Album = require 'views.album'
-local AlbumListView = require 'views.album_list'
 local Cover = require 'views.album_cover'
 --local Indicator = require 'views.indicator'
-local AlbumList = class('MoterAlbumListView', AlbumListView)
-local Toast = require 'views.toast'
+local AlbumList = class('AlbumListView', View)
 local APP = require("classes.application")
 
 -- Constants List:
@@ -31,7 +29,6 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
-local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 -- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
@@ -79,19 +76,14 @@ end
 
 -- 利用获取的图集信息实例化一个图集对象
 function AlbumList:initialize(obj, topPadding, sceneGroup)
-  assert(obj.tag_id, 'No tag id specified!')
   View.initialize(self, sceneGroup)
   -- -------------------
   -- DATA BINDING
   self.rawData = obj
-  self.tag_id = obj.tag_id
   self._albums = obj.albums
-  self.name = 'album_list'
+  self.name = 'album list'
   self.covers = {}
-  sceneGroup.currentAlbumList = self
-  local scene = composer.getScene(composer.getSceneName('current'))
-  local moterView = scene.moterView
-  local hint = moterView.elements.hint
+  APP.CurrentAlbumList = self
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -99,8 +91,9 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   -- ScrollView listener
   local function onScrollComplete()
     print( "Scroll complete!" )
+    
   end
-
+  
   local function scrollListener( event )
     local _t = event.target
     local phase = event.phase
@@ -109,7 +102,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
     elseif ( phase == "moved" ) then
       _t.xLast, _t.yLast = _t:getContentPosition()
       _t.motion = _t.yLast - _t.yStart
-      local isTabBarHidden = APP.Footer.hidden
+
     elseif ( phase == "ended" ) then
       print( "Scroll view was released" )
     end
@@ -117,8 +110,8 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
     if ( event.limitReached ) then
       local slider = self.elements.slider
       if ( event.direction == "up" ) then
-        print( "Load more content..., TODO: block continuesly load if there'r no more albums" )
-        local iMoter = self.bumper or APP.iMoterAPI --or require('classes.iMoter'):new()
+        print( "Load more content..." )
+        local iMoter = self.bumper
         local function showAlbumsWithData(res)
           if not res or not res.data then
             native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
@@ -129,12 +122,10 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
           for _, album in ipairs(newlist) do
             table.insert(albumlist, album)
           end
-          d(#self._albums)
           self:open(self.cursorIndex + 1)
         end
-        iMoter:listAlbumsOfMoter( self.moter_id, {skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
+        iMoter:listAlbums({skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
-
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )
       elseif ( event.direction == "right" ) then print( "Reached left limit" )
@@ -158,20 +149,10 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   -- -------------------
 end
 
-function AlbumList:unfold()
-  transition.to(
-    self.layer,
-    {
-      time = 600, transition = easing.outExpo,
-      y = vH+bottomInset,
-      onComplete = function() self:stop() end
-    }
-  )
-  local scene = composer.getScene(composer.getSceneName('current'))
-end
-
 function AlbumList:open(index)
   index = index or 1
+  --self.cursorAlbumId = index
+  --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
   local albums = self._albums
   for i = index, #albums, 1 do
     self:loadCover(i)
@@ -182,7 +163,6 @@ end
 
 function AlbumList:loadCover(index)
   local album = self._albums[index]
---  d(album)
   if not album then return false end
   local coverURI, coverFileName = resolveCoverImage(album)
   local cover = Cover({
@@ -200,16 +180,23 @@ function AlbumList:loadCover(index)
   cover:preload(row, col)
 end
 
-function AlbumList:onCoverTapped(event)
---  composer.removeScene('scens.album')
+function AlbumList:onAlbumTapped(event)
   local options = {
-    time = 420,
-    effect = "slideLeft",
+    effect = "fade",
+    time = 500,
+    isModal = true,
     params = event
   }
-  composer.gotoScene("scenes.album", options)
-  -- recycle moter scene while switching to album scene
---  composer.setVariable('sceneToRemove', 'scenes.moter')
+  composer.showOverlay( "scenes.album", options )
+end
+
+function AlbumList:onCoverTapped(event)
+  local options = {
+    effect = "slideLeft",
+    time = 420,
+    params = event
+  }
+  composer.gotoScene( "scenes.album", options )
 end
 
 function AlbumList:start()
