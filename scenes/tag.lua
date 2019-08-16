@@ -38,7 +38,7 @@ local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
 local AlbumList = require("views.album_list")
-local HeaderView = require("views.home_header")
+local HeaderView = require("views.tag_header")
 --local Indicator = require 'views.indicator'
 ----------------------------------------------------------------------------------
 --

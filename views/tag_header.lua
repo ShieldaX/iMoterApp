@@ -61,12 +61,12 @@ function Header:initialize(opts, parent)
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create the header")
   View.initialize(self, parent)
   assert(self.layer, 'Piece View Initialized Failed!')
-  self.name = opts.name or 'home_header' -- timestamp
-  d('创建标签页头部对象: '..self.name)
-  d(self.name..' began with '..self:getState())
+  self.name = opts.name or 'tag_header' -- timestamp
+  self.id = opts.id
+  self.tag_name = opts.tag_name or 'meitui'
+  self.tag_desc = opts.tag_desc or '美腿美女图片，图片中的美女都有着美丽、性感、修长的玉腿。美腿之美可以分为晶莹剔透的大腿美、白璧无瑕的小腿美、细微的美足、健康明朗的腿形美。美腿不仅具有先天性因素，同时通过后天的弥补也可以修得迷人腿型，方法多样。'
   -- -------------------
   -- DATA BINDING
-  --
   -- END DATA BINDING
   -- -------------------
   -- -------------------
@@ -79,67 +79,18 @@ function Header:initialize(opts, parent)
   
   local labelTitle = display.newText {text = self.tag_name, x = vW*.24, y = gY, fontSize = 26, font = fontZcoolHuangYou}
   gY = gY + padding*4
-  local labelUpdate = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
-  self:_attach(labelUpdate, 'labelUpdate')
-  labelUpdate.id = 'labelUpdate'
-  self:start()
+  local labelDesc = display.newText {text = self.tag_desc, x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
+  self:_attach(labelTitle, 'labelTitle')
+  self:_attach(labelDesc, 'labelDesc')
+  labelDesc.id = 'labelDesc'
   -- END VISUAL INITIALIING
   -- -------------------
-end
-
-function Header:hide()
-  local topBar = self.elements.TopBar
-  if not topBar or self.isHidden then return false end
-  self.animation = transition.to(topBar, {time = 420, transition = easing.outExpo, y = -topBar.contentHeight})
-  self:signal('onHeaderMove', {hidden = true})
-  self.isHidden = true
-end
-
-function Header:show()
-  local topBar = self.elements.TopBar
-  if not topBar or not self.isHidden then return false end
-  self.animation = transition.to(topBar, {time = 420, transition = easing.outExpo, y = 0})
-  self:signal('onHeaderMove', {hidden = false})
-  self.isHidden = false
-end
-
-function Header:start()
-  for i, e in pairs(self.elements) do
-    e:addEventListener('tap', self)
-  end
 end
 
 function Header:tap(event)
   local id = event.target.id
   
   return true
-end
-
-function Header:selectTab(tab_id)
-  local cursor = self.elements.cursor
-  local targetTab = self.elements[tab_id]
-  transition.to(cursor, {transition = easing.outExpo, time = 400, x = targetTab.x})
-  self.tabSelected = tab_id
-  self:signal('onHomeTabChanged', {tab = tab_id})
-end
-
-function Header:onHomeTabChanged(event)
-  local targetTabID = event.tab
-  local updateView = APP.albumListView
-  local hotView = APP.hotAlbumListView
-  if targetTabID == 'labelUpdate' then
-    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = 0})
---    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 1})
-    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, x = vW})
---    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 0})
-  else
-    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = -vW})
---    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 0})
-    local scene = composer.getScene(composer.getSceneName('current'))
-    scene:loadHotAlbumList()
---    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 1}) end
-    if hotView then transition.to(hotView.layer, {transition = easing.outExpo, time = 600, x = 0}) end
-  end
 end
 
 return Header

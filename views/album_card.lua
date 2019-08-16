@@ -389,6 +389,18 @@ function Card:touch(event)
   return true
 end
 
+function Card:onTagTapped(event)
+  local options = {
+    effect = "slideLeft",
+    time = 300,
+    params = {tag_id = event.id, tag_name = event.name}
+  }
+  d('打开标签专门页面...')
+  composer.gotoScene( "scenes.tag", options )
+  -- recycle album scene while switching to tagged album list scene
+  composer.setVariable('sceneToRemove', 'scenes.album')
+end
+
 function Card:tap(event)
 --  stop any tap/touch propgation
   return true
