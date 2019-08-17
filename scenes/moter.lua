@@ -35,9 +35,8 @@ local background = nil
 
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
-
+local MoterView = require("views.moter")
 local AlbumList = require("views.moter_album_list")
-local MoterView = require("views.moter_ui")
 local HeaderView = require("views.header")
 
 -- mui

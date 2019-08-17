@@ -38,9 +38,9 @@ local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
 --local mui = require( "materialui.mui" )
-local AlbumView = require("views.album")
+--local AlbumView = require("views.album")
 local AlbumList = require("views.album_list")
-local MoterView = require("views.moter_ui")
+--local MoterView = require("views.moter")
 local HeaderView = require("views.home_header")
 local FooterView = require("views.footer")
 --local Indicator = require 'views.indicator'
