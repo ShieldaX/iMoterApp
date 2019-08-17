@@ -93,7 +93,7 @@ function scene:create( event )
     end
     local _albumList = res.data.albums
     local _data = res.data
-    d(_albumList)
+    d(_data)
     self.header.elements.navBar:setLabel(tag_name)
     local topPadding = topInset
     local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
@@ -101,6 +101,7 @@ function scene:create( event )
     albumListView.layer.y = albumListView.layer.y + self.header.layer.contentHeight
     albumListView:open()
     albumListView.bumper = iMoter
+    self.header.layer:toFront()
   end
   iMoter:listAlbumsByTag(tag_id, {skip = 0, limit = 10}, showAlbumsWithData)
   APP:sceneForwards(params)

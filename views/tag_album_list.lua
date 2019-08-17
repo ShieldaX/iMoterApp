@@ -17,7 +17,8 @@ local Piece = require 'views.piece'
 local Album = require 'views.album'
 local Cover = require 'views.album_cover'
 --local Indicator = require 'views.indicator'
-local AlbumList = class('AlbumListView', View)
+local AlbumList = class('TagAlbumListView', View)
+AlbumList:include(Stateful)
 local APP = require("classes.application")
 
 -- Constants List:
@@ -29,6 +30,8 @@ local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeig
 local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
 local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+-- Gather insets (function returns these in the order of top, left, bottom, right)
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 -- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
@@ -36,6 +39,7 @@ local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
 local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 
 local function resolveCoverImage(album)
   local prefix = 'https://t1.onvshen.com:85/gallery/'
@@ -81,13 +85,21 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   -- DATA BINDING
   self.rawData = obj
   self._albums = obj.albums
-  self.name = 'album list'
+  self._tag = obj.tag
+  self.name = 'tag_album_list'
   self.covers = {}
   APP.CurrentAlbumList = self
   -- END DATA BINDING
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
+  local leftPadding = 18
+  local labelDesc = display.newText {text = '      '..self._tag.desc,  width = vW*.92, x = leftPadding, y = -12, fontSize = 16, font = fontZcoolHuangYou}
+  labelDesc:setFillColor(colorHex('6C6C6C'))
+  labelDesc.anchorX = 0
+  labelDesc.anchorY = 1
+
+  self:_attach(labelDesc, 'desc')
   -- ScrollView listener
   local function onScrollComplete()
     print( "Scroll complete!" )
@@ -102,7 +114,12 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
     elseif ( phase == "moved" ) then
       _t.xLast, _t.yLast = _t:getContentPosition()
       _t.motion = _t.yLast - _t.yStart
-
+      if _t.yLast > 20 then
+        d('should switch')
+        self:gotoState('AlbumListWithDesc')
+      elseif _t.yLast < 20 then
+        self:popState('AlbumListWithDesc')
+      end
     elseif ( phase == "ended" ) then
       print( "Scroll view was released" )
     end
@@ -207,6 +224,30 @@ end
 
 function AlbumList:stop()
   self:cleanup()
+end
+
+local AlbumListWithDesc = AlbumList:addState('AlbumListWithDesc')
+
+function AlbumListWithDesc:enteredState()
+  local desc = self.elements.desc
+  transition.to(
+    self.layer,
+    {
+      time = 300,
+      y = topInset+69+desc.contentHeight, transition = easing.outExpo,
+    }
+  )
+end
+
+function AlbumListWithDesc:exitedState()
+  local desc = self.elements.desc
+  transition.to(
+    self.layer,
+    {
+      time = 300,
+      y = topInset+45, transition = easing.outExpo,
+    }
+  )
 end
 
 return AlbumList
