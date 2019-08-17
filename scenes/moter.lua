@@ -127,6 +127,8 @@ function scene:show( event )
       composer.setVariable('sceneToRemove', false)
     end
     APP._scenes()
+  elseif event.phase == 'will' then
+    self.header.layer:toFront()
   end
 end
 

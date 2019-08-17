@@ -47,7 +47,63 @@ local FooterView = require("views.footer")
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
+-- @usage: https://material.io/tools/icons
+function util.createIcon(options)
+  local fontPath = "icon-font/"
+  local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
+  options.font = materialFont
+  local x,y = 160, 240
+  if options.x ~= nil then
+    x = options.x
+  end
+  if options.y ~= nil then
+    y = options.y
+  end  
+  local fontSize = options.height
+  if options.fontSize ~= nil then
+    fontSize = options.fontSize
+  end
+  fontSize = math.floor(tonumber(fontSize))
 
+  local font = native.systemFont
+  if options.font ~= nil then
+    font = options.font
+  end
+  local textColor = { 0, 0.82, 1 }
+  if options.textColor ~= nil then
+    textColor = options.textColor
+  end
+  local fillColor = { 0, 0, 0 }
+  if options.fillColor ~= nil then
+    fillColor = options.fillColor
+  end
+  options.isFontIcon = true
+  -- scale font
+  -- Calculate a font size that will best fit the given text field's height
+  local checkbox = {contentHeight=options.height, contentWidth=options.width}
+  local textToMeasure = display.newText( options.text, 0, 0, font, fontSize )
+  fontSize = math.floor(fontSize * ( ( checkbox.contentHeight ) / textToMeasure.contentHeight ))
+  local tw = textToMeasure.contentWidth
+  local th = textToMeasure.contentHeight
+  tw = fontSize
+  options.text = mui.getMaterialFontCodePointByName(options.text)
+  textToMeasure:removeSelf()
+  textToMeasure = nil
+  local options2 =
+  {
+    --parent = textGroup,
+    text = options.text,
+    x = x,
+    y = y,
+    font = font,
+    width = tw * 1.5,
+    fontSize = fontSize,
+    align = "center"
+  }
+  local _icon = display.newText( options2 )
+  _icon:setFillColor(unpack(textColor))
+  return _icon
+end
 ----------------------------------------------------------------------------------
 --
 --      NOTE:

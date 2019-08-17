@@ -84,12 +84,18 @@ function Bar:initialize(opts, parent)
     inEasing = easing.outCubic,
     outEasing = easing.inCirc
   }
-  local backgroundRect = display.newRect( 0, 0, panel.width - 2, panel.height - 2 )
+  local backgroundRect = display.newRect( 0, -1, panel.width, panel.height - 2 )
   backgroundRect:setFillColor(unpack(backgroundColor))
+  local strokeLine = display.newLine(-vW*.5, panel.height*.5, vW*.5, panel.height*.5)
+  strokeLine.anchorX = 1
+  strokeLine.anchorY = .5
+  strokeLine:setStrokeColor(colorHex('C7A680'))
+  strokeLine.strokeWidth = 1
 --  backgroundRect:setStrokeColor(colorHex('C7A680'))
 --  backgroundRect.strokeWidth = 1
   local background = display.newGroup()
   background:insert(backgroundRect)
+  background:insert(strokeLine)
   panel.background = background
   panel:insert( background )
   

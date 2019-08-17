@@ -70,7 +70,7 @@ function scene:create( event )
   self.searchBar = SearchBar:new({name = 'searchBar'}, sceneGroup)
   self.searchBar:show()
   -- Push scene on to search tab [root]
-  APP.pushScene({name = composer.getSceneName('current'), params = params}, 'search')
+  APP.pushScene({name = composer.getSceneName('current'), params = params}, 'mine')
   -----------------------------------------------------------------------------
 end
 
