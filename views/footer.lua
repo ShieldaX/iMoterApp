@@ -1,3 +1,5 @@
+local composer = require( "composer" )
+
 local widget = require( "widget" )
 local widgetExtras = require("libs.widget-extras")
 local mui = require( "materialui.mui" )
@@ -83,19 +85,19 @@ function Footer:initialize(opts, parent)
       onPress = handleTabBarEvent
     },
     {
-      id = "tab_xplr",
+      id = "home",
       label = {text = "Explore", font = fontMorganiteSemiBold, fontSize = 32, xOffset = 5},
       icon = {name = 'pages', fontSize = 36},
       xOffset = -vW*0.32, yOffset = 3,
       selected = true
     },
     {
-      id = "tab_search",
+      id = "search",
       icon = {name = 'search', fontSize = 36},
       xOffset = vW*0.06, yOffset = 4
     },
     {
-      id = "tab_mine",
+      id = "mine",
       icon = {
         name = { default = 'person_outline', over = 'person'},
         fontSize = 36
@@ -128,6 +130,7 @@ function Footer:initialize(opts, parent)
   self:buildTabs(tabOptions)
   self.hidden = true
   self:show()
+  panel:addEventListener('tap', self)
   -- END VISUAL INITIALIING
   -- -------------------
 end
@@ -269,6 +272,7 @@ function Footer:selectTab(tab_id)
     end
   end
   self.tabSelected = tab_id
+  composer.gotoScene('scenes.'..tab_id)
 end
 
 function Footer:show()

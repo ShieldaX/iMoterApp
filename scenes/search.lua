@@ -33,99 +33,45 @@ local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 
 local background = nil
 local widget = require( "widget" )
-
+--local utility = require( "libs.utility" )
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
---local mui = require( "materialui.mui" )
---local AlbumView = require("views.album")
 local AlbumList = require("views.album_list")
---local MoterView = require("views.moter")
-local HeaderView = require("views.home_header")
-local FooterView = require("views.footer")
+local SearchBar = require("views.search_bar")
 --local Indicator = require 'views.indicator'
 
--- mui
---local muiData = require( "materialui.mui-data" )
-
-----------------------------------------------------------------------------------
---
---      NOTE:
---
---      Code outside of listener functions (below) will only be executed once,
---      unless storyboard.removeScene() is called.
---
----------------------------------------------------------------------------------
 local scene = composer.newScene()
 -- Our modules
 local APP = require( "classes.application" )
---local utility = require( "libs.utility" )
-
 local iMoter = iMoterAPI:new()
 
 ---------------------------------------------------------------------------------
 -- BEGINNING OF YOUR IMPLEMENTATION
 ---------------------------------------------------------------------------------
+local function createIcon(options)
+  local fontPath = "icon-font/"
+  local materialFont = fontPath .. "MaterialIcons-Regular.ttf"
+  options.font = materialFont
+  options.text = mui.getMaterialFontCodePointByName(options.text)
+  local icon = display.newText(options)
+  return icon
+end
 
 -- Called when the scene's view does not exist:
 function scene:create( event )
   local sceneGroup = self.view
-  mui.init(nil, { parent=self.view })
-  -- Create a vector rectangle sized exactly to the "safe area"
+--  mui.init(nil, { parent=self.view })
   background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
-  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
-  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
---  local _lgray = {colorHex('6C6C6C')}
-  local labelFSize = 20
-  local padding = labelFSize*.618
-  local function showAlbumsWithData(res)
-    if not res or not res.data then
-      native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
-      return false -- no need to try and run the rest of the function if we don't have our forecast.the
-    end
-    local _albumList = res.data.albums
-    local _data = res.data
---    d(_albumList)
---    APP.Header.elements.TopBar:setLabel('模云')
---    APP.Header.elements.TopBar._title:setFillColor(unpack(colorsRGB.RGBA('white')))
-    local topPadding = topInset
-    local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
-    APP.albumListView = albumListView
-    local cursor = APP.Header.elements.cursor
-    albumListView.layer.y = albumListView.layer.y + cursor.y + padding
-    albumListView:open()
-    albumListView.bumper = iMoter
-  end
---  iMoter:listAlbums('22162', {skip = 0, limit = 100}, showAlbumsWithData) -- 19702; 22162; 27180
-  iMoter:listAlbums({skip = 0, limit = 10}, showAlbumsWithData) -- 19702; 22162; 27180
---  iMoter:getMoterById('18229', {}, showMoterWithData)
-  APP.pushScene({name = composer.getSceneName('current'), params = params})
-  -----------------------------------------------------------------------------
-end
 
-function scene:loadHotAlbumList()
-  if APP.hotAlbumListView then return end
-  local sceneGroup = self.view
-  local labelFSize = 20
-  local padding = labelFSize*.618
-  local function showAlbumsWithData(res)
-    if not res or not res.data then
-      native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
-      return false
-    end
-    local _albumList = res.data.albums
-    local _data = res.data
-    local topPadding = topInset
-    local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
-    APP.hotAlbumListView = albumListView
-    local cursor = APP.Header.elements.cursor
-    albumListView.layer.y = albumListView.layer.y + cursor.y + padding
-    albumListView:open()
-  end
-  iMoter:listAlbums({skip = 10, limit = 20}, showAlbumsWithData)
+  self.searchBar = SearchBar:new({name = 'searchBar'}, sceneGroup)
+  self.searchBar:show()
+  -- Push scene on to search tab [root]
+  APP.pushScene({name = composer.getSceneName('current'), params = params}, 'search')
+  -----------------------------------------------------------------------------
 end
 
 -- Called BEFORE scene has moved onscreen:
