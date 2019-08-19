@@ -70,16 +70,23 @@ function Header:initialize(opts, parent)
   -- -------------------
   -- VISUAL INITIALIING
   -- Configure topbar
+  navBarHeight = 42
+  self.navBarHeight = navBarHeight
+  
+  local bg = display.newRect(cX, navBarHeight, vW, vH*.24)
+  bg:setFillColor(unpack(theme.navBarBackgroundColor))
+  bg.anchorY = 0
+  self:_attach(bg, 'bg')
+  
 	local RightButton = {
     id = 'backBtn',
-    label = '退出',
+    label = '设置 ',
     font = fontZcoolHuangYou,
 		fontSize = 16,
 		onEvent = opts.onEvent or leftButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
 	}
-  navBarHeight = 42
-  self.navBarHeight = navBarHeight
+
   local navBar = widget.newNavigationBar({
 		isTransluscent = true,
 		backgroundColor = theme.navBarBackgroundColor,
@@ -88,12 +95,32 @@ function Header:initialize(opts, parent)
 		font = fontDMFT, fontSize = 18,
 		height = navBarHeight,
 		includeStatusBar = false,
-		leftButton = leftButton,
+		rightButton = RightButton,
 	})
   self.navBarYPos = navBar.y
   self:_attach(navBar, 'navBar')
+  self:showAvatar()
   -- END VISUAL INITIALIING
   -- -------------------
+end
+
+function Header:showAvatar()
+  local avatar = display.newCircle(cX, cY, 36)
+  avatar:setStrokeColor(.8)
+  avatar.strokeWidth = 4
+  self:_attach(avatar, 'avatar')
+  local bg = self.elements.bg
+  avatar.x = vW*.2
+  avatar.y = bg.y + bg.contentHeight*.6
+  local uname = display.newText {
+      text = '登录/注册',
+      font = fontDMFT,
+      fontSize = 20,
+    }
+  self:_attach(uname, 'sign')
+  uname.anchorX = 0
+  uname.x = avatar.x + avatar.width*.8
+  uname.y = avatar.y
 end
 
 function Header:hide()

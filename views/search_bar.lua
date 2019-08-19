@@ -102,7 +102,7 @@ function Bar:initialize(opts, parent)
   local iconOption =  {
       id = "search_icon",
       icon = {name = 'search', fontSize = 36},
-      xOffset = vW*0.36, yOffset = topInset*.5
+      xOffset = vW*0.36, yOffset = topInset*.25
     }
   local defaultColor = {colorHex('6C6C6C')}
   local overColor = {colorHex('C7A680')}
@@ -120,7 +120,7 @@ function Bar:initialize(opts, parent)
   
   local input = widget.newTextField {
       id = 'search_field',
-      left = -vW*.4, top = -18,
+      left = -vW*.4, top = -18+topInset*.25,
       width = vW*.69, height= 32,
       label = '搜索',
       labelFontSize = 12, labelFontColor = {colorHex('C7A680')},

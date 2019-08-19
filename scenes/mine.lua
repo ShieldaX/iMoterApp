@@ -40,6 +40,7 @@ local iMoterAPI = require( "classes.iMoter" )
 local AlbumList = require("views.album_list")
 local SearchBar = require("views.search_bar")
 local HeaderView = require("views.mine_header")
+local MineView = require('views.mine')
 --local Indicator = require 'views.indicator'
 
 local scene = composer.newScene()
@@ -68,7 +69,8 @@ function scene:create( event )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
   self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
-
+  local headerHeight = self.header.layer.contentHeight
+  MineView:new(headerHeight, sceneGroup)
   -- Push scene on to search tab [root]
   APP.pushScene({name = composer.getSceneName('current'), params = params}, 'mine')
   -----------------------------------------------------------------------------
