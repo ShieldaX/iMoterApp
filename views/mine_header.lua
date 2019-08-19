@@ -72,7 +72,7 @@ function Header:initialize(opts, parent)
   -- Configure topbar
 	local RightButton = {
     id = 'backBtn',
-    label = '退出登录',
+    label = '退出',
     font = fontZcoolHuangYou,
 		fontSize = 16,
 		onEvent = opts.onEvent or leftButtonEvent,

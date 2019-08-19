@@ -39,6 +39,7 @@ local iMoterAPI = require( "classes.iMoter" )
 
 local AlbumList = require("views.album_list")
 local SearchBar = require("views.search_bar")
+local HeaderView = require("views.mine_header")
 --local Indicator = require 'views.indicator'
 
 local scene = composer.newScene()
@@ -66,9 +67,8 @@ function scene:create( event )
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
+  self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
 
-  self.searchBar = SearchBar:new({name = 'searchBar'}, sceneGroup)
-  self.searchBar:show()
   -- Push scene on to search tab [root]
   APP.pushScene({name = composer.getSceneName('current'), params = params}, 'mine')
   -----------------------------------------------------------------------------
