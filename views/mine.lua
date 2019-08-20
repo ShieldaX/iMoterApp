@@ -36,6 +36,7 @@ local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
 local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 
 local function createIcon(options)
   local fontPath = "icon-font/"
@@ -56,95 +57,75 @@ function MineList:initialize(topPadding, sceneGroup)
   -- -------------------
   -- -------------------
   -- VISUAL INITIALIING
-  local springStart = 0
-  local needToReload = false
-
-  local function scrollListener( event )
-     if ( event.phase == "began" ) then
-        springStart = event.target.parent.parent:getContentPosition()
-        needToReload = false
-     elseif ( event.phase == "moved" ) then
-        if ( event.target.parent.parent:getContentPosition() > springStart + 60 ) then
-           needToReload = true
-        end
-     elseif ( event.limitReached == true and event.phase == nil and event.direction == "down" and needToReload == true ) then
-        --print( "Reloading Table!" )
-        needToReload = false
-     end
-     return true
-  end
-    
+  local bgColor
+  local rowLineColor
+  local labelColor = {colorHex('C7A680')}
   local function onRowRender( event )
 
-     --Set up the localized variables to be passed via the event table
+    --Set up the localized variables to be passed via the event table
 
-     local row = event.row
-     local id = row.index
-     local params = event.row.params
+    local row = event.row
+    local id = row.index
+    local params = event.row.params
 
-     row.bg = display.newRect( 0, 0, display.contentWidth, 60 )
-     row.bg.anchorX = 0
-     row.bg.anchorY = 0
-     row.bg:setFillColor( 1, 1, 1 )
-     row:insert( row.bg )
+    row.bg = display.newRect( 0, 0, display.contentWidth, 60 )
+    row.bg.anchorX = 0
+    row.bg.anchorY = 0
+    row.bg:setFillColor(colorHex('1A1A19'))
+    row:insert( row.bg )
+    row._separator:toFront()
 
-     if ( event.row.params ) then    
-        row.nameText = display.newText( params.name, 12, 0, native.systemFontBold, 18 )
-        row.nameText.anchorX = 0
-        row.nameText.anchorY = 0.5
-        row.nameText:setFillColor( 0 )
-        row.nameText.y = 20
-        row.nameText.x = 42
+    if ( event.row.params ) then    
+      row.nameText = display.newText( params.name, 12, 0, fontZcoolHuangYou, 22 )
+      row.nameText.anchorX = 0
+      row.nameText.anchorY = 0.5
+      row.nameText:setFillColor( unpack(labelColor) )
+      row.nameText.y = 30
+      row.nameText.x = 42
+      
+      row.rightArrow = display.newText( '>', 12 , 0,  fontZcoolHuangYou, 18)
+      row.rightArrow.anchorX = 0
+      row.rightArrow.anchorY = 0.5
+      row.rightArrow:setFillColor( .5 )
+      row.rightArrow.x = display.contentWidth - 40
+      row.rightArrow.y = row.height / 2
 
-        row.phoneText = display.newText( params.phone, 12, 0, native.systemFont, 18 )
-        row.phoneText.anchorX = 0
-        row.phoneText.anchorY = 0.5
-        row.phoneText:setFillColor( 0.5 )
-        row.phoneText.y = 40
-        row.phoneText.x = 42
-
-        row.rightArrow = display.newText( '>', 15 , 40 )
-        row.rightArrow.x = display.contentWidth - 20
-        row.rightArrow.y = row.height / 2
-
-        row:insert( row.nameText )
-        row:insert( row.phoneText )
-        row:insert( row.rightArrow )
-     end
-     return true
+      row:insert( row.nameText )
+      row:insert( row.rightArrow )
+    end
+    return true
   end
 
   local navBarHeight = topPadding or 100
   local tabBarHeight = 50
   local myList = widget.newTableView {
-     top = navBarHeight, 
-     width = display.contentWidth, 
-     height = display.contentHeight - navBarHeight - tabBarHeight,
-     onRowRender = onRowRender,
-     onRowTouch = onRowTouch,
-     listener = scrollListener
+    top = navBarHeight, 
+    width = display.contentWidth,
+    height = display.contentHeight - navBarHeight - tabBarHeight,
+    onRowRender = onRowRender,
+    onRowTouch = onRowTouch,
+    hideBackground = true,
+    topPadding = 20,
   }
-  
+
   local myData = {}
   myData[1] = { name="收藏的图集",    phone="555-555-1234" }
   myData[2] = { name="喜欢的女神",  phone="555-555-1235" }
-  myData[3] = { name="Wilma",   phone="555-555-1236" }
-  myData[4] = { name="Betty",   phone="555-555-1237" }
-  myData[5] = { name="Pebbles", phone="555-555-1238" }
-  myData[6] = { name="BamBam",  phone="555-555-1239" }
-  myData[7] = { name="Dino",    phone="555-555-1240" }
+  myData[3] = { name="反馈",   phone="555-555-1236" }
+  myData[4] = { name="设置",   phone="555-555-1237" }
+  myData[5] = { name="关于", phone="555-555-1238" }
 
   for i = 1, #myData do
-     myList:insertRow{
-        rowHeight = 60,
-        isCategory = false,
-        rowColor = { 1, 1, 1 },
-        lineColor = { 0.2, 0.2, 0.2 },
-        params = {
-           name = myData[i].name,
-           phone = myData[i].phone
-        }
-     }
+    myList:insertRow{
+      rowHeight = 60,
+      isCategory = false,
+      rowColor = { default=labelColor, over={1,0.5,0,0.2} },
+      lineColor = {.5, .5, .5, .5},
+      params = {
+        name = myData[i].name,
+        phone = myData[i].phone
+      }
+    }
   end
   self:_attach(myList, 'table')
   -- END VISUAL INITIALIING

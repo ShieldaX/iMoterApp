@@ -105,9 +105,15 @@ function Header:initialize(opts, parent)
 end
 
 function Header:showAvatar()
+  -- Set the fill (paint) to use the bitmap image
+  local paint = {
+    type = "image",
+    filename = "assets/images/user.png"
+  }
   local avatar = display.newCircle(cX, cY, 36)
   avatar:setStrokeColor(.8)
-  avatar.strokeWidth = 4
+  avatar.strokeWidth = 2
+  avatar.fill = paint
   self:_attach(avatar, 'avatar')
   local bg = self.elements.bg
   avatar.x = vW*.2
