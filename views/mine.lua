@@ -111,8 +111,8 @@ function MineList:initialize(topPadding, sceneGroup)
   local myData = {}
   myData[1] = { name="收藏的图集",    phone="555-555-1234" }
   myData[2] = { name="喜欢的女神",  phone="555-555-1235" }
-  myData[3] = { name="反馈",   phone="555-555-1236" }
-  myData[4] = { name="设置",   phone="555-555-1237" }
+  myData[3] = { name="升级Pro",   phone="555-555-1236" }
+  myData[4] = { name="反馈",   phone="555-555-1237" }
   myData[5] = { name="关于", phone="555-555-1238" }
 
   for i = 1, #myData do
@@ -130,37 +130,6 @@ function MineList:initialize(topPadding, sceneGroup)
   self:_attach(myList, 'table')
   -- END VISUAL INITIALIING
   -- -------------------
-end
-
-function MineList:open(index)
-  index = index or 1
-  --self.cursorAlbumId = index
-  --local indicator = Indicator:new({total= #self.imgURIs, name= 'progbar', top= 0}, self)
-  local albums = self._albums
-  for i = index, #albums, 1 do
-    self:loadCover(i)
-  end
-  self.cursorIndex = #albums
-  self:setState('STARTED')
-end
-
-function MineList:loadCover(index)
-  local album = self._albums[index]
-  if not album then return false end
-  local coverURI, coverFileName = resolveCoverImage(album)
-  local cover = Cover({
-      uri = coverURI,
-      name = coverFileName,
-      title = album.title,
-      id = album._id,
-      index = index
-      }, self)
-  local row = math.round(index/2)
-  local col = index - (row - 1)*2
-  local covers = self.covers
-  covers[row] = covers[row] or {}
-  covers[row][col] = cover
-  cover:preload(row, col)
 end
 
 function MineList:onAlbumTapped(event)
