@@ -44,17 +44,18 @@ return {
 
     -- Users
     createUser = {
-      path = "api/accounts/register",
-      required_params = { "nickname", "signin_id", "password" },
+      path = "api/auth/register",
+      required_params = { "name", "email", "password" },
       optional_params = { "avatar_id" },
       method = "POST",
       required_payload = true,
     },
 
     login = {
-      path = "api/accounts/signin",
-      required_params = { "signin_id", "password" },
+      path = "api/auth/sign_in",
+      required_params = { "email", "password" },
       method = "POST",
+      authentication = true,
       required_payload = true,
     },
 
@@ -84,8 +85,9 @@ return {
       required_params = { "token", "ficus_user_session" },
       method = "POST",
       required_payload = true,
-    },
+    }
 
   },
+
 }
 

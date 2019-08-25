@@ -47,10 +47,10 @@ local View = require "libs.view"
 local Header = class('HeaderView', View)
 
 local function leftButtonEvent( event )
-	if event.phase == "ended" then
+  if event.phase == "ended" then
     APP:sceneBackwards()
-	end
-	return true
+  end
+  return true
 end
 
 local navBarHeight = nil
@@ -72,31 +72,31 @@ function Header:initialize(opts, parent)
   -- Configure topbar
   navBarHeight = 42
   self.navBarHeight = navBarHeight
-  
+
   local bg = display.newRect(cX, navBarHeight, vW, vH*.24)
   bg:setFillColor(unpack(theme.navBarBackgroundColor))
   bg.anchorY = 0
   self:_attach(bg, 'bg')
-  
-	local RightButton = {
+
+  local RightButton = {
     id = 'backBtn',
     label = '设置 ',
     font = fontZcoolHuangYou,
-		fontSize = 16,
-		onEvent = opts.onEvent or leftButtonEvent,
+    fontSize = 16,
+    onEvent = opts.onEvent or leftButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
-	}
+  }
 
   local navBar = widget.newNavigationBar({
-		isTransluscent = true,
-		backgroundColor = theme.navBarBackgroundColor,
-		title = "个人中心",
-		titleColor = {colorHex('C7A680')},
-		font = fontDMFT, fontSize = 18,
-		height = navBarHeight,
-		includeStatusBar = false,
-		rightButton = RightButton,
-	})
+      isTransluscent = true,
+      backgroundColor = theme.navBarBackgroundColor,
+      title = "个人中心",
+      titleColor = {colorHex('C7A680')},
+      font = fontDMFT, fontSize = 18,
+      height = navBarHeight,
+      includeStatusBar = false,
+      rightButton = RightButton,
+    })
   self.navBarYPos = navBar.y
   self:_attach(navBar, 'navBar')
   self:showAvatar()
@@ -119,14 +119,33 @@ function Header:showAvatar()
   avatar.x = vW*.2
   avatar.y = bg.y + bg.contentHeight*.6
   local uname = display.newText {
-      text = '登录/注册',
-      font = fontDMFT,
-      fontSize = 20,
-    }
-  self:_attach(uname, 'sign')
+    text = '登录/注册',
+    font = fontDMFT,
+    fontSize = 20,
+  }
+  self:_attach(uname, 'auth')
   uname.anchorX = 0
   uname.x = avatar.x + avatar.width*.8
   uname.y = avatar.y
+  local function userAuthentication()
+    local options =
+    {
+      isModal = true,
+      effect = "slideUp",
+      time = 360,
+      params = {
+        sampleVar1 = "my sample variable",
+        sampleVar2 = "another sample variable"
+      }
+    }
+    composer.showOverlay('scenes.authenticate', options)
+  end
+  uname:addEventListener('tap', userAuthentication)
+end
+
+function Header:loadUser(event)
+  local user = event.user
+  self.elements.auth.text = user.name
 end
 
 function Header:hide()

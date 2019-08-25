@@ -31,16 +31,19 @@ end
 function iMoter:callMethod(name, t, ...)
    --local arg = {n=select('#', ...), ...}
   local preCallback = nil
-
+  
   if name == "login" then
     preCallback = function(res)
       if res.error then
         print("ERROR on Login")
         print("URL: "..res.url)
+      elseif tonumber(res.status) == 200 then
+        local token = res.data.token
+        print("login success, new access token: " .. token)
+        self.headers.Authorization = 'JWT ' .. token
+        print(self.headers.Authorization)
       else
-        local ticket = res.data.session_ticket
-        print("login success, new session_ticket: " .. ticket)
-        self.headers.Authorization = 'imoter_user_session:' .. ticket
+        print("login failed, status code: " .. res.status)
       end
     end
   end

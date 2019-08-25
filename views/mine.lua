@@ -52,7 +52,7 @@ function MineList:initialize(topPadding, sceneGroup)
   View.initialize(self, sceneGroup)
   -- -------------------
   -- DATA BINDING
-  self.rawData = obj
+--  self.rawData = obj
   -- END DATA BINDING
   -- -------------------
   -- -------------------

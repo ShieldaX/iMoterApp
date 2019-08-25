@@ -70,10 +70,17 @@ function scene:create( event )
   sceneGroup:insert( background )
   self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
   local headerHeight = self.header.layer.contentHeight
-  MineView:new(headerHeight, sceneGroup)
+  self.menu = MineView:new(headerHeight, sceneGroup)
   -- Push scene on to search tab [root]
   APP.pushScene({name = composer.getSceneName('current'), params = params}, 'mine')
   -----------------------------------------------------------------------------
+end
+
+function scene:authenticated()
+  local verifiedUser = composer.getVariable('verifiedUser')
+  self.header:send('loadUser', {user = verifiedUser})
+  self.menu:send('loadUser', {user = verifiedUser})
+  d(verifiedUser)
 end
 
 -- Called BEFORE scene has moved onscreen:

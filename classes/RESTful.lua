@@ -15,7 +15,7 @@ local d = util.print_r
 -- Class
 local RESTful = class 'RESTful'
 
-local DEBUG = false
+local DEBUG = true
 RESTful.PREVIEW_MOD = DEBUG
 
 -- supported http methods
@@ -171,7 +171,7 @@ function RESTful:call(name, t, headers, extraArgList, preCallbackHook, ...)
     end
   end
 
-  if t.required_payload then
+  if t.required_payload and type(arg[index]) ~= "function" then
     body = arg[index]
     index = index + 1
   end
@@ -242,7 +242,7 @@ function RESTful:call(name, t, headers, extraArgList, preCallbackHook, ...)
   end
 
   if t.required_payload then
-    if not body then
+    if (not body) or type(body) ~= "string" then
       body = args -- intent pass paramters in body, convert args to body
       args = ""
     end
@@ -293,8 +293,10 @@ function RESTful:call(name, t, headers, extraArgList, preCallbackHook, ...)
       bytesTransferred = event.bytesTransferred,
     }
 
-    if DEBUG then print("responsed") end
-
+    if DEBUG then
+      print("responsed")
+    end
+    
     handleResponse(event.isError, response)
   end
 
@@ -307,6 +309,7 @@ function RESTful:call(name, t, headers, extraArgList, preCallbackHook, ...)
     print("------Progress:")
     d(progress)
     print("---------------")
+    network.request(url, self.methods[t.method], listener, params)
   else
     network.request(url, self.methods[t.method], listener, params)
   end
