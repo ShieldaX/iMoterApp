@@ -132,8 +132,8 @@ function scene:create( event )
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
-  APP.Header = HeaderView:new({name = 'TopBar'}, sceneGroup)
-  APP.Footer = FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
+  APP.Header = APP.Header or HeaderView:new({name = 'TopBar'}, sceneGroup)
+  APP.Footer = APP.Footer or FooterView:new({name = 'AppTabs', barHeight = 64}, display.getCurrentStage())
 --  local _lgray = {colorHex('6C6C6C')}
   local labelFSize = 20
   local padding = labelFSize*.618

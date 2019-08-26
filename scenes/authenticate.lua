@@ -137,15 +137,13 @@ function scene:create( event )
   local _ColorGolden = {colorHex('C7A680')}
   local labelFSize = 34
   local padding = labelFSize*.618
-  local topMargin = oX + topInset
-  d(topMargin)
-  local layoutY = topMargin
+  local topMargin = topInset
+  
   local labelHeadline = display.newText( "欢迎回来", 0, 0, fontZcoolHuangYou, labelFSize)
 --  labelHeadline.anchorX = 0; labelHeadline.anchorY = .5
   labelHeadline.x = cX
   labelHeadline.y = topMargin + labelFSize
   sceneGroup:insert(labelHeadline)
-  layoutY = labelHeadline.y
 
   mui.newTextField({
       parent = mui.getParent(),
@@ -156,7 +154,7 @@ function scene:create( event )
       width = vW*.618,
       height = 36,
       x = cX,
-      y = topMargin + labelFSize*2 + 18,
+      y = labelFSize*2 + 48,
       trimAtLength = 30,
       activeColor = _ColorGolden,
       inactiveColor = _ColorGolden,
@@ -172,7 +170,7 @@ function scene:create( event )
       width = vW*.618,
       height = 36,
       x = cX,
-      y = topMargin + labelFSize*2 + 120,
+      y = labelFSize*2 + 140,
       activeColor = _ColorGolden,
       inactiveColor = _ColorGolden,
       callBack = mui.textfieldCallBack,
@@ -197,7 +195,7 @@ function scene:create( event )
   labelReturnStatus:setFillColor(unpack(_ColorGray))
   labelReturnStatus.anchorY = 0
   labelReturnStatus.x = cX
-  labelReturnStatus.y = topMargin + labelFSize*2 + 120 + 40
+  labelReturnStatus.y = topMargin + labelFSize*2 + 186
 -- ----------------------------------------------------------------------------
 -- HANDLE BUTTON PRESS
 -- ----------------------------------------------------------------------------
@@ -239,7 +237,7 @@ function scene:create( event )
       width = 150,
       height = 40,
       x = cX,
-      y = topMargin + labelFSize*2 + 220,
+      y = labelFSize*2 + 240,
       radius = 10,
       font = fontZcoolHuangYou,
       iconAlign = "left",
