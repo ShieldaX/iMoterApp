@@ -135,16 +135,19 @@ function scene:create( event )
   local _ColorGray = {colorHex('6C6C6C')}
   local _ColorDark = {colorHex('1A1A19')}
   local _ColorGolden = {colorHex('C7A680')}
-  local labelFSize = 20
+  local labelFSize = 34
   local padding = labelFSize*.618
-
-  local labelHeadline = display.newText( "欢迎回来", 0, 0, fontZcoolHuangYou, 34)
+  local topMargin = oX + topInset
+  d(topMargin)
+  local layoutY = topMargin
+  local labelHeadline = display.newText( "欢迎回来", 0, 0, fontZcoolHuangYou, labelFSize)
 --  labelHeadline.anchorX = 0; labelHeadline.anchorY = .5
   labelHeadline.x = cX
-  labelHeadline.y = topInset + labelFSize*2
+  labelHeadline.y = topMargin + labelFSize
   sceneGroup:insert(labelHeadline)
+  layoutY = labelHeadline.y
 
-  self.fieldEmail = mui.newTextField({
+  mui.newTextField({
       parent = mui.getParent(),
       name = "email",
       labelText = "邮箱",
@@ -153,14 +156,14 @@ function scene:create( event )
       width = vW*.618,
       height = 36,
       x = cX,
-      y = oX + topInset + 100,
+      y = topMargin + labelFSize*2 + 18,
       trimAtLength = 30,
       activeColor = _ColorGolden,
       inactiveColor = _ColorGolden,
       callBack = mui.textfieldCallBack
     })
 
-  self.fieldPassword = mui.newTextField({
+  mui.newTextField({
       parent = mui.getParent(),
       name = "password",
       labelText = "密码",
@@ -169,7 +172,7 @@ function scene:create( event )
       width = vW*.618,
       height = 36,
       x = cX,
-      y = oX + topInset + 180,
+      y = topMargin + labelFSize*2 + 120,
       activeColor = _ColorGolden,
       inactiveColor = _ColorGolden,
       callBack = mui.textfieldCallBack,
@@ -192,9 +195,9 @@ function scene:create( event )
 --    })
   local labelReturnStatus = display.newText(sceneGroup, "没有账户？点击创建", 0, 0, fontSHSansBold, 14)
   labelReturnStatus:setFillColor(unpack(_ColorGray))
---  labelReturnStatus.anchorX = 0; labelReturnStatus.anchorY = .5
+  labelReturnStatus.anchorY = 0
   labelReturnStatus.x = cX
-  labelReturnStatus.y = 360
+  labelReturnStatus.y = topMargin + labelFSize*2 + 120 + 40
 -- ----------------------------------------------------------------------------
 -- HANDLE BUTTON PRESS
 -- ----------------------------------------------------------------------------
@@ -236,7 +239,7 @@ function scene:create( event )
       width = 150,
       height = 40,
       x = cX,
-      y = oX + topInset + 320,
+      y = topMargin + labelFSize*2 + 220,
       radius = 10,
       font = fontZcoolHuangYou,
       iconAlign = "left",
