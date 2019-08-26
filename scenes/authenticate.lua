@@ -177,7 +177,7 @@ function scene:create( event )
       isSecure = true
     })
 
---  self.fieldUserName = mui.newTextField({
+--  mui.newTextField({
 --      parent = mui.getParent(),
 --      name = "username",
 --      labelText = "用户名",
