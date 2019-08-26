@@ -32,6 +32,9 @@ local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
 local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 
 local background = nil
+local labelHint = nil
+local labelHeadline = nil
+local isSignin = nil
 local widget = require( "widget" )
 
 local inspect = require('libs.inspect')
@@ -43,6 +46,7 @@ local AlbumList = require("views.album_list")
 --local MoterView = require("views.moter")
 local HeaderView = require("views.home_header")
 local FooterView = require("views.footer")
+local Toast = require 'views.toast'
 --local Indicator = require 'views.indicator'
 
 -- mui
@@ -139,7 +143,7 @@ function scene:create( event )
   local padding = labelFSize*.618
   local topMargin = topInset
   
-  local labelHeadline = display.newText( "欢迎回来", 0, 0, fontZcoolHuangYou, labelFSize)
+  labelHeadline = display.newText( "欢迎回来", 0, 0, fontZcoolHuangYou, labelFSize)
 --  labelHeadline.anchorX = 0; labelHeadline.anchorY = .5
   labelHeadline.x = cX
   labelHeadline.y = topMargin + labelFSize
@@ -170,75 +174,124 @@ function scene:create( event )
       width = vW*.618,
       height = 36,
       x = cX,
-      y = labelFSize*2 + 140,
+      y = labelFSize*2 + 128,
       activeColor = _ColorGolden,
       inactiveColor = _ColorGolden,
       callBack = mui.textfieldCallBack,
       isSecure = true
     })
 
---  mui.newTextField({
---      parent = mui.getParent(),
---      name = "username",
---      labelText = "用户名",
---      text = "nickname",
---      font = fontZcoolHuangYou,
---      width = vW*.618,
---      height = 36,
---      x = cX,
---      y = oX + topInset + 260,
---      activeColor = _ColorGolden,
---      inactiveColor = _ColorGolden,
---      callBack = mui.textfieldCallBack,
---    })
-  local labelReturnStatus = display.newText(sceneGroup, "没有账户？点击创建", 0, 0, fontSHSansBold, 14)
+  mui.newTextField({
+      parent = mui.getParent(),
+      name = "username",
+      labelText = "用户名",
+      text = "昵称",
+      font = fontZcoolHuangYou,
+      width = vW*.618,
+      height = 36,
+      x = cX,
+      y = labelFSize*2 + 48,
+      activeColor = _ColorGolden,
+      inactiveColor = _ColorGolden,
+      callBack = mui.textfieldCallBack,
+    })
+  local fieldName = mui.getWidgetProperty('username', 'object')
+  fieldName.alpha = 0
+  fieldName.isVisible = false
+  fieldName.isHitTestable = false
+  
+  local labelReturnStatus = display.newText(sceneGroup, "没有账户？点此注册", 0, 0, fontSHSansBold, 14)
   labelReturnStatus:setFillColor(unpack(_ColorGray))
   labelReturnStatus.anchorY = 0
   labelReturnStatus.x = cX
-  labelReturnStatus.y = topMargin + labelFSize*2 + 186
+  labelReturnStatus.y = topMargin + labelFSize*2 + 175
+  labelHint = labelReturnStatus
+  isSignin = true
+  function labelHint:switch()
+    if isSignin then
+      self.text = "已有账户？点此登录"
+      labelHeadline.text = "欢迎加入"
+      isSignin = false
+    else
+      self.text = "没有账户？点此注册"
+      labelHeadline.text = "欢迎回来"
+      isSignin = true
+    end
+  end
 -- ----------------------------------------------------------------------------
 -- HANDLE BUTTON PRESS
 -- ----------------------------------------------------------------------------
   local function btnOnPressHandler(event)    
     local email = mui.getWidgetProperty('email', 'value')
     local password = mui.getWidgetProperty('password', 'value')
+    local name = mui.getWidgetProperty('username', 'value')
 
     print(email)
     print(password)
-
-    -- stop if fields are blank
-    if(email == '' or password == '') then
---      labelReturnStatus.text = '请输入账户和密码！'
-      native.showAlert("登录失败", "请输入账户和密码！", { "好" } )
-      return
-    end
-    local function refreshToken(res)
-      if not res or not res.data then
-        native.showAlert("登录失败", "请输入正确的账户和密码！", { "好" } )
---        labelReturnStatus.text = '登录失败，请检查您的设置！'
-        return false
+    if isSignin then
+      -- stop if fields are blank
+      if(email == '' or password == '') then
+  --      labelReturnStatus.text = '请输入账户和密码！'
+        native.showAlert("登录失败", "请输入邮箱和密码！", { "好" } )
+        return
       end
-      if tonumber(res.status) == 200 then
-        APP.access_token = iMoter.headers.Authorization
-        local user = res.data.user
-        composer.setVariable('verifiedUser', user)
-        composer.hideOverlay('slideDown')
-      else
-        native.showAlert("登录失败", "请输入正确的账户和密码！", { "好" } )
---        labelReturnStatus.text = '登录失败，请输入正确的账户和密码！'
+      local function refreshToken(res)
+        if not res or not res.data then
+          native.showAlert("登录失败", "请输入正确的账户和密码！", { "好" } )
+  --        labelReturnStatus.text = '登录失败，请检查您的设置！'
+          return false
+        end
+        if tonumber(res.status) == 200 then
+          APP.access_token = iMoter.headers.Authorization
+          local user = res.data.user
+          composer.setVariable('verifiedUser', user)
+          composer.hideOverlay('slideDown')
+        else
+          native.showAlert("登录失败", "请输入正确的账户和密码！", { "好" } )
+  --        labelReturnStatus.text = '登录失败，请输入正确的账户和密码！'
+        end
       end
+      iMoter:login(email, password,  refreshToken)
+    else
+        -- validator blanks
+      if(email == '' or password == '' or name == '') then
+  --      labelReturnStatus.text = '请输入账户和密码！'
+        native.showAlert("注册失败", "请完整输入！", { "好" } )
+        return
+      end
+      local function signUp(res)
+        if not res or not res.data then
+          native.showAlert("注册失败", "请检查您的输入！", { "好" } )
+  --        labelReturnStatus.text = '登录失败，请检查您的设置！'
+          return false
+        end
+        if tonumber(res.status) == 200 then
+          Toast('注册成功，输入密码登录'):show()
+          local user = res.data
+--          composer.setVariable('verifiedUser', user)
+--          composer.hideOverlay('slideDown')
+          mui.setTextFieldValue('email', user.email)
+          mui.setTextFieldValue('username', user.name)
+          mui.setTextFieldValue('password', '')
+          self:switchUI()
+        else
+          native.showAlert("注册失败", "检查您的输入！", { "好" } )
+          d(res.data.message)
+  --        labelReturnStatus.text = '登录失败，请输入正确的账户和密码！'
+        end
+      end
+      iMoter:register(name, email, password, signUp)
     end
-    iMoter:login(email, password,  refreshToken)
   end
   mui.newRoundedRectButton({
       parent = mui.getParent(),
-      name = "register",
-      text = "登录",
+      name = "authenticate",
+      text = "登  录",
       width = 150,
       height = 40,
       x = cX,
-      y = labelFSize*2 + 240,
-      radius = 10,
+      y = labelFSize*2 + 226,
+      radius = 18,
       font = fontZcoolHuangYou,
       iconAlign = "left",
       textColor = _ColorDark,
@@ -259,20 +312,52 @@ function scene:create( event )
         }
       },
       callBack = btnOnPressHandler,
-      callBackData = {message = "newDialog callBack called"}, -- demo passing data to an event
+--      callBackData = {message = "newDialog callBack called"}, -- demo passing data to an event
     })
   -----------------------------------------------------------------------------
+end
+
+function scene:switchUI()
+--  if self.signing == true
+  local fieldEmail = mui.getWidgetProperty('email', 'object')
+  local fieldPassword = mui.getWidgetProperty('password', 'object')
+  local fieldName = mui.getWidgetProperty('username', 'object')
+  local buttonAuth = mui.getWidgetProperty('authenticate', 'object')
+  local deltaY = fieldPassword.y - fieldEmail.y
+  local transTime = 300
+  local easingType = easing.outCubic
+  if isSignin then
+    transition.to(fieldName, {time = transTime, alpha = 1, transition = easingType, onStart = function() fieldName.isVisible = true; fieldName.isHitTestable = true end})
+    transition.to(fieldEmail, {time = transTime, y = fieldPassword.y, transition = easingType})
+    transition.to(fieldPassword, {time = transTime, y = fieldName.y + deltaY*2, transition = easingType})
+    transition.to(labelHint, {time = transTime, y = labelHint.y + deltaY, transition = easingType, onStart = function() labelHint:switch() end})
+    local labelButtonText = mui.getWidgetProperty('authenticate', 'text')
+    transition.to(buttonAuth, {time = transTime, y = buttonAuth.y + deltaY, transition = easingType, onStart = function() labelButtonText.text = '注  册' end})
+  else
+    transition.to(fieldName, {time = transTime, alpha = 0, transition = easingType, onComplete = function() fieldName.isVisible = false; fieldName.isHitTestable = false end})
+    transition.to(fieldEmail, {time = transTime, y = fieldName.y, transition = easingType})
+    transition.to(fieldPassword, {time = transTime, y = fieldName.y + deltaY, transition = easingType})
+    transition.to(labelHint, {time = transTime, y = labelHint.y - deltaY, transition = easingType, onStart = function() labelHint:switch() end})
+    local labelButtonText = mui.getWidgetProperty('authenticate', 'text')
+    transition.to(buttonAuth, {time = transTime, y = buttonAuth.y - deltaY, transition = easingType, onStart = function() labelButtonText.text = '登  录' end})
+  end
 end
 
 -- Called BEFORE scene has moved onscreen:
 function scene:show( event )
   local sceneGroup = self.view
+  local this = self
   if event.phase == "did" then
     APP.Footer:hide()
     function background:tap(event)
       native.setKeyboardFocus(nil)
     end
-    background:addEventListener("tap",background)
+    background:addEventListener("tap", background)
+    
+    function labelHint:tap(event)
+      this:switchUI()
+    end
+    labelHint:addEventListener('tap', labelHint)
   end
 end
 

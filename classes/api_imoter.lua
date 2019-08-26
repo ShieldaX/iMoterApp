@@ -43,10 +43,10 @@ return {
     },
 
     -- Users
-    createUser = {
+    register = {
       path = "api/auth/register",
       required_params = { "name", "email", "password" },
-      optional_params = { "avatar_id" },
+--      optional_params = { "avatar_id" },
       method = "POST",
       required_payload = true,
     },
@@ -55,7 +55,6 @@ return {
       path = "api/auth/sign_in",
       required_params = { "email", "password" },
       method = "POST",
-      authentication = true,
       required_payload = true,
     },
 
