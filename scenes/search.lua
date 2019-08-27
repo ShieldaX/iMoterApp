@@ -37,7 +37,7 @@ local widget = require( "widget" )
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
-local AlbumList = require("views.album_list")
+local TagList = require("views.tag_list")
 local SearchBar = require("views.search_bar")
 --local Indicator = require 'views.indicator'
 
@@ -68,10 +68,34 @@ function scene:create( event )
   sceneGroup:insert( background )
 
   self.searchBar = SearchBar:new({name = 'searchBar'}, sceneGroup)
-  self.searchBar:show()
+--  self.searchBar:show()
   -- Push scene on to search tab [root]
   APP.pushScene({name = composer.getSceneName('current'), params = params}, 'search')
   -----------------------------------------------------------------------------
+end
+
+function scene:search(name)
+  local sceneGroup = self.view
+  local labelFSize = 20
+  local padding = labelFSize*.618
+  local function showTagsWithSearchResult(res)
+    if not res or not res.data then
+      native.showAlert("Oops!", "Tag list currently not avaialble!", { "Okay" } )
+      return false -- no need to try and run the rest of the function if we don't have our forecast.the
+    end
+    local _tagList = res.data.tags
+    local _data = res.data
+    local topPadding = self.searchBar.layer.contentHeight + 10
+    local tagListView = TagList:new(_data, topPadding, sceneGroup)
+    self.searchBar.layer:toFront()
+    self.tagListView = tagListView
+    local cursor = APP.Header.elements.cursor
+    tagListView.layer.y = tagListView.layer.y + cursor.y + padding
+    tagListView:buildTags()
+--    tagListView.bumper = iMoter
+  end
+--  TODO: check/validate searching name
+  iMoter:searchTags(name, showTagsWithSearchResult)
 end
 
 -- Called BEFORE scene has moved onscreen:
@@ -79,11 +103,10 @@ function scene:show( event )
   local sceneGroup = self.view
   if event.phase == "did" then
     APP.Footer:show()
+    self.searchBar:show()
     d('search showing...')
-
     function background:tap(event)
       native.setKeyboardFocus(nil)
-      d(event)
     end
     background:addEventListener("tap", background)
     
@@ -100,7 +123,7 @@ function scene:hide( event )
   local sceneGroup = self.view
   -- nothing to do here
   if event.phase == "will" then
-
+--    self.searchBar:hide()
   end
 
 end

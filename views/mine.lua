@@ -113,8 +113,8 @@ function MineList:initialize(topPadding, sceneGroup)
   myData[2] = { name="喜欢的女神",  phone="555-555-1235" }
   myData[3] = { name="开通会员",   phone="555-555-1236" }
   myData[4] = { name="问题反馈",   phone="555-555-1237" }
-  myData[5] = { name="关于IMOT", phone="555-555-1238" }
-  myData[6] = { name="帮助中心"}
+  myData[5] = { name="关于优之艺", phone="555-555-1238" }
+  myData[6] = { name="帮助中心FAQ"}
 
   for i = 1, #myData do
     myList:insertRow{

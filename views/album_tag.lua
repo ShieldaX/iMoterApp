@@ -107,7 +107,9 @@ function Tag:initialize(opts, parent)
   -- VISUAL INITIALIING
   local padding = 6
   local fontSize = 12
-  local _text = display.newText { text = self.id, x = 0, y = 0, fontSize = fontSize, align = 'center', font = fontSHSansBold }
+  self.size = opts.size or fontSize
+  
+  local _text = display.newText { text = self.id, x = 0, y = 0, fontSize = self.size, align = 'center', font = fontSHSansBold }
   --_text.anchorY = 1
   _text:setFillColor(colorHex('1A1A19'))
   _text.y = _text.y + padding*.4

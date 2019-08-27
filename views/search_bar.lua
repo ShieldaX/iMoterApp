@@ -1,4 +1,5 @@
 -- Use top dropdown panel
+local composer = require( "composer" )
 local widget = require( "widget" )
 local widgetExtras = require("libs.widget-extras")
 local mui = require( "materialui.mui" )
@@ -81,7 +82,7 @@ function Bar:initialize(opts, parent)
     onComplete = panelTransDone,
     width = self.barWidth,
     height = self.barHeight + topInset,
-    speed = 200,
+    speed = 400,
     inEasing = easing.outCubic,
     outEasing = easing.inCirc
   }
@@ -134,7 +135,7 @@ function Bar:initialize(opts, parent)
       parent = mui.getParent(),
       name = "search",
 --      labelText = "搜索",
-      text = "搜索",
+      text = "女神",
       font = fontSHSansBold,
       width = vW*.68,
       height = 32,
@@ -160,6 +161,10 @@ end
 
 function Bar:tap(event)
 --  stop any tap/touch propgation
+  local searchText = mui.getWidgetProperty('search', 'value')
+  d(searchText)
+  local scene = composer.getScene(composer.getSceneName('current'))
+  scene:search(searchText)
   return true
 end
 

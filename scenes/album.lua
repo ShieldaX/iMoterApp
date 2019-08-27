@@ -93,7 +93,7 @@ function scene:create( event )
     local _album = res.data.album
 --    d(_album)
     if _album.publisher then
-      local publisher = _album.publisher.name
+      local publisher = '优の艺' or _album.publisher.name
       self.header.elements.navBar:setLabel(publisher)
     end
     APP.albumView = AlbumView:new(_album, sceneGroup)

@@ -41,7 +41,14 @@ return {
       optional_params = { "fetchcover" },
       required_params = {"moter_id"},
     },
-
+    
+    -- Tag
+    searchTags = {
+      method = "GET",
+      path = "api/tags/search",
+      required_params = {"name"}
+    },
+    
     -- Users
     register = {
       path = "api/auth/register",
