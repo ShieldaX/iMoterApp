@@ -61,7 +61,7 @@ end
 -- Called when the scene's view does not exist:
 function scene:create( event )
   local sceneGroup = self.view
-  mui.init(nil, { parent=self.view })
+--  mui.init(nil, { parent=self.view })
   background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
@@ -79,7 +79,14 @@ function scene:show( event )
   local sceneGroup = self.view
   if event.phase == "did" then
     APP.Footer:show()
-    d('home showing...')
+    d('search showing...')
+
+    function background:tap(event)
+      native.setKeyboardFocus(nil)
+      d(event)
+    end
+    background:addEventListener("tap", background)
+    
     local sceneToRemove = composer.getVariable('sceneToRemove')
     if sceneToRemove then
       composer.removeScene(sceneToRemove)
@@ -101,7 +108,7 @@ end
 function scene:destroy( event )
   local sceneGroup = self.view
   -- nothing to do here
-  mui.destroy()
+--  mui.destroy()
 end
 
 ---------------------------------------------------------------------------------

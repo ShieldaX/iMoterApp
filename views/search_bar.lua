@@ -52,6 +52,7 @@ end
 function Bar:initialize(opts, parent)
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create a search bar")
   View.initialize(self, parent)
+  mui.init(nil, { parent=self.layer })
   assert(self.layer, 'Piece View Initialized Failed!')
   self.name = opts.name or '_search_bar' -- timestamp
   d('创建搜索条对象: '..self.name)
@@ -134,11 +135,11 @@ function Bar:initialize(opts, parent)
       name = "search",
 --      labelText = "搜索",
       text = "搜索",
-      font = fontZcoolHuangYou,
+      font = fontSHSansBold,
       width = vW*.68,
       height = 32,
       x = -vW*.06,
-      y = -32,
+      y = -topInset*.8,
       activeColor = _ColorGolden,
       inactiveColor = _ColorGolden,
       callBack = mui.textfieldCallBack,
