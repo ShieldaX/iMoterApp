@@ -118,15 +118,37 @@ function Bar:initialize(opts, parent)
   panel:insert(icon)
   icon:addEventListener('tap', self)
   
-  local input = widget.newTextField {
-      id = 'search_field',
-      left = -vW*.4, top = -18+topInset*.25,
-      width = vW*.69, height= 32,
-      label = '搜索',
-      labelFontSize = 12, labelFontColor = {colorHex('C7A680')},
-      labelWidth = 46
-    }
-  panel:insert(input)
+--  local input = widget.newTextField {
+--      id = 'search_field',
+--      left = -vW*.4, top = -18+topInset*.25,
+--      width = vW*.69, height= 32,
+--      label = '搜索',
+--      labelFontSize = 12, labelFontColor = {colorHex('C7A680')},
+--      labelWidth = 46
+--    }
+  local _ColorGray = {colorHex('6C6C6C')}
+  local _ColorDark = {colorHex('1A1A19')}
+  local _ColorGolden = {colorHex('C7A680')}
+  mui.newTextField({
+      parent = mui.getParent(),
+      name = "search",
+--      labelText = "搜索",
+      text = "搜索",
+      font = fontZcoolHuangYou,
+      width = vW*.68,
+      height = 32,
+      x = -vW*.06,
+      y = -32,
+      activeColor = _ColorGolden,
+      inactiveColor = _ColorGolden,
+      callBack = mui.textfieldCallBack,
+    })
+  local fieldSearch = mui.getWidgetProperty('search', 'object')
+--  fieldSearch.alpha = 0
+--  fieldSearch.isVisible = false
+--  fieldSearch.isHitTestable = false
+  panel:insert(fieldSearch)
+  
   
   self:_attach(panel, 'bar')
   self.hidden = true

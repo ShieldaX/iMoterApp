@@ -61,7 +61,7 @@ end
 -- Called when the scene's view does not exist:
 function scene:create( event )
   local sceneGroup = self.view
---  mui.init(nil, { parent=self.view })
+  mui.init(nil, { parent=self.view })
   background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
@@ -101,6 +101,7 @@ end
 function scene:destroy( event )
   local sceneGroup = self.view
   -- nothing to do here
+  mui.destroy()
 end
 
 ---------------------------------------------------------------------------------
