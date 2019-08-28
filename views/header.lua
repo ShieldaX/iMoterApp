@@ -75,7 +75,8 @@ local navBarHeight = nil
 function Header:initialize(opts, parent)
   assert(type(opts) == 'table' and next(opts) ~= nil, "a named option hash table need to create the header")
   View.initialize(self, parent)
-  self.name = opts.name or '_indicator' -- timestamp
+  self.onTab = opts.onTab or 'home'
+  self.name = opts.name or self.onTab .. '_stack_header' -- timestamp
   -- -------------------
   -- DATA BINDING
   --

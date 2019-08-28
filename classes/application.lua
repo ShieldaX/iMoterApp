@@ -43,14 +43,21 @@ function M.previousScene(tab)
 end
 
 function M:sceneForwards(params)
+  local tab = self:currentTab() or 'home'
   local currentSceneName = composer.getSceneName('current')
   local sceneToRemove = composer.getVariable('sceneToRemove')
   if not sceneToRemove then
-    self.pushScene({name = currentSceneName, params = params}, 'home')
+    self.pushScene({name = currentSceneName, params = params}, tab)
   end
 end
 
+function M:currentTab()
+  local AppFooter = self.Footer
+  return AppFooter and AppFooter.tabSelected
+end
+
 function M:sceneBackwards(tab)
+  tab = tab or self:currentTab() or 'home'
   local prevScene = self.previousScene(tab)
   if prevScene then
     d('CBack to :')

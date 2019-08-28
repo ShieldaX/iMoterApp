@@ -75,14 +75,16 @@ function scene:create( event )
   local params = event.params
   local tag_id = params.tag_id or 'meitui'
   local tag_name = params.tag_name or '美腿'
-  mui.init(nil, { parent=self.view })
+  
+  local onTab = params.onTab or 'home'
+--  mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
   -- Create a vector rectangle sized exactly to the "safe area"
   background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
-  self.header = HeaderView:new({name = 'TopBar'}, sceneGroup)
+  self.header = HeaderView:new({name = 'TopBar', onTab = onTab}, sceneGroup)
 --  local _lgray = {colorHex('6C6C6C')}
   local labelFSize = 20
   local padding = labelFSize*.618

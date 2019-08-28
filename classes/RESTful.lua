@@ -15,7 +15,7 @@ local d = util.print_r
 -- Class
 local RESTful = class 'RESTful'
 
-local DEBUG = true
+local DEBUG = false
 RESTful.PREVIEW_MOD = DEBUG
 
 -- supported http methods
