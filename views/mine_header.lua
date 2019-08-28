@@ -128,7 +128,8 @@ function Header:showAvatar()
   uname.anchorX = 0
   uname.x = avatar.x + avatar.width*.8
   uname.y = avatar.y
-  local function userAuthentication()
+  local function userAuthentication(tap)
+    if APP.access_token then return end
     local options =
     {
       isModal = true,

@@ -80,7 +80,7 @@ function Header:initialize(opts, parent)
   local titleFSize = 12
   local labelFSize = 18
   local padding = labelFSize*.618
-  local gY = topInset + padding*2 + 14
+  local gY = topInset + padding*2 + 10
   
   local labelTitle = display.newText {text = '女神图集', x = vW*.26, y = gY, fontSize = 28, font = fontZcoolHuangYou}
   gY = gY + padding*3 + 14

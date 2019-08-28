@@ -76,6 +76,10 @@ function scene:create( event )
 end
 
 function scene:search(name)
+  if self.tagListView then
+    self.tagListView:cleanup()
+    self.tagListView = nil
+  end
   local sceneGroup = self.view
   local labelFSize = 20
   local padding = labelFSize*.618
@@ -85,6 +89,9 @@ function scene:search(name)
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
     local _tagList = res.data.tags
+    if not next(_tagList) then 
+      
+    end
     local _data = res.data
     local topPadding = self.searchBar.layer.contentHeight + 10
     local tagListView = TagList:new(_data, topPadding, sceneGroup)
@@ -108,6 +115,10 @@ function scene:show( event )
     d('search showing...')
     function background:tap(event)
       native.setKeyboardFocus(nil)
+      if self.tagListView then
+        self.tagListView:cleanup()
+        self.tagListView = nil
+      end
     end
     background:addEventListener("tap", background)
     

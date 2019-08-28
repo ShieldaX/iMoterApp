@@ -249,6 +249,7 @@ function scene:create( event )
         else
           native.showAlert("登录失败", "请输入正确的账户和密码！", { "好" } )
   --        labelReturnStatus.text = '登录失败，请输入正确的账户和密码！'
+          APP.access_token = nil
         end
       end
       iMoter:login(email, password,  refreshToken)
@@ -375,7 +376,7 @@ end
 function scene:destroy( event )
   local sceneGroup = self.view
   -- nothing to do here
-  mui.destroy()
+  --mui.destroy()
 end
 
 ---------------------------------------------------------------------------------
