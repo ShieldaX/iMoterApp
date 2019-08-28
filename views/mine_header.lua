@@ -70,19 +70,20 @@ function Header:initialize(opts, parent)
   -- -------------------
   -- VISUAL INITIALIING
   -- Configure topbar
-  navBarHeight = 42
+  navBarHeight = 60
   self.navBarHeight = navBarHeight
+  theme.navBarBackgroundColor = {colorHex('1A1A19')}
 
-  local bg = display.newRect(cX, navBarHeight, vW, vH*.24)
+  local bg = display.newRect(cX, navBarHeight, vW, vH*.2 + topInset*.5)
   bg:setFillColor(unpack(theme.navBarBackgroundColor))
   bg.anchorY = 0
   self:_attach(bg, 'bg')
 
-  local RightButton = {
+  local rightButton = {
     id = 'backBtn',
-    label = '设置 ',
+    label = '设置  ',
     font = fontZcoolHuangYou,
-    fontSize = 16,
+    fontSize = 20,
     onEvent = opts.onEvent or leftButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
   }
@@ -92,10 +93,10 @@ function Header:initialize(opts, parent)
       backgroundColor = theme.navBarBackgroundColor,
       title = "个人中心",
       titleColor = {colorHex('C7A680')},
-      font = fontDMFT, fontSize = 18,
+      font = fontZcoolHuangYou, fontSize = 28,
       height = navBarHeight,
       includeStatusBar = false,
-      rightButton = RightButton,
+      rightButton = rightButton,
     })
   self.navBarYPos = navBar.y
   self:_attach(navBar, 'navBar')
@@ -117,11 +118,11 @@ function Header:showAvatar()
   self:_attach(avatar, 'avatar')
   local bg = self.elements.bg
   avatar.x = vW*.2
-  avatar.y = bg.y + bg.contentHeight*.6
+  avatar.y = bg.y + avatar.contentHeight*.6 + topInset
   local uname = display.newText {
     text = '登录/注册',
-    font = fontDMFT,
-    fontSize = 20,
+    font = fontZcoolHuangYou,
+    fontSize = 26,
   }
   self:_attach(uname, 'auth')
   uname.anchorX = 0
@@ -148,30 +149,30 @@ function Header:loadUser(event)
   self.elements.auth.text = user.name
 end
 
-function Header:hide()
-  local navBar = self.elements.navBar
-  if not navBar or self.isHidden then return false end
-  local targetY = navBar.y-navBarHeight
-  self:signal('onHeaderMove', {hidden = true, targetYPos = targetY + self.navBarHeight + topInset})
-  self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
-  self.isHidden = true
-end
+--function Header:hide()
+--  local navBar = self.elements.navBar
+--  if not navBar or self.isHidden then return false end
+--  local targetY = navBar.y-navBarHeight
+--  self:signal('onHeaderMove', {hidden = true, targetYPos = targetY + self.navBarHeight + topInset})
+--  self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
+--  self.isHidden = true
+--end
 
-function Header:show()
-  local navBar = self.elements.navBar
-  if not navBar or not self.isHidden then return false end
-  local targetY = self.navBarYPos
-  self:signal('onHeaderMove', {hidden = false, targetYPos = targetY + self.navBarHeight + topInset})
-  self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
-  self.isHidden = false
-end
+--function Header:show()
+--  local navBar = self.elements.navBar
+--  if not navBar or not self.isHidden then return false end
+--  local targetY = self.navBarYPos
+--  self:signal('onHeaderMove', {hidden = false, targetYPos = targetY + self.navBarHeight + topInset})
+--  self.animation = transition.to(navBar, {time = 450, transition = easing.outExpo, y = targetY})
+--  self.isHidden = false
+--end
 
-function Header:toggle()
-  if self.isHidden then
-    self:show()
-  else
-    self:hide()
-  end
-end
+--function Header:toggle()
+--  if self.isHidden then
+--    self:show()
+--  else
+--    self:hide()
+--  end
+--end
 
 return Header

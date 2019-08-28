@@ -64,7 +64,7 @@ function scene:create( event )
   local sceneGroup = self.view
 --  mui.init(nil, { parent=self.view })
   background = display.newRect(sceneGroup, oX, oY, vW, vH)
-  background:setFillColor(convertColor.rgb(32, 32, 32))
+  background:setFillColor(colorHex('1A1A19'))
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
   sceneGroup:insert( background )
 

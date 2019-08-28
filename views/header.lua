@@ -98,9 +98,9 @@ function Header:initialize(opts, parent)
   local navBar = widget.newNavigationBar({
 		isTransluscent = true,
 		backgroundColor = theme.navBarBackgroundColor,
-		title = "图集",
+		title = "优之艺",
 		titleColor = {colorHex('C7A680')},
-		font = fontDMFT, fontSize = 18,
+		font = fontZcoolHuangYou, fontSize = 20,
 		height = navBarHeight,
 		includeStatusBar = false,
 		leftButton = leftButton,

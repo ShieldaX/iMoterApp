@@ -20,15 +20,17 @@ local Cover = require 'views.album_cover'
 local MineList = class('MineList', View)
 local APP = require("classes.application")
 
--- Constants List:
-local oX = display.screenOriginX
-local oY = display.screenOriginY
+--Display Constants List:
+local oX = display.safeScreenOriginX
+local oY = display.safeScreenOriginY
 local vW = display.viewableContentWidth
 local vH = display.viewableContentHeight
+local visibleAspectRatio = vW/vH
 local screenW, screenH, halfW, halfH = display.contentWidth, display.contentHeight, display.contentWidth*0.5, display.contentHeight*0.5
-local viewableScreenW, viewableScreenH = display.viewableContentWidth, display.viewableContentHeight
+local cX, cY = display.contentCenterX, display.contentCenterY
+local sW, sH = display.safeActualContentWidth, display.safeActualContentHeight
 local screenOffsetW, screenOffsetH = display.contentWidth -  display.viewableContentWidth, display.contentHeight - display.viewableContentHeight
-local cX, cY = screenOffsetW + halfW, screenOffsetH + halfH
+local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
 -- Fonts
 local fontDMFT = 'assets/fonts/DMFT1541427649707.ttf'
@@ -98,37 +100,37 @@ function MineList:initialize(topPadding, sceneGroup)
 
   local navBarHeight = topPadding or 100
   local tabBarHeight = 50
-  local myList = widget.newTableView {
+  local menuList = widget.newTableView {
     top = navBarHeight, 
     width = display.contentWidth,
     height = display.contentHeight - navBarHeight - tabBarHeight,
     onRowRender = onRowRender,
     onRowTouch = onRowTouch,
     hideBackground = true,
-    topPadding = 20,
+    topPadding = topInset*.36,
   }
 
-  local myData = {}
-  myData[1] = { name="收藏的图集",    phone="555-555-1234" }
-  myData[2] = { name="喜欢的女神",  phone="555-555-1235" }
-  myData[3] = { name="开通会员",   phone="555-555-1236" }
-  myData[4] = { name="问题反馈",   phone="555-555-1237" }
-  myData[5] = { name="关于优之艺", phone="555-555-1238" }
-  myData[6] = { name="帮助中心FAQ"}
+  local menuData = {}
+  menuData[1] = { name="收藏的图集" }
+  menuData[2] = { name="喜欢的女神" }
+  menuData[3] = { name="开通会员"   }
+  menuData[4] = { name="问题反馈"   }
+  menuData[5] = { name="关于优艺"   }
+  menuData[6] = { name="帮助中心"   }
 
-  for i = 1, #myData do
-    myList:insertRow{
+  for i = 1, #menuData do
+    menuList:insertRow{
       rowHeight = 60,
       isCategory = false,
       rowColor = { default=labelColor, over={1,0.5,0,0.2} },
       lineColor = {.5, .5, .5, .5},
       params = {
-        name = myData[i].name,
-        phone = myData[i].phone
+        name = menuData[i].name,
+        phone = menuData[i].phone
       }
     }
   end
-  self:_attach(myList, 'table')
+  self:_attach(menuList, 'table')
   -- END VISUAL INITIALIING
   -- -------------------
 end

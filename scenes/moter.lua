@@ -135,7 +135,7 @@ end
 function scene:loadMoterAlbumList()
   if self.moterAlbumListView then return end
   local oldLabel = self.header.elements.navBar:getLabel()
-  self.header.elements.navBar:setLabel(oldLabel..'·图集')
+  self.header.elements.navBar:setLabel(oldLabel..' | 图集')
   local sceneGroup = self.view
   local labelFSize = 20
   local padding = labelFSize*.618

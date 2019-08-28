@@ -33,6 +33,7 @@ local fontSHSans = 'assets/fonts/SourceHanSansK-Regular.ttf'
 local fontSHSansBold = 'assets/fonts/SourceHanSansK-Bold.ttf'
 local fontMorganiteBook = 'assets/fonts/Morganite-Book-4.ttf'
 local fontMorganiteSemiBold = 'assets/fonts/Morganite-SemiBold-9.ttf'
+local fontZcoolHuangYou = 'assets/fonts/站酷庆科黄油体.ttf'
 -- ---
 -- CLASSES Declaration
 --
@@ -59,7 +60,7 @@ function Bar:initialize(opts, parent)
   d('创建搜索条对象: '..self.name)
   -- -------------------
   -- DATA BINDING
-  self.barHeight = opts.barHeight or 64
+  self.barHeight = opts.barHeight or 120
   self.barWidth = opts.barWidth or vW
   -- END DATA BINDING
   -- -------------------
@@ -76,7 +77,8 @@ function Bar:initialize(opts, parent)
   local function handleTabBarEvent( event )
     print( event.target.id )  -- Reference to button's 'id' parameter
   end
-  local backgroundColor = colorsRGB.RGBA('black', 0.9)
+  local backgroundColor = colorsRGB.RGBA('black', 1)
+  backgroundColor = {colorHex('1A1A19')}
   local panel = widget.newPanel{
     location = "top",
     onComplete = panelTransDone,
@@ -86,13 +88,14 @@ function Bar:initialize(opts, parent)
     inEasing = easing.outCubic,
     outEasing = easing.inCirc
   }
-  local backgroundRect = display.newRect( 0, -1, panel.width, panel.height - 2 )
+  local strokeWidth = 0
+  local backgroundRect = display.newRect( 0, -strokeWidth*.5, panel.width, panel.height - strokeWidth )
   backgroundRect:setFillColor(unpack(backgroundColor))
   local strokeLine = display.newLine(-vW*.5, panel.height*.5, vW*.5, panel.height*.5)
   strokeLine.anchorX = 1
   strokeLine.anchorY = .5
   strokeLine:setStrokeColor(colorHex('C7A680'))
-  strokeLine.strokeWidth = 2
+  strokeLine.strokeWidth = strokeWidth
 --  backgroundRect:setStrokeColor(colorHex('C7A680'))
 --  backgroundRect.strokeWidth = 1
   local background = display.newGroup()
@@ -103,8 +106,8 @@ function Bar:initialize(opts, parent)
   
   local iconOption =  {
       id = "search_icon",
-      icon = {name = 'search', fontSize = 36},
-      xOffset = vW*0.36, yOffset = topInset*.25
+      icon = {name = 'search', fontSize = 38},
+      xOffset = vW*0.34, yOffset = topInset*.5 + 16
     }
   local defaultColor = {colorHex('6C6C6C')}
   local overColor = {colorHex('C7A680')}
@@ -114,6 +117,8 @@ function Bar:initialize(opts, parent)
     text = 'search',
     fontSize = 32
   }
+  icon.defaultColor = defaultColor
+  icon.overColor = overColor
   icon:setFillColor(unpack(fillColor))
   icon.x = iconOption.xOffset
   icon.y = iconOption.yOffset
@@ -131,20 +136,28 @@ function Bar:initialize(opts, parent)
   local _ColorGray = {colorHex('6C6C6C')}
   local _ColorDark = {colorHex('1A1A19')}
   local _ColorGolden = {colorHex('C7A680')}
+  
+  local labelFSize = 18
+  local padding = labelFSize*.618
+  local gY = padding
+  local labelTitle = display.newText {text = '分类搜索', x = -vW*.24, y = -gY + topInset*.5, fontSize = 28, font = fontZcoolHuangYou}
+  panel:insert(labelTitle)
   mui.newTextField({
       parent = mui.getParent(),
       name = "search",
 --      labelText = "搜索",
       text = "女神",
-      font = fontSHSansBold,
-      width = vW*.68,
+      font = fontZcoolHuangYou,
+      width = vW*.6,
       height = 32,
       x = -vW*.06,
-      y = -topInset*.8,
+      y = -padding*.5 - topInset*.5 + 32,
       activeColor = _ColorGolden,
       inactiveColor = _ColorGolden,
       callBack = mui.textfieldCallBack,
     })
+  labelTitle.y = labelTitle.y - labelTitle.contentHeight*.5
+  icon.y = icon.y + padding
   local fieldSearch = mui.getWidgetProperty('search', 'object')
 --  fieldSearch.alpha = 0
 --  fieldSearch.isVisible = false

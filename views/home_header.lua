@@ -80,13 +80,14 @@ function Header:initialize(opts, parent)
   local titleFSize = 12
   local labelFSize = 18
   local padding = labelFSize*.618
-  local gY = topInset + padding*2
+  local gY = topInset + padding*2 + 14
   
---  local labelTitle = display.newText {text = '女神图集', x = vW*.24, y = gY, fontSize = 26, font = fontZcoolHuangYou}
---  gY = gY + padding*4
-  local labelUpdate = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
-  local labelHot = display.newText {text = '热门', x = vW*.5, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
-  local labelRecom = display.newText {text = '推荐', x = vW*.76, y = gY, fontSize = labelFSize, font = fontZcoolHuangYou}
+  local labelTitle = display.newText {text = '女神图集', x = vW*.26, y = gY, fontSize = 28, font = fontZcoolHuangYou}
+  gY = gY + padding*3 + 14
+  local labelUpdate = display.newText {text = '最新', x = vW*.24, y = gY, fontSize = labelFSize+2, font = fontZcoolHuangYou}
+  local labelHot = display.newText {text = '热门', x = vW*.5, y = gY, fontSize = labelFSize+2, font = fontZcoolHuangYou}
+  local labelRecom = display.newText {text = '推荐', x = vW*.76, y = gY, fontSize = labelFSize+2, font = fontZcoolHuangYou}
+  self:_attach(labelTitle, 'labelTitle')
   self:_attach(labelUpdate, 'labelUpdate')
   self:_attach(labelHot, 'labelHot')
   self:_attach(labelRecom, 'labelRecom')
