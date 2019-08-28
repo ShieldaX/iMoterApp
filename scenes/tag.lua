@@ -95,7 +95,7 @@ function scene:create( event )
     end
     local _albumList = res.data.albums
     local _data = res.data
-    d(_data)
+--    d(_data)
     self.header.elements.navBar:setLabel(tag_name)
     local topPadding = topInset
     local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
@@ -120,7 +120,7 @@ function scene:show( event )
       composer.removeScene(sceneToRemove)
       composer.setVariable('sceneToRemove', false)
     end
---    APP._scenes()
+    APP._scenes()
   end
 end
 

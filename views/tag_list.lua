@@ -122,6 +122,9 @@ function TagList:buildTags(tags, left, top)
     if tagL.x + tagL.contentWidth >= vW then
       left = 20
       top = top + 48
+      tagL.x = left
+      tagL.y = top
+      left = left + tagL.contentWidth + 16
     end
     tag:start()
     table.insert(self._elements, tag)
@@ -129,13 +132,14 @@ function TagList:buildTags(tags, left, top)
 end
 
 function TagList:onTagTapped(event)
+  APP.Footer:hide()
   local options = {
     effect = "slideLeft",
     time = 300,
-    params = {tag_id = event.tagID, tag_name = event.tagName}
+    params = {tag_id = event.tagID, tag_name = event.tagName, tab = 'search'}
   }
   d(options)
-  d('打开标签专门页面...')
+  d('打开搜索后标签页面...')
   composer.gotoScene( "scenes.tag", options )
   -- recycle album scene while switching to tagged album list scene
 --  composer.setVariable('sceneToRemove', 'scenes.album')

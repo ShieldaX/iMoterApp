@@ -93,7 +93,7 @@ function scene:create( event )
     local _album = res.data.album
 --    d(_album)
     if _album.publisher then
-      local publisher = '优の艺' or _album.publisher.name
+      local publisher = _album.publisher.name or '优の艺'
       self.header.elements.navBar:setLabel(publisher)
     end
     APP.albumView = AlbumView:new(_album, sceneGroup)
@@ -103,13 +103,6 @@ function scene:create( event )
   end
   iMoter:getAlbumById(album_id, openAlbumWithData)
   APP:sceneForwards(params)
---  local prevScene = APP.previousScene()
---  local _currentScene = APP.currentScene()
---  local currentSceneName = composer.getSceneName('current')
---  local sceneToRemove = composer.getVariable('sceneToRemove')
---  if not sceneToRemove then
---    APP.pushScene({name = currentSceneName, params = params})
---  end
   -----------------------------------------------------------------------------
 end
 

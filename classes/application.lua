@@ -44,6 +44,7 @@ end
 
 function M:sceneForwards(params)
   local tab = self:currentTab() or 'home'
+  d('当前所在TAB：'..tab)
   local currentSceneName = composer.getSceneName('current')
   local sceneToRemove = composer.getVariable('sceneToRemove')
   if not sceneToRemove then
@@ -58,11 +59,12 @@ end
 
 function M:sceneBackwards(tab)
   tab = tab or self:currentTab() or 'home'
+  d('当前所在TAB：'..tab)
   local prevScene = self.previousScene(tab)
   if prevScene then
     d('CBack to :')
     d(prevScene.name)
-    local currentSceneName = self.currentScene().name
+    local currentSceneName = self.currentScene(tab).name
     if not (currentSceneName == prevScene.name) then
       d('remove '..currentSceneName)
       composer.setVariable('sceneToRemove', currentSceneName)

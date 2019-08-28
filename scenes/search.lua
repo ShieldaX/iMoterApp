@@ -113,6 +113,7 @@ function scene:show( event )
     local sceneToRemove = composer.getVariable('sceneToRemove')
     if sceneToRemove then
       composer.removeScene(sceneToRemove)
+      d(sceneToRemove)
       composer.setVariable('sceneToRemove', false)
     end
     APP._scenes()
