@@ -92,7 +92,7 @@ function Bar:initialize(opts, parent)
   strokeLine.anchorX = 1
   strokeLine.anchorY = .5
   strokeLine:setStrokeColor(colorHex('C7A680'))
-  strokeLine.strokeWidth = 1
+  strokeLine.strokeWidth = 2
 --  backgroundRect:setStrokeColor(colorHex('C7A680'))
 --  backgroundRect.strokeWidth = 1
   local background = display.newGroup()

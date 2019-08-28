@@ -26,7 +26,7 @@ local _colors = {
 
 -- source https://gist.github.com/jasonbradley/4357406
 local function hex2rgb (hex)
-    local hex = hex:gsub("#","")
+    hex = hex:gsub("#","")
     local r, g, b = tonumber("0x"..hex:sub(1,2)), tonumber("0x"..hex:sub(3,4)), tonumber("0x"..hex:sub(5,6))
     return r/255, g/255, b/255 -- Corona needs percentages
 end

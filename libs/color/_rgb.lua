@@ -182,7 +182,7 @@ local M
       }
 
     function M.color( arg )
-      local arg = arg or "white"
+      arg = arg or "white"
       if M[arg] then
         return M[arg][1], M[arg][2], M[arg][3]
       else
