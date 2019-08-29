@@ -70,7 +70,7 @@ end
 function scene:create( event )
 	local sceneGroup = self.view
   local params = event.params
-  composer.setVariable( "autoRotate", false )
+--  composer.setVariable( "autoRotate", false )
   mui.init(nil, { parent=self.view })
   -----------------------------------------------------------------------------
   --      CREATE display objects and add them to 'group' here.

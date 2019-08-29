@@ -82,6 +82,10 @@ function scene:create( event )
   local function onSwitchPress( event )
     local switch = event.target
     print( "Switch with ID '"..switch.id.."' is on: "..tostring(switch.isOn) )
+    composer.setVariable( "autoRotate", not switch.isOn)
+    d('-------------- SET AUTO ROTATE ---------')
+    d(composer.getVariable( "autoRotate"))
+--    switch.isOn = not switch.isOn
   end
   -- Create the widget
   local autoRotateLabel = display.newText( "横图自动旋转", 0, 0, fontZcoolHuangYou, labelFSize*.69)
@@ -95,8 +99,8 @@ function scene:create( event )
       left = cX + labelFSize,
       top = gY,
       style = "onOff",
-      id = "onOffSwitch",
-      initialSwitchState = false, --TODO: load state from local_storage
+      id = "autoRotateSwitch",
+      initialSwitchState = composer.getVariable('autoRotate') or false, --TODO: load state from local_storage
       onPress = onSwitchPress
     }
   )

@@ -112,6 +112,18 @@ function TagList:buildTags(tags, left, top)
   top = top or 60
   left = left or 20
   tags = tags or self._tags
+  if not next(tags) then
+    local notFoundLabel = display.newText {
+      parent = self.layer,
+      text = '未找到匹配的标签，请尝试其他关键词',
+      x = cX, y = cY - vH*.32,
+      width = vW*.9, height = 0,
+      font = fontSHSansBold, fontSize = 16,
+      align = 'center'
+    }
+    notFoundLabel:setFillColor(colorHex('6C6C6C'))
+    return
+  end
   for k, _tag in pairs(tags) do
     _tag.size = 16
     local tag = Tag:new(_tag, self.elements.slider)

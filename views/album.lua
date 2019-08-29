@@ -108,7 +108,9 @@ function Album:initialize(obj, sceneGroup)
   self.currentPieceId = nil
   self.paintedPieceId = nil
   self.pieceAutoRotate = composer.getVariable('autoRotate')
-  composer.setVariable( "autoRotate", self.pieceAutoRotate )
+  d('--------------AUTO ROTATE? ---------')
+  d(self.pieceAutoRotate)
+--  composer.setVariable( "autoRotate", self.pieceAutoRotate )
   -- END DATA BINDING
   -- -------------------
   -- -------------------

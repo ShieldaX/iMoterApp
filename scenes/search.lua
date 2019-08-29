@@ -88,10 +88,10 @@ function scene:search(name)
       native.showAlert("Oops!", "Tag list currently not avaialble!", { "Okay" } )
       return false -- no need to try and run the rest of the function if we don't have our forecast.the
     end
-    local _tagList = res.data.tags
-    if not next(_tagList) then 
+--    local _tagList = res.data.tags
+--    if not next(_tagList) then 
       
-    end
+--    end
     local _data = res.data
     local topPadding = self.searchBar.layer.contentHeight + 10
     local tagListView = TagList:new(_data, topPadding, sceneGroup)

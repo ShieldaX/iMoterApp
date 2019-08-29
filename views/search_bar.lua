@@ -140,7 +140,7 @@ function Bar:initialize(opts, parent)
   local labelFSize = 18
   local padding = labelFSize*.618
   local gY = padding
-  local labelTitle = display.newText {text = '分类搜索', x = -vW*.24, y = -gY + topInset*.5, fontSize = 28, font = fontZcoolHuangYou}
+  local labelTitle = display.newText {text = '标签搜索', x = -vW*.24, y = -gY + topInset*.5, fontSize = 28, font = fontZcoolHuangYou}
   panel:insert(labelTitle)
   mui.newTextField({
       parent = mui.getParent(),
