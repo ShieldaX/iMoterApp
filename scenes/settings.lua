@@ -31,11 +31,7 @@ local d = util.print_r
 local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
---local mui = require( "materialui.mui" )
-local AlbumView = require("views.album")
---local Tag = require("views.album_tag")
 local HeaderView = require("views.header")
-local Card = require 'views.album_card'
 
 -- mui
 --local muiData = require( "materialui.mui-data" )
@@ -59,18 +55,17 @@ local iMoter = iMoterAPI:new()
 -- BEGINNING OF YOUR IMPLEMENTATION
 ---------------------------------------------------------------------------------
 
-function scene:showInfo(album)
-  local cardOpts = album
-  cardOpts.name = 'infoCard'
-  self.infoCard = Card:new(cardOpts, self.view)
-  self.infoCard:showMoters(album.moters)
-end
-
 -- Called when the scene's view does not exist:
 function scene:create( event )
 	local sceneGroup = self.view
   local params = event.params
   mui.init(nil, { parent=self.view })
+  local _ColorGray = {colorHex('6C6C6C')}
+  local _ColorDark = {colorHex('1A1A19')}
+  local _ColorGolden = {colorHex('C7A680')}
+  local labelFSize = 34
+  local padding = labelFSize*.618
+  local topMargin = topInset
   -----------------------------------------------------------------------------
   -- Create a vector rectangle sized exactly to the "safe area"
   local background = display.newRect(sceneGroup, oX, oY, vW, vH)
@@ -79,7 +74,40 @@ function scene:create( event )
   sceneGroup:insert( background )
   
   self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
-  
+  self.header.elements.navBar:setLabel('设置')
+
+  mui.newRoundedRectButton({
+      parent = mui.getParent(),
+      name = "sign_out",
+      text = "退出登录",
+      width = 150,
+      height = 40,
+      x = cX,
+      y = labelFSize*2 + 226,
+      radius = 18,
+      font = fontZcoolHuangYou,
+      iconAlign = "left",
+      textColor = _ColorDark,
+      fillColor = colorsRGB.RGBA('firebrick'),
+      state = {
+        value = "off", -- defaults to "off", values: off, on and disabled
+        off = {
+          textColor = {1, 1, 1},
+          fillColor = {0, 0.81, 1}
+        },
+        on = {
+          textColor = {1, 1, 1},
+          fillColor = {0, 0.61, 1}
+        },
+        disabled = {
+          textColor = {1, 1, 1},
+          fillColor = {.3, .3, .3}
+        }
+      },
+      callBack = btnOnPressHandler,
+--      callBackData = {message = "newDialog callBack called"}, -- demo passing data to an event
+    })
+
   APP:sceneForwards(params, 'mine')
   -----------------------------------------------------------------------------
 end

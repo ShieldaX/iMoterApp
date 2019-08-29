@@ -46,9 +46,13 @@ local APP = require( "classes.application" )
 local View = require "libs.view"
 local Header = class('HeaderView', View)
 
-local function leftButtonEvent( event )
+local function rightButtonEvent( event )
   if event.phase == "ended" then
-    APP:sceneBackwards()
+    local options = {
+        effect = 'slideLeft',
+        time = 420
+      }
+    composer.gotoScene('scenes.settings', options)
   end
   return true
 end
@@ -84,7 +88,7 @@ function Header:initialize(opts, parent)
     label = '设置  ',
     font = fontZcoolHuangYou,
     fontSize = 20,
-    onEvent = opts.onEvent or leftButtonEvent,
+    onEvent = opts.onEvent or rightButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
   }
 
