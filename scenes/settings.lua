@@ -66,6 +66,7 @@ function scene:create( event )
   local labelFSize = 34
   local padding = labelFSize*.618
   local topMargin = topInset
+  local gY
   -----------------------------------------------------------------------------
   -- Create a vector rectangle sized exactly to the "safe area"
   local background = display.newRect(sceneGroup, oX, oY, vW, vH)
@@ -75,38 +76,112 @@ function scene:create( event )
   
   self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
   self.header.elements.navBar:setLabel('设置')
-
-  mui.newRoundedRectButton({
-      parent = mui.getParent(),
-      name = "sign_out",
-      text = "退出登录",
-      width = 150,
+  
+  -- Usage
+  -- 横图自动旋转 =================================
+  local function onSwitchPress( event )
+    local switch = event.target
+    print( "Switch with ID '"..switch.id.."' is on: "..tostring(switch.isOn) )
+  end
+  -- Create the widget
+  local autoRotateLabel = display.newText( "横图自动旋转", 0, 0, fontZcoolHuangYou, labelFSize*.69)
+  autoRotateLabel.anchorX = 1; autoRotateLabel.anchorY = 0
+  autoRotateLabel.x = cX + labelFSize*.5
+  autoRotateLabel.y = topMargin + labelFSize + 40
+  sceneGroup:insert(autoRotateLabel)
+  gY = autoRotateLabel.y
+  local autoRotateSwitch = widget.newSwitch(
+    {
+      left = cX + labelFSize,
+      top = gY,
+      style = "onOff",
+      id = "onOffSwitch",
+      initialSwitchState = false, --TODO: load state from local_storage
+      onPress = onSwitchPress
+    }
+  )
+  sceneGroup:insert(autoRotateSwitch)
+  -- ================================================
+  
+  -- 手机网络可用 =================================
+  local function onNetBanSwitchPress( event )
+    local switch = event.target
+    print( "Switch with ID '"..switch.id.."' is on: "..tostring(switch.isOn) )
+  end
+  local mobileNetworkBanLabel = display.newText( "非Wi-Fi下可用", 0, 0, fontZcoolHuangYou, labelFSize*.69)
+  mobileNetworkBanLabel.anchorX = 1; mobileNetworkBanLabel.anchorY = 0
+  mobileNetworkBanLabel.x = cX + labelFSize*.5
+  mobileNetworkBanLabel.y = gY + 60
+  sceneGroup:insert(mobileNetworkBanLabel)
+  gY = mobileNetworkBanLabel.y
+  local networkBanSwitch = widget.newSwitch(
+    {
+      left = cX + labelFSize,
+      top = gY,
+      style = "onOff",
+      id = "onOffSwitch",
+      initialSwitchState = false, --TODO: load state from local_storage
+      onPress = onNetBanSwitchPress
+    }
+  )
+  sceneGroup:insert(networkBanSwitch)
+  -- ================================================
+  
+  local function resetCache( event )
+    if ( "ended" == event.phase ) then
+      print( "TODO: clear app's cache data, images" )
+    end
+  end
+  local resetCacheBtn = widget.newButton(
+    {
+      label = "清 除 缓 存",
+      onEvent = resetCache,
+      emboss = false,
+      -- Properties for a rounded rectangle button
+      shape = "roundedRect",
+      width = 200,
       height = 40,
-      x = cX,
-      y = labelFSize*2 + 226,
-      radius = 18,
-      font = fontZcoolHuangYou,
-      iconAlign = "left",
-      textColor = _ColorDark,
-      fillColor = colorsRGB.RGBA('firebrick'),
-      state = {
-        value = "off", -- defaults to "off", values: off, on and disabled
-        off = {
-          textColor = {1, 1, 1},
-          fillColor = {0, 0.81, 1}
-        },
-        on = {
-          textColor = {1, 1, 1},
-          fillColor = {0, 0.61, 1}
-        },
-        disabled = {
-          textColor = {1, 1, 1},
-          fillColor = {.3, .3, .3}
-        }
-      },
-      callBack = btnOnPressHandler,
---      callBackData = {message = "newDialog callBack called"}, -- demo passing data to an event
-    })
+      cornerRadius = 10,
+      font = fontZcoolHuangYou, fontSize = labelFSize*.6,
+      labelAlign = 'center', 
+      labelColor = { default=colorsRGB.RGBA('white'), over=colorsRGB.RGBA('white') },
+      fillColor = { default=colorsRGB.RGBA('firebrick'), over=colorsRGB.RGBA('tomato') },
+--      strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+--      strokeWidth = 2
+    }
+  )
+  resetCacheBtn.x = cX
+  resetCacheBtn.y = gY + 80
+  gY = resetCacheBtn.y
+  sceneGroup:insert(resetCacheBtn)
+
+  local function signout( event )
+    if ( "ended" == event.phase ) then
+      print( "TODO: sign user out" )
+    end
+  end
+  local signoutBtn = widget.newButton(
+    {
+      label = "退 出 登 录",
+      onEvent = signout,
+      emboss = false,
+      -- Properties for a rounded rectangle button
+      shape = "roundedRect",
+      width = 200,
+      height = 40,
+      cornerRadius = 10,
+      font = fontZcoolHuangYou, fontSize = labelFSize*.6,
+      labelAlign = 'center', 
+      labelColor = { default=colorsRGB.RGBA('white'), over=colorsRGB.RGBA('white') },
+      fillColor = { default=colorsRGB.RGBA('firebrick'), over=colorsRGB.RGBA('tomato') },
+--      strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+--      strokeWidth = 2
+    }
+  )
+  signoutBtn.x = cX
+  signoutBtn.y = gY + 69
+  gY = signoutBtn.y
+  sceneGroup:insert(signoutBtn)
 
   APP:sceneForwards(params, 'mine')
   -----------------------------------------------------------------------------
