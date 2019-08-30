@@ -34,6 +34,12 @@ return {
       required_params = {"tag_id"},
     },
     
+    listAlbumsHot = {
+      method = "GET",
+      path = "api/feed/hotlist",
+      optional_params = { "skip", "limit" },      
+    },
+    
     -- Moter
     getMoterById = {
       method = "GET",

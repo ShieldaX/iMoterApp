@@ -181,7 +181,7 @@ function scene:loadHotAlbumList()
     albumListView.layer.y = albumListView.layer.y + cursor.y + padding
     albumListView:open()
   end
-  iMoter:listAlbums({skip = 10, limit = 20}, showAlbumsWithData)
+  iMoter:listAlbumsHot({skip = 0, limit = 10}, showAlbumsWithData)
 end
 
 -- Called BEFORE scene has moved onscreen:

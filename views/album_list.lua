@@ -81,9 +81,9 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   -- DATA BINDING
   self.rawData = obj
   self._albums = obj.albums
-  self.name = 'album list'
+  self.name = 'album_list'
   self.covers = {}
-  APP.CurrentAlbumList = self
+  --APP.CurrentAlbumList = self
   -- END DATA BINDING
   -- -------------------
   -- -------------------

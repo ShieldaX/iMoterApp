@@ -62,6 +62,15 @@ function MineList:initialize(topPadding, sceneGroup)
   local bgColor
   local rowLineColor
   local labelColor = {colorHex('C7A680')}
+  local function onRowTouch(event)
+    local row = event.row
+    local id = row.index
+    local phase = event.phase
+    if "press" == phase then
+        print( "Touched row:", event.target.index )
+    end
+  end
+  
   local function onRowRender( event )
 
     --Set up the localized variables to be passed via the event table
@@ -126,7 +135,6 @@ function MineList:initialize(topPadding, sceneGroup)
       lineColor = {.5, .5, .5, .5},
       params = {
         name = menuData[i].name,
-        phone = menuData[i].phone
       }
     }
   end

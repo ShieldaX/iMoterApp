@@ -32,7 +32,7 @@ local inspect = require('libs.inspect')
 local iMoterAPI = require( "classes.iMoter" )
 
 local HeaderView = require("views.header")
-
+local Toast = require 'views.toast'
 -- mui
 --local muiData = require( "materialui.mui-data" )
 
@@ -88,15 +88,15 @@ function scene:create( event )
 --    switch.isOn = not switch.isOn
   end
   -- Create the widget
-  local autoRotateLabel = display.newText( "横图自动旋转", 0, 0, fontZcoolHuangYou, labelFSize*.69)
-  autoRotateLabel.anchorX = 1; autoRotateLabel.anchorY = 0
-  autoRotateLabel.x = cX + labelFSize*.5
+  local autoRotateLabel = display.newText( "横图自适应旋转", 0, 0, fontZcoolHuangYou, labelFSize*.69)
+  autoRotateLabel.anchorX = 0; autoRotateLabel.anchorY = 0
+  autoRotateLabel.x = vW*.12
   autoRotateLabel.y = topMargin + labelFSize + 40
   sceneGroup:insert(autoRotateLabel)
   gY = autoRotateLabel.y
   local autoRotateSwitch = widget.newSwitch(
     {
-      left = cX + labelFSize,
+      left = cX + labelFSize*2.4,
       top = gY,
       style = "onOff",
       id = "autoRotateSwitch",
@@ -112,15 +112,15 @@ function scene:create( event )
     local switch = event.target
     print( "Switch with ID '"..switch.id.."' is on: "..tostring(switch.isOn) )
   end
-  local mobileNetworkBanLabel = display.newText( "非Wi-Fi下可用", 0, 0, fontZcoolHuangYou, labelFSize*.69)
-  mobileNetworkBanLabel.anchorX = 1; mobileNetworkBanLabel.anchorY = 0
-  mobileNetworkBanLabel.x = cX + labelFSize*.5
+  local mobileNetworkBanLabel = display.newText( "非Wi-Fi网络下可用", 0, 0, fontZcoolHuangYou, labelFSize*.69)
+  mobileNetworkBanLabel.anchorX = 0; mobileNetworkBanLabel.anchorY = 0
+  mobileNetworkBanLabel.x = vW*.12
   mobileNetworkBanLabel.y = gY + 60
   sceneGroup:insert(mobileNetworkBanLabel)
   gY = mobileNetworkBanLabel.y
   local networkBanSwitch = widget.newSwitch(
     {
-      left = cX + labelFSize,
+      left = cX + labelFSize*2.4,
       top = gY,
       style = "onOff",
       id = "onOffSwitch",
@@ -143,7 +143,7 @@ function scene:create( event )
       emboss = false,
       -- Properties for a rounded rectangle button
       shape = "roundedRect",
-      width = 200,
+      width = vW*.8,
       height = 40,
       cornerRadius = 10,
       font = fontZcoolHuangYou, fontSize = labelFSize*.6,
@@ -158,34 +158,40 @@ function scene:create( event )
   resetCacheBtn.y = gY + 80
   gY = resetCacheBtn.y
   sceneGroup:insert(resetCacheBtn)
-
+  
   local function signout( event )
     if ( "ended" == event.phase ) then
       print( "TODO: sign user out" )
+      APP.access_token = nil
+--      iMoter:logout()
+      iMoter.headers.Authorization = nil
+      Toast('您已经退出，请重新登录！'):show()
     end
   end
-  local signoutBtn = widget.newButton(
-    {
-      label = "退 出 登 录",
-      onEvent = signout,
-      emboss = false,
-      -- Properties for a rounded rectangle button
-      shape = "roundedRect",
-      width = 200,
-      height = 40,
-      cornerRadius = 10,
-      font = fontZcoolHuangYou, fontSize = labelFSize*.6,
-      labelAlign = 'center', 
-      labelColor = { default=colorsRGB.RGBA('white'), over=colorsRGB.RGBA('white') },
-      fillColor = { default=colorsRGB.RGBA('firebrick'), over=colorsRGB.RGBA('tomato') },
---      strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
---      strokeWidth = 2
-    }
-  )
-  signoutBtn.x = cX
-  signoutBtn.y = gY + 69
-  gY = signoutBtn.y
-  sceneGroup:insert(signoutBtn)
+  if APP.access_token then
+    local signoutBtn = widget.newButton(
+      {
+        label = "退 出 登 录",
+        onEvent = signout,
+        emboss = false,
+        -- Properties for a rounded rectangle button
+        shape = "roundedRect",
+        width = vW*.8,
+        height = 40,
+        cornerRadius = 10,
+        font = fontZcoolHuangYou, fontSize = labelFSize*.6,
+        labelAlign = 'center', 
+        labelColor = { default=colorsRGB.RGBA('white'), over=colorsRGB.RGBA('white') },
+        fillColor = { default=colorsRGB.RGBA('firebrick'), over=colorsRGB.RGBA('tomato') },
+  --      strokeColor = { default={1,0.4,0,1}, over={0.8,0.8,1,1} },
+  --      strokeWidth = 2
+      }
+    )
+    signoutBtn.x = cX
+    signoutBtn.y = gY + 69
+    gY = signoutBtn.y
+    sceneGroup:insert(signoutBtn)
+  end
 
   APP:sceneForwards(params, 'mine')
   -----------------------------------------------------------------------------
