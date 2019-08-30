@@ -43,7 +43,7 @@ luac.out
 ######################
 .DS_Store?
 ehthumbs.db
-Icon*
+#Icon*
 Thumbs.db
 
 Images.xcassets/
