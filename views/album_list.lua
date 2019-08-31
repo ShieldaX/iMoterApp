@@ -19,6 +19,8 @@ local Cover = require 'views.album_cover'
 --local Indicator = require 'views.indicator'
 local AlbumList = class('AlbumListView', View)
 local APP = require("classes.application")
+local iMoterAPI = require( "classes.iMoter" )
+local iMoter = iMoterAPI:new(APP.access_token)
 
 -- Constants List:
 local oX = display.screenOriginX
@@ -82,6 +84,8 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
   self.rawData = obj
   self._albums = obj.albums
   self.name = 'album_list'
+  self.actionName = obj.actionName
+  self.API = obj.API
   self.covers = {}
   --APP.CurrentAlbumList = self
   -- END DATA BINDING
@@ -116,7 +120,8 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
       local slider = self.elements.slider
       if ( event.direction == "up" ) then
         print( "Load more content..." )
-        local iMoter = self.bumper
+        local API = self.bumper or self.API or iMoter
+        local actionName = self.actionName or 'listAlbums'
         local function showAlbumsWithData(res)
           if not res or not res.data then
             native.showAlert("Oops!", "Album list currently not avaialble!", { "Okay" } )
@@ -129,7 +134,7 @@ function AlbumList:initialize(obj, topPadding, sceneGroup)
           end
           self:open(self.cursorIndex + 1)
         end
-        iMoter:listAlbums({skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
+        API[actionName](API, {skip = self.cursorIndex, limit = 10}, showAlbumsWithData)
       elseif ( event.direction == "down" ) then print( "Reached top limit" )
       elseif ( event.direction == "left" ) then
         print( "Reached right limit" )

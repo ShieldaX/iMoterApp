@@ -177,6 +177,8 @@ function scene:loadHotAlbumList()
     local topPadding = topInset
     local albumListView = AlbumList:new(_data, topPadding, sceneGroup)
     APP.hotAlbumListView = albumListView
+    AlbumList.API = iMoter
+    AlbumList.actionName = 'listAlbumsHot'
     local cursor = APP.Header.elements.cursor
     albumListView.layer.y = albumListView.layer.y + cursor.y + padding
     albumListView:open()

@@ -6,11 +6,11 @@ local RESTful = require("classes.RESTful")
 local iMoter = class 'iMoter'
 
 ----------------------------  -------------------------------------------------------------
-function iMoter:initialize()   
+function iMoter:initialize(token)   
 
   -- Create header for app-level access
   self.headers = {}
-
+  if token then self.headers.Authorization = 'JWT ' .. token end
   -- Initialize class
   self.restful = RESTful:new(self, "iMoter")
 
