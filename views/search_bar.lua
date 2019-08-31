@@ -114,7 +114,7 @@ function Bar:initialize(opts, parent)
   local fillColor = overColor
   local icon = createIcon {
     x = 0, y = 0,
-    text = 'search',
+    text = 'find_in_page',
     fontSize = 32
   }
   icon.defaultColor = defaultColor

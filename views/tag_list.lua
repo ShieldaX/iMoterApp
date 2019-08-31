@@ -71,9 +71,9 @@ function TagList:initialize(obj, topPadding, sceneGroup)
       _t.motion = _t.yLast - _t.yStart
       local isTabBarHidden = APP.Footer.hidden
       if _t.motion <= -30 and not isTabBarHidden then
---        APP.Footer:hide()
+        APP.Footer:hide()
       elseif _t.motion >= 30 and isTabBarHidden then
---        APP.Footer:show()
+        APP.Footer:show()
       end
     elseif ( phase == "ended" ) then
       print( "Scroll view was released" )
