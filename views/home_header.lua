@@ -156,7 +156,7 @@ function Header:onHomeTabChanged(event)
     transition.to(hotView.layer, {transition = easing.outExpo, time = 420, x = vW})
 --    transition.to(hotView.layer, {transition = easing.outExpo, time = 420, alpha = 0})
   else
-    transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = -vW})
+    if updateView then transition.to(updateView.layer, {transition = easing.outExpo, time = 600, x = -vW}) end
 --    transition.to(updateView.layer, {transition = easing.outExpo, time = 200, alpha = 0})
     local scene = composer.getScene(composer.getSceneName('current'))
     scene:loadHotAlbumList()
