@@ -80,4 +80,18 @@ function M:sceneRecycle(sceneName)
   composer.removeScene(sceneName)
 end
 
+function M:userAuthentication()
+  if self.access_token then return true end
+  local options =
+  {
+    isModal = true,
+    effect = "slideUp",
+    time = 360,
+--    params = {
+--      sampleVar1 = "my sample variable"
+--    }
+  }
+  composer.showOverlay('scenes.authenticate', options)
+end
+
 return M

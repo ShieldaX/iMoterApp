@@ -209,6 +209,24 @@ function Card:initialize(opts, parent)
   infoCard:insert(iconViews)
   iconViews.x = labelViews.x - labelViews.contentWidth -12
   
+  -- 收藏
+  local labelFav = display.newText {
+      text = '收藏' or opts.favorites,
+      font = fontSHSans, fontSize = 16,
+      x = vW*.12, y = topPadding + 4,  
+    }
+  labelFav.anchorX = 0
+  local iconFav = createIcon {
+      x = 60, y = topPadding,
+      text = 'star',
+      fontSize = 20,
+    }
+  labelFav:setFillColor(colorHex('6C6C6C'))
+  iconFav:setFillColor(colorHex('6C6C6C'))
+  infoCard:insert(labelFav)
+  infoCard:insert(iconFav)
+  iconFav.x = labelFav.x - 12
+  
   local panel = widget.newPanel{
     location = "bottom",
     onComplete = panelTransDone,

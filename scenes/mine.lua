@@ -80,7 +80,7 @@ function scene:authenticated()
   local verifiedUser = composer.getVariable('verifiedUser')
   self.header:send('loadUser', {user = verifiedUser})
   self.menu:send('loadUser', {user = verifiedUser})
-  d(verifiedUser)
+  APP.Footer:toggle()
 end
 
 -- Called BEFORE scene has moved onscreen:

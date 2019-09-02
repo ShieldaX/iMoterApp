@@ -72,19 +72,34 @@ function scene:create( event )
   local params = event.params
 --  composer.setVariable( "autoRotate", false )
   mui.init(nil, { parent=self.view })
+  local album_id = params.album_id
+  local index = params.index or 1
   -----------------------------------------------------------------------------
   --      CREATE display objects and add them to 'group' here.
   local background = display.newRect(sceneGroup, oX, oY, vW, vH)
   background:setFillColor( 0 )
   background:translate( background.contentWidth*0.5, background.contentHeight*0.5 )
-  
+--  local function rightButtonEvent(event)
+--    if event.phase == "ended" then
+--      d('TODO: try to fav this album: '..album_id)
+--      APP:userAuthentication()
+--    end
+--    return true
+--  end
+--	local rightButton = {
+--    id = 'favBtn',
+--    label = '收藏+ ',
+--    font = fontZcoolHuangYou,
+--		fontSize = 18,
+--		onEvent = rightButtonEvent,
+--    labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
+--	}
+--  self.header = HeaderView:new({name = 'NavBar', rightButton = rightButton}, sceneGroup)
   self.header = HeaderView:new({name = 'NavBar'}, sceneGroup)
   
-  local album_id = params.album_id
-  local _title = params.title
-  local index = params.index or 1
-  _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
-  local title = util.GetMaxLenString(_title, 30)
+--  local _title = params.title
+--  _title = _title:gsub("%d+%.%d+%.%d+", '', 1)
+--  local title = util.GetMaxLenString(_title, 30)
   local function openAlbumWithData(res)
     if not res or not res.data then
       native.showAlert("Oops!", "This album currently not avaialble!", { "Okay" } )

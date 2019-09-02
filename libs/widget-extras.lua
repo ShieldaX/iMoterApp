@@ -520,6 +520,7 @@ function widget.newNavigationBar( options )
     leftButton.x = 15 + leftButton.width * 0.5
     leftButton.y = barContainer._title.y
     barContainer:insert(leftButton)
+--    barContainer.leftBtn = leftButton
   end
 
   local rightButton
@@ -543,11 +544,13 @@ function widget.newNavigationBar( options )
           fontSize = opt.rightButton.fontSize or opt.fontSize,
           labelColor = opt.rightButton.labelColor or { default={ 1, 1, 1 }, over={ 0, 0, 0, 0.5 } },
           labelAlign = "right",
+          textOnly = true
         })
     end
     rightButton.x = display.contentWidth - (15 + rightButton.width * 0.5)
     rightButton.y = barContainer._title.y
     barContainer:insert(rightButton)
+--    barContainer.rightBtn = rightButton
   end
 
   function barContainer:setLabel( text )

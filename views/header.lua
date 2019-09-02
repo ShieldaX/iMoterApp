@@ -85,7 +85,7 @@ function Header:initialize(opts, parent)
   -- -------------------
   -- VISUAL INITIALIING
   -- Configure topbar
-	local leftButton = {
+	local _leftButton = {
     id = 'backBtn',
     label = ' < 返回',
     font = fontZcoolHuangYou,
@@ -93,6 +93,7 @@ function Header:initialize(opts, parent)
 		onEvent = opts.onEvent or leftButtonEvent,
     labelColor = { default={colorHex('C7A680')}, over={colorHex('6C6C6C')} }
 	}
+  local leftButton = opts.leftButton or _leftButton
   navBarHeight = 42
   self.navBarHeight = navBarHeight
   local navBar = widget.newNavigationBar({
@@ -104,6 +105,7 @@ function Header:initialize(opts, parent)
 		height = navBarHeight,
 		includeStatusBar = false,
 		leftButton = leftButton,
+    rightButton = opts.rightButton
 	})
   self.navBarYPos = navBar.y
   self:_attach(navBar, 'navBar')

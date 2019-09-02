@@ -367,8 +367,8 @@ function scene:hide( event )
   local parent = event.parent
   -- nothing to do here
   if event.phase == "will" then
-    parent:authenticated()
-    APP.Footer:show()
+    if parent.authenticated then parent:authenticated() end
+    --APP.Footer:show()
   end
 
 end
